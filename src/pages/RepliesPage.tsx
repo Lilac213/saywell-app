@@ -82,6 +82,14 @@ const RepliesPage: React.FC = () => {
       if (aiError) {
         const errorMsg = await aiError?.context?.text();
         console.error('AI生成回复失败:', errorMsg || aiError?.message);
+        
+        // 提供更友好的错误提示
+        toast({
+          title: 'AI分析失败',
+          description: '网络连接问题或服务暂时不可用，请稍后重试',
+          variant: 'destructive',
+        });
+        
         throw new Error('AI生成回复失败');
       }
 
@@ -129,6 +137,37 @@ const RepliesPage: React.FC = () => {
     if (!sessionId) return;
 
     setSelectedIndex(index);
+
+    // 如果选择的是第4个反馈选项，弹出输入框收集反馈
+    if (index === 3) {
+      const feedback = prompt('请输入您期望的回复内容或反馈建议：');
+      if (feedback && feedback.trim()) {
+        // 保存反馈记录
+        await replySelectionApi.create(
+          sessionId,
+          replies.map((r) => r.text),
+          `用户反馈：${feedback}`,
+          index
+        );
+
+        toast({
+          title: '感谢您的反馈',
+          description: '我们会根据您的反馈持续优化回复风格',
+        });
+
+        // 延迟返回首页
+        setTimeout(() => {
+          navigate('/');
+        }, 1500);
+      } else {
+        setSelectedIndex(null);
+        toast({
+          title: '已取消',
+          description: '您可以继续选择其他回复',
+        });
+      }
+      return;
+    }
 
     // 保存选择记录
     await replySelectionApi.create(
@@ -217,54 +256,61 @@ const RepliesPage: React.FC = () => {
                 key={index}
                 className={`animate-slide-up transition-all hover:shadow-lg ${
                   selectedIndex === index ? 'ring-2 ring-primary' : ''
-                }`}
+                } ${index === 3 ? 'border-dashed' : ''}`}
                 style={{ animationDelay: `${index * 0.1}s` }}
               >
                 <CardHeader>
                   <div className="flex items-start justify-between gap-4">
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-2">
-                        <CardTitle className="text-base">回复选项 {index + 1}</CardTitle>
-                        <Badge variant="secondary">{reply.tone}</Badge>
+                        <CardTitle className="text-base">
+                          {index === 3 ? '💭 反馈选项' : `回复选项 ${index + 1}`}
+                        </CardTitle>
+                        <Badge variant={index === 3 ? 'outline' : 'secondary'}>{reply.tone}</Badge>
                       </div>
                       <CardDescription className="text-sm">{reply.reasoning}</CardDescription>
                     </div>
                   </div>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <div className="p-4 bg-accent/50 rounded-lg">
+                  <div className={`p-4 rounded-lg ${index === 3 ? 'bg-muted/50 border border-dashed border-border' : 'bg-accent/50'}`}>
                     <p className="text-base leading-relaxed">{reply.text}</p>
                   </div>
                   <div className="flex gap-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleCopy(reply.text, index)}
-                      className="flex-1"
-                    >
-                      {copiedIndex === index ? (
-                        <>
-                          <Check className="w-4 h-4 mr-2" />
-                          已复制
-                        </>
-                      ) : (
-                        <>
-                          <Copy className="w-4 h-4 mr-2" />
-                          复制
-                        </>
-                      )}
-                    </Button>
+                    {index !== 3 && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleCopy(reply.text, index)}
+                        className="flex-1"
+                      >
+                        {copiedIndex === index ? (
+                          <>
+                            <Check className="w-4 h-4 mr-2" />
+                            已复制
+                          </>
+                        ) : (
+                          <>
+                            <Copy className="w-4 h-4 mr-2" />
+                            复制
+                          </>
+                        )}
+                      </Button>
+                    )}
                     <Button
                       size="sm"
                       onClick={() => handleSelect(reply, index)}
                       disabled={selectedIndex !== null}
                       className="flex-1"
+                      variant={index === 3 ? 'outline' : 'default'}
                     >
                       {selectedIndex === index ? (
                         <>
                           <Check className="w-4 h-4 mr-2" />
                           已选择
                         </>
+                      ) : index === 3 ? (
+                        '提供反馈'
                       ) : (
                         '选择此回复'
                       )}
