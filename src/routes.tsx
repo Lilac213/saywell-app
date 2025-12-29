@@ -1,4 +1,8 @@
-import SamplePage from './pages/SamplePage';
+import HomePage from './pages/HomePage';
+import QuestionnairePage from './pages/QuestionnairePage';
+import RepliesPage from './pages/RepliesPage';
+import HistoryPage from './pages/HistoryPage';
+import ProfilePage from './pages/ProfilePage';
 import type { ReactNode } from 'react';
 
 interface RouteConfig {
@@ -10,9 +14,29 @@ interface RouteConfig {
 
 const routes: RouteConfig[] = [
   {
-    name: 'Sample Page',
+    name: '首页',
     path: '/',
-    element: <SamplePage />
+    element: <HomePage />
+  },
+  {
+    name: '问卷',
+    path: '/questionnaire',
+    element: <QuestionnairePage />
+  },
+  {
+    name: '回复建议',
+    path: '/replies/:sessionId',
+    element: <RepliesPage />
+  },
+  {
+    name: '历史记录',
+    path: '/history',
+    element: <HistoryPage />
+  },
+  {
+    name: '我的画像',
+    path: '/profile',
+    element: <ProfilePage />
   }
 ];
 

@@ -1,0 +1,287 @@
+import React, { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { useToast } from '@/hooks/use-toast';
+import { useUserProfile } from '@/contexts/UserProfileContext';
+import { chatSessionApi, replySelectionApi } from '@/db/api';
+import { supabase } from '@/db/supabase';
+import { ArrowLeft, Copy, Check, Sparkles, Loader2 } from 'lucide-react';
+import type { ChatSession, GeneratedReply } from '@/types/types';
+
+const RepliesPage: React.FC = () => {
+  const { sessionId } = useParams<{ sessionId: string }>();
+  const navigate = useNavigate();
+  const { toast } = useToast();
+  const { userProfile } = useUserProfile();
+  const [session, setSession] = useState<ChatSession | null>(null);
+  const [replies, setReplies] = useState<GeneratedReply[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
+  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+
+  useEffect(() => {
+    if (sessionId) {
+      loadSessionAndGenerateReplies();
+    }
+  }, [sessionId]);
+
+  const loadSessionAndGenerateReplies = async () => {
+    if (!sessionId || !userProfile) return;
+
+    try {
+      setLoading(true);
+
+      // 加载会话信息
+      const sessionData = await chatSessionApi.getById(sessionId);
+      if (!sessionData) {
+        throw new Error('会话不存在');
+      }
+      setSession(sessionData);
+
+      // 将图片URL转换为base64
+      const response = await fetch(sessionData.screenshot_url);
+      const blob = await response.blob();
+      const base64 = await new Promise<string>((resolve) => {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          const result = reader.result as string;
+          resolve(result.split(',')[1]);
+        };
+        reader.readAsDataURL(blob);
+      });
+
+      // 获取历史选择记录（用于学习）
+      const allSessions = await chatSessionApi.getByUserProfile(userProfile.id, 10);
+      const previousSelections = [];
+      for (const s of allSessions) {
+        if (s.id === sessionId) continue;
+        const selection = await replySelectionApi.getByChatSession(s.id);
+        if (selection) {
+          previousSelections.push({
+            generated_replies: selection.generated_replies,
+            selected_reply: selection.selected_reply,
+          });
+        }
+      }
+
+      // 调用AI生成回复
+      const { data: aiData, error: aiError } = await supabase.functions.invoke('generate-replies', {
+        body: {
+          screenshotBase64: base64,
+          userProfile: {
+            personality_traits: userProfile.personality_traits,
+            language_habits: userProfile.language_habits,
+            background_story: userProfile.background_story,
+          },
+          previousSelections,
+        },
+      });
+
+      if (aiError) {
+        const errorMsg = await aiError?.context?.text();
+        console.error('AI生成回复失败:', errorMsg || aiError?.message);
+        throw new Error('AI生成回复失败');
+      }
+
+      // 更新会话的提取文本
+      if (aiData.extracted_text) {
+        await chatSessionApi.update(sessionId, {
+          extracted_text: aiData.extracted_text,
+          context: { analysis: aiData.context_analysis },
+        });
+      }
+
+      setReplies(aiData.replies || []);
+    } catch (error) {
+      console.error('加载失败:', error);
+      toast({
+        title: '加载失败',
+        description: error instanceof Error ? error.message : '请稍后重试',
+        variant: 'destructive',
+      });
+      navigate('/');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleCopy = async (text: string, index: number) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopiedIndex(index);
+      setTimeout(() => setCopiedIndex(null), 2000);
+      toast({
+        title: '已复制',
+        description: '回复内容已复制到剪贴板',
+      });
+    } catch (error) {
+      toast({
+        title: '复制失败',
+        description: '请手动复制',
+        variant: 'destructive',
+      });
+    }
+  };
+
+  const handleSelect = async (reply: GeneratedReply, index: number) => {
+    if (!sessionId) return;
+
+    setSelectedIndex(index);
+
+    // 保存选择记录
+    await replySelectionApi.create(
+      sessionId,
+      replies.map((r) => r.text),
+      reply.text,
+      index
+    );
+
+    toast({
+      title: '已记录您的选择',
+      description: '我们会根据您的选择持续优化回复风格',
+    });
+
+    // 延迟返回首页
+    setTimeout(() => {
+      navigate('/');
+    }, 1500);
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-accent/30 to-background">
+        <div className="text-center animate-fade-in">
+          <div className="inline-flex items-center justify-center w-20 h-20 bg-primary rounded-full mb-4">
+            <Sparkles className="w-10 h-10 text-primary-foreground animate-pulse" />
+          </div>
+          <h2 className="text-2xl font-bold mb-2">AI正在分析中...</h2>
+          <p className="text-muted-foreground">正在为您生成个性化回复建议</p>
+          <div className="mt-6">
+            <Loader2 className="w-8 h-8 animate-spin mx-auto text-primary" />
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-accent/30 to-background">
+      {/* 顶部导航 */}
+      <header className="border-b border-border bg-card/50 backdrop-blur-sm sticky top-0 z-10">
+        <div className="container mx-auto px-4 h-16 flex items-center">
+          <Button variant="ghost" size="icon" onClick={() => navigate('/')}>
+            <ArrowLeft className="w-5 h-5" />
+          </Button>
+          <h1 className="text-xl font-bold ml-2">回复建议</h1>
+        </div>
+      </header>
+
+      {/* 主内容 */}
+      <main className="container mx-auto px-4 py-6 xl:py-8">
+        <div className="max-w-4xl mx-auto">
+          {/* 截图预览 */}
+          {session && (
+            <Card className="mb-6 animate-fade-in">
+              <CardHeader>
+                <CardTitle className="text-lg">聊天截图</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="rounded-lg overflow-hidden border border-border">
+                  <img
+                    src={session.screenshot_url}
+                    alt="聊天截图"
+                    className="w-full h-auto max-h-64 object-contain bg-muted"
+                  />
+                </div>
+                {session.extracted_text && (
+                  <div className="mt-4 p-4 bg-muted rounded-lg">
+                    <p className="text-sm text-muted-foreground mb-1">识别的文本：</p>
+                    <p className="text-sm">{session.extracted_text}</p>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          )}
+
+          {/* 回复建议列表 */}
+          <div className="space-y-4">
+            <h2 className="text-xl font-bold flex items-center gap-2">
+              <Sparkles className="w-5 h-5 text-primary" />
+              为您推荐的回复
+            </h2>
+
+            {replies.map((reply, index) => (
+              <Card
+                key={index}
+                className={`animate-slide-up transition-all hover:shadow-lg ${
+                  selectedIndex === index ? 'ring-2 ring-primary' : ''
+                }`}
+                style={{ animationDelay: `${index * 0.1}s` }}
+              >
+                <CardHeader>
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-2">
+                        <CardTitle className="text-base">回复选项 {index + 1}</CardTitle>
+                        <Badge variant="secondary">{reply.tone}</Badge>
+                      </div>
+                      <CardDescription className="text-sm">{reply.reasoning}</CardDescription>
+                    </div>
+                  </div>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="p-4 bg-accent/50 rounded-lg">
+                    <p className="text-base leading-relaxed">{reply.text}</p>
+                  </div>
+                  <div className="flex gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleCopy(reply.text, index)}
+                      className="flex-1"
+                    >
+                      {copiedIndex === index ? (
+                        <>
+                          <Check className="w-4 h-4 mr-2" />
+                          已复制
+                        </>
+                      ) : (
+                        <>
+                          <Copy className="w-4 h-4 mr-2" />
+                          复制
+                        </>
+                      )}
+                    </Button>
+                    <Button
+                      size="sm"
+                      onClick={() => handleSelect(reply, index)}
+                      disabled={selectedIndex !== null}
+                      className="flex-1"
+                    >
+                      {selectedIndex === index ? (
+                        <>
+                          <Check className="w-4 h-4 mr-2" />
+                          已选择
+                        </>
+                      ) : (
+                        '选择此回复'
+                      )}
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+
+          <div className="mt-6 text-center text-sm text-muted-foreground">
+            选择一个回复后，我们会记录您的偏好以优化未来的建议
+          </div>
+        </div>
+      </main>
+    </div>
+  );
+};
+
+export default RepliesPage;
