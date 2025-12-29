@@ -17,6 +17,7 @@ export interface ChatSession {
   screenshot_url: string;
   extracted_text: string | null;
   context: Record<string, any>;
+  user_style_observation?: string | null;
 }
 
 // 回复选择记录类型

@@ -93,11 +93,14 @@ const RepliesPage: React.FC = () => {
         throw new Error('AI生成回复失败');
       }
 
-      // 更新会话的提取文本
-      if (aiData.extracted_text) {
+      // 更新会话的提取文本和用户风格观察
+      if (aiData.extracted_text || aiData.user_style_observation) {
         await chatSessionApi.update(sessionId, {
-          extracted_text: aiData.extracted_text,
-          context: { analysis: aiData.context_analysis },
+          extracted_text: aiData.extracted_text || null,
+          context: { 
+            analysis: aiData.context_analysis,
+            user_style_observation: aiData.user_style_observation,
+          },
         });
       }
 
@@ -237,7 +240,13 @@ const RepliesPage: React.FC = () => {
                 {session.extracted_text && (
                   <div className="mt-4 p-4 bg-muted rounded-lg">
                     <p className="text-sm text-muted-foreground mb-1">识别的文本：</p>
-                    <p className="text-sm">{session.extracted_text}</p>
+                    <p className="text-sm whitespace-pre-wrap">{session.extracted_text}</p>
+                  </div>
+                )}
+                {session.context?.user_style_observation && (
+                  <div className="mt-4 p-4 bg-primary/10 rounded-lg border border-primary/20">
+                    <p className="text-sm text-primary font-medium mb-1">📝 从截图中观察到的您的语言风格：</p>
+                    <p className="text-sm text-foreground">{session.context.user_style_observation}</p>
                   </div>
                 )}
               </CardContent>
