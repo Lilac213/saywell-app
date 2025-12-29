@@ -11,7 +11,7 @@ import { Upload, Image as ImageIcon, History, User, Sparkles } from 'lucide-reac
 const HomePage: React.FC = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { userProfile, loading: profileLoading } = useUserProfile();
+  const { userProfile, loading: profileLoading, createProfile, updateProfile } = useUserProfile();
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
@@ -206,9 +206,44 @@ const HomePage: React.FC = () => {
               在开始使用之前，请先完成简单的问卷，帮助我们了解您的个性特征
             </CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="space-y-3">
             <Button onClick={() => navigate('/questionnaire')} className="w-full" size="lg">
               开始问卷
+            </Button>
+            <Button 
+              onClick={async () => {
+                // 快速跳过问卷，使用默认画像
+                if (!userProfile) {
+                  const profile = await createProfile();
+                  if (profile) {
+                    await updateProfile({
+                      personality_traits: { 性格: '随和', 沟通风格: '轻松自然' },
+                      language_habits: { 表达方式: '简洁明了', 语气特点: '友好亲切' },
+                      background_story: '一个喜欢使用智能工具的用户',
+                      questionnaire_completed: true,
+                    });
+                    toast({
+                      title: '已使用默认画像',
+                      description: '您可以稍后在个人画像页面重新填写问卷',
+                    });
+                  }
+                } else {
+                  await updateProfile({
+                    personality_traits: { 性格: '随和', 沟通风格: '轻松自然' },
+                    language_habits: { 表达方式: '简洁明了', 语气特点: '友好亲切' },
+                    background_story: '一个喜欢使用智能工具的用户',
+                    questionnaire_completed: true,
+                  });
+                  toast({
+                    title: '已使用默认画像',
+                    description: '您可以稍后在个人画像页面重新填写问卷',
+                  });
+                }
+              }} 
+              variant="outline" 
+              className="w-full"
+            >
+              跳过问卷（使用默认画像）
             </Button>
           </CardContent>
         </Card>

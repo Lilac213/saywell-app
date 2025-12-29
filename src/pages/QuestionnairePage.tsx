@@ -1,16 +1,12 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Progress } from '@/components/ui/progress';
 import { useToast } from '@/hooks/use-toast';
 import { useUserProfile } from '@/contexts/UserProfileContext';
 import { questionnaireQuestions } from '@/data/questionnaire';
-import { questionnaireApi, userProfileApi } from '@/db/api';
+import { questionnaireApi } from '@/db/api';
 import { supabase } from '@/db/supabase';
 import { Loader2, Sparkles } from 'lucide-react';
 
@@ -154,40 +150,42 @@ const QuestionnairePage: React.FC = () => {
           <CardContent className="space-y-6">
             <div className="space-y-2">
               {currentQuestion.type === 'text' && (
-                <Input
+                <input
+                  type="text"
                   placeholder={currentQuestion.placeholder}
                   value={answers[currentQuestion.id] || ''}
                   onChange={(e) => handleAnswerChange(e.target.value)}
-                  className="text-base"
+                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                 />
               )}
 
               {currentQuestion.type === 'textarea' && (
-                <Textarea
+                <textarea
                   placeholder={currentQuestion.placeholder}
                   value={answers[currentQuestion.id] || ''}
                   onChange={(e) => handleAnswerChange(e.target.value)}
                   rows={4}
-                  className="text-base resize-none"
+                  className="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 resize-none"
                 />
               )}
 
               {currentQuestion.type === 'select' && (
-                <Select
-                  value={answers[currentQuestion.id] || ''}
-                  onValueChange={handleAnswerChange}
-                >
-                  <SelectTrigger className="text-base">
-                    <SelectValue placeholder="请选择" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {currentQuestion.options?.map((option) => (
-                      <SelectItem key={option} value={option}>
-                        {option}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <div className="space-y-2">
+                  {currentQuestion.options?.map((option) => (
+                    <button
+                      key={option}
+                      type="button"
+                      onClick={() => handleAnswerChange(option)}
+                      className={`w-full text-left px-4 py-3 rounded-lg border transition-all ${
+                        answers[currentQuestion.id] === option
+                          ? 'border-primary bg-primary/10 text-primary font-medium'
+                          : 'border-border hover:border-primary/50 hover:bg-accent'
+                      }`}
+                    >
+                      {option}
+                    </button>
+                  ))}
+                </div>
               )}
             </div>
 
