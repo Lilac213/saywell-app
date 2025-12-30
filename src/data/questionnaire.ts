@@ -46,24 +46,34 @@ export const questionnaireQuestions: QuestionnaireQuestion[] = [
   },
   {
     id: 5,
+    question: '你平时发消息的习惯是？',
+    type: 'select',
+    options: [
+      '喜欢一次发完，一条长消息',
+      '习惯分成多条短消息发送',
+      '看情况，有时长有时短',
+    ],
+  },
+  {
+    id: 6,
     question: '你是否要设定特别关心的人？',
     type: 'select',
     options: ['否，暂不设定', '是，我要设定'],
   },
   {
-    id: 6,
+    id: 7,
     question: '请输入TA在你这里的备注名称',
     placeholder: '例如：老板、小王、妈妈、宝贝等',
     type: 'text',
-    conditionalOn: 5,
+    conditionalOn: 6,
     conditionalValue: '是，我要设定',
   },
   {
-    id: 7,
+    id: 8,
     question: 'TA跟你的关系是？',
     placeholder: '例如：领导、同事、朋友、父母、爱人、暧昧对象、追求对象、追求者等',
     type: 'text',
-    conditionalOn: 5,
+    conditionalOn: 6,
     conditionalValue: '是，我要设定',
   },
 ];

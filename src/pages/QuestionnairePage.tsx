@@ -8,7 +8,7 @@ import { useUserProfile } from '@/contexts/UserProfileContext';
 import { questionnaireQuestions, updateQuestions } from '@/data/questionnaire';
 import { questionnaireApi } from '@/db/api';
 import { supabase } from '@/db/supabase';
-import { Loader2, Sparkles } from 'lucide-react';
+import { Loader2, Sparkles, User } from 'lucide-react';
 
 const QuestionnairePage: React.FC = () => {
   const navigate = useNavigate();
@@ -200,7 +200,22 @@ const QuestionnairePage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-accent/30 to-background p-4 xl:p-8">
-      <div className="max-w-2xl mx-auto">
+      {/* 顶部导航栏 */}
+      <header className="fixed top-0 left-0 right-0 bg-background/80 backdrop-blur-sm border-b border-border z-50">
+        <div className="container mx-auto px-4 py-3 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+              <Sparkles className="w-5 h-5 text-primary-foreground" />
+            </div>
+            <h1 className="text-xl font-bold">智能回复助手</h1>
+          </div>
+          <Button variant="ghost" size="icon" onClick={() => navigate('/profile')}>
+            <User className="w-5 h-5" />
+          </Button>
+        </div>
+      </header>
+
+      <div className="max-w-2xl mx-auto pt-20">{/* 添加padding-top以避免被固定头部遮挡 */}
         <div className="text-center mb-8 animate-fade-in">
           <div className="inline-flex items-center justify-center w-16 h-16 bg-primary rounded-full mb-4">
             <Sparkles className="w-8 h-8 text-primary-foreground" />

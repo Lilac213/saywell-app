@@ -80,7 +80,13 @@ const ProfilePage: React.FC = () => {
                   {Object.entries(userProfile.personality_traits).map(([key, value]) => (
                     <div key={key} className="flex flex-col xl:flex-row xl:items-center gap-2">
                       <span className="font-medium text-sm min-w-24">{key}：</span>
-                      <span className="text-sm text-muted-foreground flex-1">{String(value)}</span>
+                      <span className="text-sm text-muted-foreground flex-1">
+                        {typeof value === 'object' && value !== null
+                          ? Object.entries(value)
+                              .map(([k, v]) => `${k}: ${v}`)
+                              .join(', ')
+                          : String(value)}
+                      </span>
                     </div>
                   ))}
                 </CardContent>

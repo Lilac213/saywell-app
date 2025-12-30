@@ -14,7 +14,7 @@ const RepliesPage: React.FC = () => {
   const { sessionId } = useParams<{ sessionId: string }>();
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { userProfile } = useUserProfile();
+  const { userProfile, refreshProfile } = useUserProfile();
   const [session, setSession] = useState<ChatSession | null>(null);
   const [replies, setReplies] = useState<GeneratedReply[]>([]);
   const [loading, setLoading] = useState(true);
@@ -189,23 +189,54 @@ const RepliesPage: React.FC = () => {
       return;
     }
 
-    // 保存反馈记录
-    await replySelectionApi.create(
-      sessionId,
-      replies.map((r) => r.text),
-      `用户反馈：${feedbackText}`,
-      3
-    );
+    try {
+      // 保存反馈记录
+      await replySelectionApi.create(
+        sessionId,
+        replies.map((r) => r.text),
+        `用户反馈：${feedbackText}`,
+        3
+      );
 
-    toast({
-      title: '感谢您的反馈',
-      description: '我们会根据您的反馈持续优化回复风格',
-    });
+      // 调用Edge Function分析反馈并更新画像
+      if (userProfile) {
+        const { error } = await supabase.functions.invoke('analyze-feedback', {
+          body: {
+            feedbackText,
+            userProfileId: userProfile.id,
+            existingProfile: {
+              personality_traits: userProfile.personality_traits,
+              language_habits: userProfile.language_habits,
+              background_story: userProfile.background_story,
+            },
+          },
+        });
 
-    // 延迟返回首页
-    setTimeout(() => {
-      navigate('/');
-    }, 1500);
+        if (error) {
+          console.error('分析反馈失败:', error);
+        } else {
+          // 刷新用户画像
+          await refreshProfile();
+        }
+      }
+
+      toast({
+        title: '感谢您的反馈',
+        description: '您的画像已根据反馈更新',
+      });
+
+      // 延迟返回首页
+      setTimeout(() => {
+        navigate('/');
+      }, 1500);
+    } catch (error) {
+      console.error('提交反馈失败:', error);
+      toast({
+        title: '提交失败',
+        description: '请稍后重试',
+        variant: 'destructive',
+      });
+    }
   };
 
   const handleCancelFeedback = () => {
