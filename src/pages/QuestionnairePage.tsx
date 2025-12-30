@@ -20,7 +20,14 @@ const QuestionnairePage: React.FC = () => {
   const [isNewUser, setIsNewUser] = useState<boolean | null>(null);
 
   // 根据是否新用户选择问题列表
-  const questions = isNewUser === false ? updateQuestions : questionnaireQuestions;
+  const allQuestions = isNewUser === false ? updateQuestions : questionnaireQuestions;
+  
+  // 过滤条件问题
+  const questions = allQuestions.filter((q) => {
+    if (!q.conditionalOn) return true;
+    return answers[q.conditionalOn] === q.conditionalValue;
+  });
+  
   const currentQuestion = questions[currentStep];
   const progress = ((currentStep + 1) / questions.length) * 100;
 
@@ -257,6 +264,14 @@ const QuestionnairePage: React.FC = () => {
             </div>
 
             <div className="flex gap-3 pt-4">
+              <Button
+                variant="outline"
+                onClick={() => navigate('/')}
+                disabled={isSubmitting}
+                className="flex-1"
+              >
+                返回首页
+              </Button>
               <Button
                 variant="outline"
                 onClick={handlePrevious}

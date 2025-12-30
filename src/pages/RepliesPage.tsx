@@ -23,6 +23,9 @@ const RepliesPage: React.FC = () => {
   const [feedbackText, setFeedbackText] = useState('');
   const [showFeedbackInput, setShowFeedbackInput] = useState(false);
   const [intentAnalysis, setIntentAnalysis] = useState<string>('');
+  const [emotionAnalysis, setEmotionAnalysis] = useState<string>('');
+  const [relationship, setRelationship] = useState<string>('');
+  const [chatRemark, setChatRemark] = useState<string>('');
 
   useEffect(() => {
     if (sessionId) {
@@ -104,9 +107,15 @@ const RepliesPage: React.FC = () => {
             analysis: aiData.context_analysis,
             user_style_observation: aiData.user_style_observation,
             intent_analysis: aiData.intent_analysis,
+            emotion_analysis: aiData.emotion_analysis,
+            relationship: aiData.relationship,
+            chat_remark: aiData.chat_remark,
           },
         });
         setIntentAnalysis(aiData.intent_analysis || '');
+        setEmotionAnalysis(aiData.emotion_analysis || '');
+        setRelationship(aiData.relationship || '');
+        setChatRemark(aiData.chat_remark || '');
       }
 
       setReplies(aiData.replies || []);
@@ -268,16 +277,37 @@ const RepliesPage: React.FC = () => {
           )}
 
           {/* AI意图分析 */}
-          {intentAnalysis && (
+          {(intentAnalysis || emotionAnalysis || relationship) && (
             <Card className="mb-6 animate-fade-in bg-gradient-to-br from-primary/5 to-accent/5">
               <CardHeader>
                 <CardTitle className="text-lg flex items-center gap-2">
                   <Sparkles className="w-5 h-5 text-primary" />
-                  对方意图分析
+                  AI分析
                 </CardTitle>
               </CardHeader>
-              <CardContent>
-                <p className="text-base leading-relaxed">{intentAnalysis}</p>
+              <CardContent className="space-y-4">
+                {chatRemark && relationship && (
+                  <div className="p-3 bg-background rounded-lg border border-border">
+                    <p className="text-sm text-muted-foreground mb-1">对方信息</p>
+                    <p className="text-base">
+                      <span className="font-medium">{chatRemark}</span>
+                      {' · '}
+                      <span className="text-muted-foreground">{relationship}</span>
+                    </p>
+                  </div>
+                )}
+                {emotionAnalysis && (
+                  <div className="p-3 bg-background rounded-lg border border-border">
+                    <p className="text-sm text-muted-foreground mb-1">对方情绪</p>
+                    <p className="text-base">{emotionAnalysis}</p>
+                  </div>
+                )}
+                {intentAnalysis && (
+                  <div className="p-3 bg-background rounded-lg border border-border">
+                    <p className="text-sm text-muted-foreground mb-1">对方意图</p>
+                    <p className="text-base">{intentAnalysis}</p>
+                  </div>
+                )}
               </CardContent>
             </Card>
           )}

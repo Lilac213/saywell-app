@@ -47,6 +47,8 @@ export interface QuestionnaireQuestion {
   placeholder?: string;
   type: 'text' | 'textarea' | 'select';
   options?: string[];
+  conditionalOn?: number;
+  conditionalValue?: string;
 }
 
 // AI生成的回复类型
