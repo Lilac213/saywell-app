@@ -227,10 +227,10 @@ const HomePage: React.FC = () => {
       <header className="border-b border-border bg-card/50 backdrop-blur-sm sticky top-0 z-10">
         <div className="container mx-auto px-4 h-16 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+            <div className="w-8 h-8 bg-gradient-to-br from-primary to-secondary rounded-lg flex items-center justify-center">
               <Sparkles className="w-5 h-5 text-primary-foreground" />
             </div>
-            <h1 className="text-xl font-bold">智能回复助手</h1>
+            <h1 className="text-xl font-bold gradient-text">好好说</h1>
           </div>
           <div className="flex gap-2">
             <Button variant="ghost" size="icon" onClick={() => navigate('/profile')}>
@@ -241,28 +241,30 @@ const HomePage: React.FC = () => {
       </header>
 
       {/* 主内容 */}
-      <main className="container mx-auto px-4 py-8 xl:py-12">
+      <main className="container mx-auto px-4 py-6 xl:py-8">
         <div className="max-w-3xl mx-auto">
-          {/* 提示信息 */}
-          <Alert className="mb-6 animate-fade-in bg-primary/5 border-primary/20">
-            <Info className="h-4 w-4 text-primary" />
-            <AlertDescription className="text-sm">
-              💡 <strong>个性化提示：</strong>为了获得更符合您风格的回复建议，建议前往
-              <Button 
-                variant="link" 
-                className="px-1 h-auto font-semibold text-primary"
-                onClick={() => navigate('/profile')}
-              >
-                「我的画像」
-              </Button>
-              填写问卷，完善您的人设和说话习惯
+          {/* 提示信息 - 优化布局 */}
+          <Alert className="mb-4 gradient-bg border-primary/30">
+            <AlertDescription className="text-sm flex items-center gap-2">
+              <Info className="h-4 w-4 text-primary shrink-0" />
+              <span>
+                <strong>个性化提示：</strong>前往
+                <Button 
+                  variant="link" 
+                  className="px-1 h-auto font-semibold text-primary"
+                  onClick={() => navigate('/profile')}
+                >
+                  我的画像
+                </Button>
+                填写问卷，完善您的人设和说话习惯，获得更符合您风格的回复建议
+              </span>
             </AlertDescription>
           </Alert>
 
-          <div className="text-center mb-8 animate-fade-in">
+          <div className="text-center mb-6">
             <h2 className="text-2xl xl:text-3xl font-bold mb-2">上传聊天截图</h2>
-            <p className="text-muted-foreground">
-              上传您的聊天记录截图，AI将为您生成个性化的回复建议
+            <p className="text-sm text-muted-foreground">
+              上传聊天记录截图，AI为您生成个性化回复建议
             </p>
           </div>
 
@@ -338,41 +340,22 @@ const HomePage: React.FC = () => {
             </CardContent>
           </Card>
 
-          {/* 功能说明 */}
-          <div className="grid grid-cols-1 xl:grid-cols-3 gap-4 mt-8">
-            <Card className="animate-fade-in">
-              <CardContent className="p-6 text-center">
-                <div className="inline-flex items-center justify-center w-12 h-12 bg-primary/10 rounded-full mb-3">
-                  <Upload className="w-6 h-6 text-primary" />
-                </div>
-                <h3 className="font-semibold mb-1">快速上传</h3>
-                <p className="text-sm text-muted-foreground">
-                  支持拖拽上传，操作简单便捷
-                </p>
-              </CardContent>
-            </Card>
-            <Card className="animate-fade-in" style={{ animationDelay: '0.1s' }}>
-              <CardContent className="p-6 text-center">
-                <div className="inline-flex items-center justify-center w-12 h-12 bg-primary/10 rounded-full mb-3">
-                  <Sparkles className="w-6 h-6 text-primary" />
-                </div>
-                <h3 className="font-semibold mb-1">AI智能分析</h3>
-                <p className="text-sm text-muted-foreground">
-                  基于您的画像生成个性化回复
-                </p>
-              </CardContent>
-            </Card>
-            <Card className="animate-fade-in" style={{ animationDelay: '0.2s' }}>
-              <CardContent className="p-6 text-center">
-                <div className="inline-flex items-center justify-center w-12 h-12 bg-primary/10 rounded-full mb-3">
-                  <TrendingUp className="w-6 h-6 text-primary" />
-                </div>
-                <h3 className="font-semibold mb-1">持续学习</h3>
-                <p className="text-sm text-muted-foreground">
-                  根据您的选择不断优化回复风格
-                </p>
-              </CardContent>
-            </Card>
+          {/* 功能说明 - 简化为一行 */}
+          <div className="mt-6 text-center text-sm text-muted-foreground">
+            <span className="inline-flex items-center gap-4 flex-wrap justify-center">
+              <span className="flex items-center gap-1">
+                <Upload className="w-4 h-4" />
+                快速上传
+              </span>
+              <span className="flex items-center gap-1">
+                <Sparkles className="w-4 h-4" />
+                AI智能分析
+              </span>
+              <span className="flex items-center gap-1">
+                <TrendingUp className="w-4 h-4" />
+                持续学习
+              </span>
+            </span>
           </div>
         </div>
       </main>

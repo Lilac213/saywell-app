@@ -178,7 +178,7 @@ const QuestionnairePage: React.FC = () => {
 
         toast({
           title: '问卷完成！',
-          description: '您的个性化画像已创建，现在可以开始使用智能回复助手了',
+          description: '您的个性化画像已创建，现在可以开始使用好好说了',
         });
 
         // 延迟导航以确保状态更新
@@ -207,7 +207,7 @@ const QuestionnairePage: React.FC = () => {
             <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
               <Sparkles className="w-5 h-5 text-primary-foreground" />
             </div>
-            <h1 className="text-xl font-bold">智能回复助手</h1>
+            <h1 className="text-xl font-bold gradient-text">好好说</h1>
           </div>
           <Button variant="ghost" size="icon" onClick={() => navigate('/profile')}>
             <User className="w-5 h-5" />
@@ -221,7 +221,7 @@ const QuestionnairePage: React.FC = () => {
             <Sparkles className="w-8 h-8 text-primary-foreground" />
           </div>
           <h1 className="text-3xl xl:text-4xl font-bold text-foreground mb-2">
-            {isNewUser === false ? '更新您的画像' : '欢迎使用智能回复助手'}
+            {isNewUser === false ? '更新您的画像' : '欢迎使用好好说'}
           </h1>
           <p className="text-muted-foreground">
             {isNewUser === false

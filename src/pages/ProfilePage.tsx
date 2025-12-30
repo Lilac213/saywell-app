@@ -66,18 +66,18 @@ const ProfilePage: React.FC = () => {
             </CardHeader>
           </Card>
 
-          {/* 重新填写问卷按钮 */}
+          {/* 重新填写问卷按钮 - 压缩版 */}
           <Card className="animate-fade-in" style={{ animationDelay: '0.1s' }}>
-            <CardContent className="p-6">
-              <div className="flex flex-col xl:flex-row items-center gap-4">
-                <div className="flex-1 text-center xl:text-left">
-                  <h3 className="font-semibold mb-1">完善个性化画像</h3>
-                  <p className="text-sm text-muted-foreground">
-                    填写问卷可以让AI更准确地了解您的性格特点和语言习惯，生成更符合您风格的回复
+            <CardContent className="p-4">
+              <div className="flex items-center gap-3">
+                <div className="flex-1">
+                  <p className="text-sm font-medium mb-1">完善个性化画像</p>
+                  <p className="text-xs text-muted-foreground">
+                    填写问卷让AI更了解您的风格
                   </p>
                 </div>
-                <Button onClick={() => navigate('/questionnaire')} className="shrink-0">
-                  <RefreshCw className="w-4 h-4 mr-2" />
+                <Button onClick={() => navigate('/questionnaire')} size="sm">
+                  <RefreshCw className="w-4 h-4 mr-1" />
                   填写问卷
                 </Button>
               </div>

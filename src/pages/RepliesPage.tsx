@@ -22,6 +22,7 @@ const RepliesPage: React.FC = () => {
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [feedbackText, setFeedbackText] = useState('');
   const [showFeedbackInput, setShowFeedbackInput] = useState(false);
+  const [submittingFeedback, setSubmittingFeedback] = useState(false);
   const [intentAnalysis, setIntentAnalysis] = useState<string>('');
   const [emotionAnalysis, setEmotionAnalysis] = useState<string>('');
   const [relationship, setRelationship] = useState<string>('');
@@ -189,7 +190,15 @@ const RepliesPage: React.FC = () => {
       return;
     }
 
+    setSubmittingFeedback(true);
+
     try {
+      // 立即显示提交成功提示
+      toast({
+        title: '正在处理您的反馈...',
+        description: '请稍候，我们正在分析并更新您的画像',
+      });
+
       // 保存反馈记录
       await replySelectionApi.create(
         sessionId,
@@ -214,16 +223,25 @@ const RepliesPage: React.FC = () => {
 
         if (error) {
           console.error('分析反馈失败:', error);
+          toast({
+            title: '反馈已保存',
+            description: '但画像更新失败，请稍后重试',
+            variant: 'destructive',
+          });
         } else {
           // 刷新用户画像
           await refreshProfile();
+          toast({
+            title: '反馈提交成功！',
+            description: '您的画像已根据反馈更新',
+          });
         }
+      } else {
+        toast({
+          title: '反馈已保存',
+          description: '感谢您的反馈',
+        });
       }
-
-      toast({
-        title: '感谢您的反馈',
-        description: '您的画像已根据反馈更新',
-      });
 
       // 延迟返回首页
       setTimeout(() => {
@@ -236,6 +254,8 @@ const RepliesPage: React.FC = () => {
         description: '请稍后重试',
         variant: 'destructive',
       });
+    } finally {
+      setSubmittingFeedback(false);
     }
   };
 
@@ -446,10 +466,17 @@ const RepliesPage: React.FC = () => {
                     </Button>
                     <Button
                       onClick={handleSubmitFeedback}
-                      disabled={!feedbackText.trim()}
+                      disabled={!feedbackText.trim() || submittingFeedback}
                       className="flex-1"
                     >
-                      提交反馈
+                      {submittingFeedback ? (
+                        <>
+                          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                          提交中...
+                        </>
+                      ) : (
+                        '提交反馈'
+                      )}
                     </Button>
                   </div>
                 </CardContent>

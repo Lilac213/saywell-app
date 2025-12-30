@@ -9,74 +9,74 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    --radius: 0.5rem;
+    --radius: 0.75rem;
     --background: 0 0% 100%;
-    --foreground: 220 13% 26%;
+    --foreground: 240 10% 20%;
     --card: 0 0% 100%;
-    --card-foreground: 220 13% 26%;
+    --card-foreground: 240 10% 20%;
     --popover: 0 0% 100%;
-    --popover-foreground: 220 13% 26%;
-    --primary: 199 89% 48%;
+    --popover-foreground: 240 10% 20%;
+    --primary: 280 65% 60%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 199 89% 65%;
-    --secondary-foreground: 220 13% 26%;
-    --muted: 210 40% 96%;
-    --muted-foreground: 220 9% 46%;
-    --accent: 199 89% 92%;
-    --accent-foreground: 199 89% 35%;
-    --destructive: 0 84% 60%;
+    --secondary: 320 70% 65%;
+    --secondary-foreground: 0 0% 100%;
+    --muted: 240 10% 96%;
+    --muted-foreground: 240 5% 50%;
+    --accent: 200 80% 92%;
+    --accent-foreground: 280 65% 50%;
+    --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 100%;
-    --border: 214 32% 91%;
-    --input: 214 32% 91%;
-    --ring: 199 89% 48%;
-    --chart-1: 199 89% 48%;
-    --chart-2: 173 58% 39%;
-    --chart-3: 197 37% 24%;
-    --chart-4: 43 74% 66%;
-    --chart-5: 27 87% 67%;
-    --sidebar-background: 199 89% 98%;
-    --sidebar-foreground: 220 13% 26%;
-    --sidebar-primary: 199 89% 48%;
+    --border: 240 10% 90%;
+    --input: 240 10% 90%;
+    --ring: 280 65% 60%;
+    --chart-1: 280 65% 60%;
+    --chart-2: 320 70% 65%;
+    --chart-3: 200 80% 60%;
+    --chart-4: 160 60% 55%;
+    --chart-5: 40 90% 60%;
+    --sidebar-background: 280 65% 98%;
+    --sidebar-foreground: 240 10% 20%;
+    --sidebar-primary: 280 65% 60%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 199 89% 92%;
-    --sidebar-accent-foreground: 199 89% 35%;
-    --sidebar-border: 214 32% 91%;
-    --sidebar-ring: 199 89% 48%;
+    --sidebar-accent: 280 65% 95%;
+    --sidebar-accent-foreground: 280 65% 50%;
+    --sidebar-border: 240 10% 90%;
+    --sidebar-ring: 280 65% 60%;
   }
 
   .dark {
-    --background: 220 13% 13%;
-    --foreground: 210 40% 98%;
-    --card: 220 13% 18%;
-    --card-foreground: 210 40% 98%;
-    --popover: 220 13% 18%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 199 89% 48%;
+    --background: 240 10% 10%;
+    --foreground: 240 10% 95%;
+    --card: 240 10% 15%;
+    --card-foreground: 240 10% 95%;
+    --popover: 240 10% 15%;
+    --popover-foreground: 240 10% 95%;
+    --primary: 280 65% 65%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 199 89% 35%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 220 13% 23%;
-    --muted-foreground: 215 20% 65%;
-    --accent: 199 89% 20%;
-    --accent-foreground: 199 89% 85%;
-    --destructive: 0 63% 31%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 220 13% 23%;
-    --input: 220 13% 23%;
-    --ring: 199 89% 48%;
-    --chart-1: 199 89% 48%;
-    --chart-2: 160 60% 45%;
-    --chart-3: 30 80% 55%;
-    --chart-4: 280 65% 60%;
-    --chart-5: 340 75% 55%;
-    --sidebar-background: 220 13% 13%;
-    --sidebar-foreground: 210 40% 98%;
-    --sidebar-primary: 199 89% 48%;
+    --secondary: 320 70% 60%;
+    --secondary-foreground: 0 0% 100%;
+    --muted: 240 10% 20%;
+    --muted-foreground: 240 5% 60%;
+    --accent: 280 65% 25%;
+    --accent-foreground: 280 65% 90%;
+    --destructive: 0 62% 45%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 240 10% 20%;
+    --input: 240 10% 20%;
+    --ring: 280 65% 65%;
+    --chart-1: 280 65% 65%;
+    --chart-2: 320 70% 60%;
+    --chart-3: 200 80% 55%;
+    --chart-4: 160 60% 50%;
+    --chart-5: 40 90% 55%;
+    --sidebar-background: 240 10% 10%;
+    --sidebar-foreground: 240 10% 95%;
+    --sidebar-primary: 280 65% 65%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 199 89% 20%;
-    --sidebar-accent-foreground: 199 89% 85%;
-    --sidebar-border: 220 13% 23%;
-    --sidebar-ring: 199 89% 48%;
+    --sidebar-accent: 280 65% 25%;
+    --sidebar-accent-foreground: 280 65% 90%;
+    --sidebar-border: 240 10% 20%;
+    --sidebar-ring: 280 65% 65%;
   }
 }
 
@@ -87,6 +87,7 @@ All colors MUST be HSL.
 
   body {
     @apply bg-background text-foreground;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
   }
 }
 
@@ -132,5 +133,17 @@ All colors MUST be HSL.
 
   .animate-scale-in {
     animation: scale-in 0.2s ease-out;
+  }
+
+  .gradient-text {
+    background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--secondary)));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+  }
+
+  .gradient-bg {
+    background: linear-gradient(135deg, hsl(var(--primary) / 0.1), hsl(var(--secondary) / 0.1));
   }
 }
