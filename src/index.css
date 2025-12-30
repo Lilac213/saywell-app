@@ -10,83 +10,83 @@ All colors MUST be HSL.
 @layer base {
   :root {
     --radius: 1.5rem;
-    --background: 280 60% 97%;
-    --foreground: 260 30% 25%;
+    --background: 210 35% 92%;
+    --foreground: 220 20% 30%;
     --card: 0 0% 100%;
-    --card-foreground: 260 30% 25%;
+    --card-foreground: 220 20% 30%;
     --popover: 0 0% 100%;
-    --popover-foreground: 260 30% 25%;
-    --primary: 260 70% 70%;
-    --primary-foreground: 260 30% 25%;
-    --secondary: 200 100% 87%;
-    --secondary-foreground: 260 30% 25%;
-    --muted: 280 40% 90%;
-    --muted-foreground: 260 20% 50%;
-    --accent: 320 100% 90%;
-    --accent-foreground: 260 30% 25%;
+    --popover-foreground: 220 20% 30%;
+    --primary: 210 30% 70%;
+    --primary-foreground: 220 20% 30%;
+    --secondary: 350 100% 90%;
+    --secondary-foreground: 220 20% 30%;
+    --muted: 210 25% 85%;
+    --muted-foreground: 220 15% 50%;
+    --accent: 350 100% 85%;
+    --accent-foreground: 220 20% 30%;
     --destructive: 0 65% 55%;
     --destructive-foreground: 0 0% 100%;
-    --border: 280 30% 88%;
-    --input: 280 30% 92%;
-    --ring: 260 70% 70%;
-    --chart-1: 260 70% 70%;
-    --chart-2: 200 100% 87%;
-    --chart-3: 320 100% 90%;
-    --chart-4: 280 70% 85%;
-    --chart-5: 240 60% 80%;
-    --dialog-bg: 320 100% 90%;
-    --dialog-border: 320 80% 85%;
-    --button-bg: 260 50% 50%;
-    --text-primary: 260 30% 25%;
-    --text-secondary: 260 20% 50%;
-    --sidebar-background: 280 60% 97%;
-    --sidebar-foreground: 260 30% 25%;
-    --sidebar-primary: 260 70% 70%;
-    --sidebar-primary-foreground: 260 30% 25%;
-    --sidebar-accent: 280 40% 94%;
-    --sidebar-accent-foreground: 260 30% 25%;
-    --sidebar-border: 280 30% 88%;
-    --sidebar-ring: 260 70% 70%;
+    --border: 210 25% 82%;
+    --input: 210 25% 88%;
+    --ring: 210 30% 70%;
+    --chart-1: 210 30% 70%;
+    --chart-2: 350 100% 90%;
+    --chart-3: 350 80% 80%;
+    --chart-4: 300 30% 75%;
+    --chart-5: 220 30% 65%;
+    --dialog-bg: 350 100% 90%;
+    --dialog-border: 350 80% 85%;
+    --button-bg: 220 30% 60%;
+    --text-primary: 220 20% 30%;
+    --text-secondary: 220 15% 50%;
+    --sidebar-background: 210 35% 92%;
+    --sidebar-foreground: 220 20% 30%;
+    --sidebar-primary: 210 30% 70%;
+    --sidebar-primary-foreground: 220 20% 30%;
+    --sidebar-accent: 210 25% 88%;
+    --sidebar-accent-foreground: 220 20% 30%;
+    --sidebar-border: 210 25% 82%;
+    --sidebar-ring: 210 30% 70%;
   }
 
   .dark {
-    --background: 260 30% 8%;
-    --foreground: 280 20% 95%;
-    --card: 260 25% 12%;
-    --card-foreground: 280 20% 95%;
-    --popover: 260 25% 12%;
-    --popover-foreground: 280 20% 95%;
-    --primary: 260 70% 65%;
+    --background: 220 25% 8%;
+    --foreground: 210 20% 95%;
+    --card: 220 20% 12%;
+    --card-foreground: 210 20% 95%;
+    --popover: 220 20% 12%;
+    --popover-foreground: 210 20% 95%;
+    --primary: 210 30% 65%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 200 80% 70%;
+    --secondary: 350 80% 75%;
     --secondary-foreground: 0 0% 100%;
-    --muted: 260 20% 18%;
-    --muted-foreground: 280 15% 60%;
-    --accent: 320 70% 70%;
+    --muted: 220 15% 18%;
+    --muted-foreground: 210 15% 60%;
+    --accent: 350 70% 70%;
     --accent-foreground: 0 0% 100%;
     --destructive: 0 60% 50%;
     --destructive-foreground: 0 0% 100%;
-    --border: 260 20% 20%;
-    --input: 260 20% 20%;
-    --ring: 260 70% 65%;
-    --chart-1: 260 70% 65%;
-    --chart-2: 200 80% 70%;
-    --chart-3: 320 70% 70%;
-    --chart-4: 280 60% 65%;
-    --chart-5: 240 50% 65%;
-    --dialog-bg: 320 70% 70%;
-    --dialog-border: 320 60% 65%;
-    --button-bg: 260 50% 45%;
-    --text-primary: 280 20% 95%;
-    --text-secondary: 280 15% 60%;
-    --sidebar-background: 260 30% 8%;
-    --sidebar-foreground: 280 20% 95%;
-    --sidebar-primary: 260 70% 65%;
+    --border: 220 15% 20%;
+    --input: 220 15% 20%;
+    --ring: 210 30% 65%;
+    --chart-1: 210 30% 65%;
+    --chart-2: 350 80% 75%;
+    --chart-3: 350 70% 70%;
+    --chart-4: 300 30% 65%;
+    --chart-5: 220 30% 60%;
+    --dialog-bg: 350 70% 70%;
+    --dialog-border: 350 60% 65%;
+    --button-bg: 220 30% 55%;
+    --text-primary: 210 20% 95%;
+    --text-secondary: 210 15% 60%;
+    --sidebar-background: 220 25% 8%;
+    --sidebar-foreground: 210 20% 95%;
+    --sidebar-primary: 210 30% 65%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 260 20% 18%;
-    --sidebar-accent-foreground: 280 20% 95%;
-    --sidebar-border: 260 20% 20%;
-    --sidebar-ring: 260 70% 65%;
+    --sidebar-accent: 220 15% 18%;
+    --sidebar-accent-foreground: 210 20% 95%;
+    --sidebar-border: 220 15% 20%;
+    --sidebar-ring: 210 30% 65%;
   }
 }
 
@@ -167,7 +167,7 @@ All colors MUST be HSL.
   }
 
   .gradient-text {
-    background: linear-gradient(135deg, #A49AFF, #E4BAFF);
+    background: linear-gradient(135deg, #92A1C3, #BED1E3);
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -175,29 +175,29 @@ All colors MUST be HSL.
   }
 
   .gradient-bg {
-    background: linear-gradient(135deg, rgba(228, 186, 255, 0.15), rgba(183, 227, 255, 0.15));
+    background: linear-gradient(135deg, rgba(255, 211, 221, 0.2), rgba(190, 209, 227, 0.2));
   }
 
   .logo-gradient {
-    background: linear-gradient(135deg, #A49AFF, #E4BAFF);
+    background: linear-gradient(135deg, #CCA1C9, #FFD3DD);
   }
 
   .dialog-capsule {
     border-radius: 1.5rem;
-    background: linear-gradient(135deg, #FFCCFF, #E4BAFF);
+    background: linear-gradient(135deg, #FFD3DD, #F3A0AD);
     padding: 0.625rem 1rem;
-    border: 1px solid rgba(228, 186, 255, 0.3);
+    border: 1px solid rgba(243, 160, 173, 0.3);
   }
 
   .button-dark {
-    background: linear-gradient(135deg, #A49AFF, #8B7FE8);
+    background: linear-gradient(135deg, #92A1C3, #BED1E3);
     color: #FFFFFF;
     border-radius: 0.75rem;
     border: none;
   }
 
   .button-dark:hover {
-    background: linear-gradient(135deg, #9489EE, #7A6FD7);
+    background: linear-gradient(135deg, #8291B3, #AEC1D3);
   }
 
   .spacing-title {
@@ -209,8 +209,8 @@ All colors MUST be HSL.
   }
 
   .card-soft {
-    background: rgba(255, 255, 255, 0.8);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(228, 186, 255, 0.2);
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(204, 161, 201, 0.2);
   }
 }

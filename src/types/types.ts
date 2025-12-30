@@ -45,7 +45,7 @@ export interface QuestionnaireQuestion {
   id: number;
   question: string;
   placeholder?: string;
-  type: 'text' | 'textarea' | 'select';
+  type: 'text' | 'textarea' | 'select' | 'multiselect';
   options?: string[];
   conditionalOn?: number;
   conditionalValue?: string;

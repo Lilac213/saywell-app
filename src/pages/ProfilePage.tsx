@@ -95,18 +95,61 @@ const ProfilePage: React.FC = () => {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
-                  {Object.entries(userProfile.personality_traits).map(([key, value]) => (
-                    <div key={key} className="flex flex-col xl:flex-row xl:items-center gap-2">
-                      <span className="font-medium text-sm min-w-24">{key}：</span>
-                      <span className="text-sm text-muted-foreground flex-1">
-                        {typeof value === 'object' && value !== null
-                          ? Object.entries(value)
-                              .map(([k, v]) => `${k}: ${v}`)
-                              .join(', ')
-                          : String(value)}
-                      </span>
-                    </div>
-                  ))}
+                  {/* 性别和星座一行 */}
+                  <div className="grid grid-cols-2 gap-4">
+                    {userProfile.personality_traits['性别'] && (
+                      <div className="flex flex-col gap-1">
+                        <span className="font-medium text-sm">性别：</span>
+                        <span className="text-sm text-muted-foreground">
+                          {String(userProfile.personality_traits['性别'])}
+                        </span>
+                      </div>
+                    )}
+                    {userProfile.personality_traits['星座'] && (
+                      <div className="flex flex-col gap-1">
+                        <span className="font-medium text-sm">星座：</span>
+                        <span className="text-sm text-muted-foreground">
+                          {String(userProfile.personality_traits['星座'])}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                  
+                  {/* 年龄段和MBTI一行 */}
+                  <div className="grid grid-cols-2 gap-4">
+                    {userProfile.personality_traits['年龄段'] && (
+                      <div className="flex flex-col gap-1">
+                        <span className="font-medium text-sm">年龄段：</span>
+                        <span className="text-sm text-muted-foreground">
+                          {String(userProfile.personality_traits['年龄段'])}
+                        </span>
+                      </div>
+                    )}
+                    {userProfile.personality_traits['MBTI'] && (
+                      <div className="flex flex-col gap-1">
+                        <span className="font-medium text-sm">MBTI：</span>
+                        <span className="text-sm text-muted-foreground">
+                          {String(userProfile.personality_traits['MBTI'])}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                  
+                  {/* 其他性格特征 */}
+                  {Object.entries(userProfile.personality_traits)
+                    .filter(([key]) => !['性别', '星座', '年龄段', 'MBTI'].includes(key))
+                    .map(([key, value]) => (
+                      <div key={key} className="flex flex-col xl:flex-row xl:items-center gap-2">
+                        <span className="font-medium text-sm min-w-24">{key}：</span>
+                        <span className="text-sm text-muted-foreground flex-1">
+                          {typeof value === 'object' && value !== null
+                            ? Object.entries(value)
+                                .map(([k, v]) => `${k}: ${v}`)
+                                .join(', ')
+                            : String(value)}
+                        </span>
+                      </div>
+                    ))}
                 </CardContent>
               </Card>
             )}

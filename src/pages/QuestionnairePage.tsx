@@ -25,7 +25,16 @@ const QuestionnairePage: React.FC = () => {
   // 过滤条件问题
   const questions = allQuestions.filter((q) => {
     if (!q.conditionalOn) return true;
-    return answers[q.conditionalOn] === q.conditionalValue;
+    const parentAnswer = answers[q.conditionalOn];
+    if (!parentAnswer) return false;
+    
+    // 支持多选答案的条件判断
+    if (parentAnswer.includes(',')) {
+      const selectedOptions = parentAnswer.split(',').map((s: string) => s.trim());
+      return selectedOptions.includes(q.conditionalValue || '');
+    }
+    
+    return parentAnswer === q.conditionalValue;
   });
   
   const currentQuestion = questions[currentStep];
@@ -282,6 +291,66 @@ const QuestionnairePage: React.FC = () => {
                       {option}
                     </button>
                   ))}
+                </div>
+              )}
+
+              {currentQuestion.type === 'multiselect' && (
+                <div className="space-y-2">
+                  {currentQuestion.options?.map((option) => {
+                    const selectedOptions = answers[currentQuestion.id]
+                      ? answers[currentQuestion.id].split(',').map((s: string) => s.trim())
+                      : [];
+                    const isSelected = selectedOptions.includes(option);
+
+                    return (
+                      <button
+                        key={option}
+                        type="button"
+                        onClick={() => {
+                          const currentAnswers = answers[currentQuestion.id]
+                            ? answers[currentQuestion.id].split(',').map((s: string) => s.trim())
+                            : [];
+                          
+                          let newAnswers;
+                          if (isSelected) {
+                            newAnswers = currentAnswers.filter((a: string) => a !== option);
+                          } else {
+                            newAnswers = [...currentAnswers, option];
+                          }
+                          
+                          handleAnswerChange(newAnswers.join(', '));
+                        }}
+                        className={`w-full text-left px-4 py-3 rounded-lg border transition-all flex items-center gap-3 ${
+                          isSelected
+                            ? 'border-primary bg-primary/10 text-primary font-medium'
+                            : 'border-border hover:border-primary/50 hover:bg-accent'
+                        }`}
+                      >
+                        <div
+                          className={`w-5 h-5 rounded border-2 flex items-center justify-center ${
+                            isSelected
+                              ? 'border-primary bg-primary'
+                              : 'border-muted-foreground'
+                          }`}
+                        >
+                          {isSelected && (
+                            <svg
+                              className="w-3 h-3 text-white"
+                              fill="none"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth="2"
+                              viewBox="0 0 24 24"
+                              stroke="currentColor"
+                            >
+                              <path d="M5 13l4 4L19 7"></path>
+                            </svg>
+                          )}
+                        </div>
+                        {option}
+                      </button>
+                    );
+                  })}
                 </div>
               )}
             </div>

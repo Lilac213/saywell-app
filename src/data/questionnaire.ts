@@ -33,6 +33,30 @@ export const questionnaireQuestions: QuestionnaireQuestion[] = [
     ],
   },
   {
+    id: 2.5,
+    question: '你的MBTI是？',
+    type: 'select',
+    options: [
+      'INTJ',
+      'INTP',
+      'ENTJ',
+      'ENTP',
+      'INFJ',
+      'INFP',
+      'ENFJ',
+      'ENFP',
+      'ISTJ',
+      'ISFJ',
+      'ESTJ',
+      'ESFJ',
+      'ISTP',
+      'ISFP',
+      'ESTP',
+      'ESFP',
+      '不清楚',
+    ],
+  },
+  {
     id: 3,
     question: '你的年龄段是？',
     type: 'select',
@@ -41,7 +65,7 @@ export const questionnaireQuestions: QuestionnaireQuestion[] = [
   {
     id: 4,
     question: '平时你是个怎样的人？（可多选）',
-    type: 'select',
+    type: 'multiselect',
     options: [
       '性格开朗',
       '比较内向',
@@ -50,7 +74,7 @@ export const questionnaireQuestions: QuestionnaireQuestion[] = [
       '幽默风趣',
       '认真严谨',
       '随和自然',
-      '自定义',
+      '其他',
     ],
   },
   {
@@ -59,7 +83,7 @@ export const questionnaireQuestions: QuestionnaireQuestion[] = [
     placeholder: '例如：喜欢开玩笑、做事细心、有点完美主义等',
     type: 'textarea',
     conditionalOn: 4,
-    conditionalValue: '自定义',
+    conditionalValue: '其他',
   },
   {
     id: 5,
@@ -81,7 +105,7 @@ export const questionnaireQuestions: QuestionnaireQuestion[] = [
       '很少使用标点符号',
       '喜欢用省略号...',
       '喜欢用感叹号！表达情绪',
-      '自定义',
+      '其他',
     ],
   },
   {
@@ -90,7 +114,7 @@ export const questionnaireQuestions: QuestionnaireQuestion[] = [
     placeholder: '例如：喜欢用问号表示疑惑、经常用逗号连接句子等',
     type: 'text',
     conditionalOn: 6,
-    conditionalValue: '自定义',
+    conditionalValue: '其他',
   },
   {
     id: 7,
