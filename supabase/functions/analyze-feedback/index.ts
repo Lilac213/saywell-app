@@ -55,7 +55,7 @@ ${JSON.stringify(existingProfile, null, 2)}
 
     // 调用Gemini API
     const geminiResponse = await fetch(
-      'https://api-integrations.appmedo.com/app-8khk2ar42dc1/api-pLVzJnE6NKDL/v1beta/models/gemini-2.0-flash-exp:streamGenerateContent?alt=sse',
+      'https://api-integrations.appmedo.com/app-8khk2ar42dc1/api-pLVzJnE6NKDL/v1beta/models/gemini-2.5-flash:streamGenerateContent?alt=sse',
       {
         method: 'POST',
         headers: {
@@ -64,26 +64,16 @@ ${JSON.stringify(existingProfile, null, 2)}
         body: JSON.stringify({
           contents: [
             {
-              parts: [
-                {
-                  text: prompt,
-                },
-              ],
+              role: 'user',
+              parts: [{ text: prompt }],
             },
           ],
-          generationConfig: {
-            temperature: 0.7,
-            topK: 40,
-            topP: 0.95,
-            maxOutputTokens: 2048,
-            responseMimeType: 'application/json',
-          },
         }),
       }
     );
 
     if (!geminiResponse.ok) {
-      throw new Error(`Gemini API error: ${geminiResponse.statusText}`);
+      throw new Error(`Gemini API 错误: ${geminiResponse.status}`);
     }
 
     const reader = geminiResponse.body?.getReader();
@@ -100,14 +90,10 @@ ${JSON.stringify(existingProfile, null, 2)}
 
         for (const line of lines) {
           if (line.startsWith('data: ')) {
-            const data = line.slice(6);
-            if (data === '[DONE]') continue;
-
             try {
-              const parsed = JSON.parse(data);
-              const text = parsed.candidates?.[0]?.content?.parts?.[0]?.text;
-              if (text) {
-                fullText += text;
+              const jsonData = JSON.parse(line.slice(6));
+              if (jsonData.candidates?.[0]?.content?.parts?.[0]?.text) {
+                fullText += jsonData.candidates[0].content.parts[0].text;
               }
             } catch {
               // 忽略解析错误
@@ -117,14 +103,13 @@ ${JSON.stringify(existingProfile, null, 2)}
       }
     }
 
-    // 解析AI返回的JSON
-    let analysisData;
-    try {
-      analysisData = JSON.parse(fullText);
-    } catch (error) {
-      console.error('Failed to parse AI response:', fullText);
-      throw new Error('AI返回格式错误');
+    // 提取JSON部分
+    const jsonMatch = fullText.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) {
+      throw new Error('无法从AI响应中提取JSON数据');
     }
+
+    const analysisData = JSON.parse(jsonMatch[0]);
 
     // 更新用户画像
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
