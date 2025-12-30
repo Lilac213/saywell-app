@@ -54,13 +54,8 @@ ${JSON.stringify(existingProfile, null, 2)}
 4. 如果反馈中没有相关信息，保持原样`;
 
     // 调用Gemini API
-    const geminiApiKey = Deno.env.get('GEMINI_API_KEY');
-    if (!geminiApiKey) {
-      throw new Error('GEMINI_API_KEY not configured');
-    }
-
     const geminiResponse = await fetch(
-      'https://api-integrations.appmedo.com/app-8khk2ar42dc1/api-pLVzJnE6NKDL/v1beta/models/gemini-2.5-flash:streamGenerateContent?alt=sse',
+      'https://api-integrations.appmedo.com/app-8khk2ar42dc1/api-pLVzJnE6NKDL/v1beta/models/gemini-2.0-flash-exp:streamGenerateContent?alt=sse',
       {
         method: 'POST',
         headers: {

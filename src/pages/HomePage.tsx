@@ -227,10 +227,13 @@ const HomePage: React.FC = () => {
       <header className="border-b border-border/50 bg-card/80 backdrop-blur-sm sticky top-0 z-10">
         <div className="container mx-auto px-6 h-16 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 bg-gradient-to-br from-primary to-secondary rounded-2xl flex items-center justify-center shadow-sm">
-              <Sparkles className="w-5 h-5 text-primary-foreground" />
+            <div className="w-10 h-10 logo-gradient rounded-2xl flex items-center justify-center shadow-sm">
+              <Sparkles className="w-5 h-5 text-white" />
             </div>
-            <h1 className="text-lg font-medium">好好说 · <span className="font-normal text-muted-foreground text-sm">SayWell</span></h1>
+            <div className="flex flex-col">
+              <h1 className="text-base font-bold leading-tight">好好说 · SayWell</h1>
+              <p className="text-xs text-muted-foreground leading-tight">帮助你好好说话的AI助手</p>
+            </div>
           </div>
           <Button variant="ghost" size="icon" className="rounded-full" onClick={() => navigate('/profile')}>
             <User className="w-5 h-5" />
@@ -241,26 +244,28 @@ const HomePage: React.FC = () => {
       {/* 主内容 */}
       <main className="container mx-auto px-6 py-12 xl:py-16">
         <div className="max-w-2xl mx-auto">
-          {/* 提示信息 - 更温和的设计 */}
-          <div className="mb-8 p-5 rounded-3xl bg-gradient-bg border border-border/30">
-            <div className="flex items-start gap-3">
-              <Info className="w-5 h-5 text-primary shrink-0 mt-0.5" />
-              <p className="text-sm text-foreground/70 leading-relaxed">
-                前往
-                <button 
-                  className="mx-1 text-primary font-medium hover:underline"
-                  onClick={() => navigate('/profile')}
-                >
-                  我的画像
-                </button>
-                填写问卷，完善您的人设和说话习惯，获得更符合您风格的回复建议
-              </p>
+          {/* 提示信息 - 胶囊形对话框设计 */}
+          <div className="mb-8 spacing-module">
+            <div className="dialog-capsule border border-[#F0B8E0]">
+              <div className="flex items-start gap-3">
+                <Info className="w-5 h-5 text-primary shrink-0 mt-0.5" />
+                <p className="text-sm text-[#333333] leading-relaxed">
+                  前往
+                  <button 
+                    className="mx-1 text-primary font-medium hover:underline"
+                    onClick={() => navigate('/profile')}
+                  >
+                    我的画像
+                  </button>
+                  填写问卷，完善您的人设和说话习惯，获得更符合您风格的回复建议
+                </p>
+              </div>
             </div>
           </div>
 
-          <div className="text-center mb-10">
-            <h2 className="text-2xl xl:text-3xl font-medium mb-3">上传聊天截图</h2>
-            <p className="text-sm text-muted-foreground">
+          <div className="text-center spacing-title">
+            <h2 className="text-xl font-bold mb-8">上传聊天截图</h2>
+            <p className="text-sm text-[#999999] leading-relaxed">
               上传聊天记录截图，AI为您生成个性化回复建议
             </p>
           </div>
@@ -317,11 +322,11 @@ const HomePage: React.FC = () => {
                     <Button
                       onClick={handleUpload}
                       disabled={uploading}
-                      className="flex-1"
+                      className="flex-1 button-dark"
                     >
                       {uploading ? (
                         <>
-                          <div className="w-4 h-4 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin mr-2" />
+                          <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
                           上传中...
                         </>
                       ) : (
