@@ -130,6 +130,11 @@ const QuestionnairePage: React.FC = () => {
           title: '画像更新成功！',
           description: '您的个性化画像已更新',
         });
+
+        // 延迟导航以确保状态更新
+        setTimeout(() => {
+          navigate('/');
+        }, 500);
       } else {
         // 新用户完整问卷
         const responses = questions.map((q) => ({
@@ -175,9 +180,12 @@ const QuestionnairePage: React.FC = () => {
           title: '问卷完成！',
           description: '您的个性化画像已创建，现在可以开始使用智能回复助手了',
         });
-      }
 
-      navigate('/');
+        // 延迟导航以确保状态更新
+        setTimeout(() => {
+          navigate('/');
+        }, 500);
+      }
     } catch (error) {
       console.error('提交问卷失败:', error);
       toast({
