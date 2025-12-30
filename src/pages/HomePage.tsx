@@ -6,7 +6,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useUserProfile } from '@/contexts/UserProfileContext';
 import { chatSessionApi } from '@/db/api';
 import { supabase } from '@/db/supabase';
-import { Upload, Image as ImageIcon, History, User, Sparkles } from 'lucide-react';
+import { Upload, Image as ImageIcon, User, Sparkles, TrendingUp } from 'lucide-react';
 
 const HomePage: React.FC = () => {
   const navigate = useNavigate();
@@ -263,9 +263,6 @@ const HomePage: React.FC = () => {
             <h1 className="text-xl font-bold">智能回复助手</h1>
           </div>
           <div className="flex gap-2">
-            <Button variant="ghost" size="icon" onClick={() => navigate('/history')}>
-              <History className="w-5 h-5" />
-            </Button>
             <Button variant="ghost" size="icon" onClick={() => navigate('/profile')}>
               <User className="w-5 h-5" />
             </Button>
@@ -382,7 +379,7 @@ const HomePage: React.FC = () => {
             <Card className="animate-fade-in" style={{ animationDelay: '0.2s' }}>
               <CardContent className="p-6 text-center">
                 <div className="inline-flex items-center justify-center w-12 h-12 bg-primary/10 rounded-full mb-3">
-                  <History className="w-6 h-6 text-primary" />
+                  <TrendingUp className="w-6 h-6 text-primary" />
                 </div>
                 <h3 className="font-semibold mb-1">持续学习</h3>
                 <p className="text-sm text-muted-foreground">

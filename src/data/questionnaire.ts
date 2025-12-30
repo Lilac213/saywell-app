@@ -2,6 +2,12 @@ import type { QuestionnaireQuestion } from '@/types/types';
 
 export const questionnaireQuestions: QuestionnaireQuestion[] = [
   {
+    id: 0,
+    question: '您是第一次使用本应用吗？',
+    type: 'select',
+    options: ['是，我是新用户', '否，我想补充或更新我的画像'],
+  },
+  {
     id: 1,
     question: '你通常如何称呼自己？（如：我、本人、俺、咱等）',
     placeholder: '例如：我',
@@ -9,6 +15,12 @@ export const questionnaireQuestions: QuestionnaireQuestion[] = [
   },
   {
     id: 2,
+    question: '你的性别是？',
+    type: 'select',
+    options: ['男', '女', '不方便透露'],
+  },
+  {
+    id: 3,
     question: '你的MBTI人格类型是？（如果知道的话）',
     type: 'select',
     options: [
@@ -32,7 +44,7 @@ export const questionnaireQuestions: QuestionnaireQuestion[] = [
     ],
   },
   {
-    id: 3,
+    id: 4,
     question: '你的星座是？',
     type: 'select',
     options: [
@@ -51,7 +63,7 @@ export const questionnaireQuestions: QuestionnaireQuestion[] = [
     ],
   },
   {
-    id: 4,
+    id: 5,
     question: '你的性格更偏向哪一种？',
     type: 'select',
     options: [
@@ -66,7 +78,7 @@ export const questionnaireQuestions: QuestionnaireQuestion[] = [
     ],
   },
   {
-    id: 5,
+    id: 6,
     question: '在聊天时，你更喜欢使用什么样的语气？',
     type: 'select',
     options: [
@@ -79,7 +91,7 @@ export const questionnaireQuestions: QuestionnaireQuestion[] = [
     ],
   },
   {
-    id: 6,
+    id: 7,
     question: '你使用标点符号的习惯是？',
     type: 'select',
     options: [
@@ -92,7 +104,7 @@ export const questionnaireQuestions: QuestionnaireQuestion[] = [
     ],
   },
   {
-    id: 7,
+    id: 8,
     question: '你的断句习惯是？',
     type: 'select',
     options: [
@@ -103,7 +115,7 @@ export const questionnaireQuestions: QuestionnaireQuestion[] = [
     ],
   },
   {
-    id: 8,
+    id: 9,
     question: '你经常使用表情符号或emoji吗？',
     type: 'select',
     options: [
@@ -115,19 +127,19 @@ export const questionnaireQuestions: QuestionnaireQuestion[] = [
     ],
   },
   {
-    id: 9,
+    id: 10,
     question: '描述一下你的职业或主要身份',
     placeholder: '例如：学生、程序员、设计师、自由职业者等',
     type: 'text',
   },
   {
-    id: 10,
+    id: 11,
     question: '你的年龄段是？',
     type: 'select',
     options: ['18岁以下', '18-25岁', '26-35岁', '36-45岁', '45岁以上'],
   },
   {
-    id: 11,
+    id: 12,
     question: '你更喜欢长句子还是短句子？',
     type: 'select',
     options: [
@@ -137,13 +149,13 @@ export const questionnaireQuestions: QuestionnaireQuestion[] = [
     ],
   },
   {
-    id: 12,
+    id: 13,
     question: '你有什么特殊的口头禅或常用词汇吗？',
     placeholder: '例如：哈哈、嗯嗯、好的、没问题、确实、hhh等',
     type: 'textarea',
   },
   {
-    id: 13,
+    id: 14,
     question: '在面对不同的人时，你的说话方式会有变化吗？',
     type: 'select',
     options: [
@@ -153,9 +165,19 @@ export const questionnaireQuestions: QuestionnaireQuestion[] = [
     ],
   },
   {
-    id: 14,
+    id: 15,
     question: '简单描述一下你的生活状态或兴趣爱好',
     placeholder: '例如：喜欢运动、热爱阅读、经常加班、享受独处等',
+    type: 'textarea',
+  },
+];
+
+// 老用户补充问卷（只有一个问题）
+export const updateQuestions: QuestionnaireQuestion[] = [
+  {
+    id: 100,
+    question: '请输入您想补充或更新的个人信息',
+    placeholder: '例如：我最近喜欢用"hhh"表示笑，或者我现在说话更直接了等',
     type: 'textarea',
   },
 ];

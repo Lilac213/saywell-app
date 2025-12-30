@@ -1,31 +1,19 @@
-# Task: 智能回复助手 - Intelligent Reply Assistant
+# Task: 智能回复助手优化 - 问卷流程和AI分析改进
 
 ## Plan
-- [x] Step 1: Initialize Supabase and create database schema
-  - [x] Initialize Supabase project
-  - [x] Create user_profiles table
-  - [x] Create chat_sessions table
-  - [x] Create reply_selections table
-  - [x] Create image storage bucket with policies
-- [x] Step 2: Update design system with light blue color scheme
-- [x] Step 3: Create type definitions and database API layer
-- [x] Step 4: Implement Gemini AI Edge Function for reply generation
-- [x] Step 5: Build core pages and components
-  - [x] Onboarding/Questionnaire page
-  - [x] Home/Upload page
-  - [x] Reply suggestions page
-  - [x] Profile page
-  - [x] History page
-- [x] Step 6: Implement image upload with compression
-- [x] Step 7: Integrate AI reply generation workflow
-- [x] Step 8: Add animations and polish UI
-- [x] Step 9: Run lint and fix any issues
+- [x] Step 1: 优化首页流程 - 首次用户填问卷，非首次直接上传截图
+- [x] Step 2: 修复问卷重填bug - 添加"是否新用户"判断，老用户只需补充信息
+- [x] Step 3: 问卷添加性别字段（星座已有）
+- [x] Step 4: 优化第4个反馈选项 - 移动端使用文本框而非弹窗
+- [x] Step 5: 添加AI对话意图分析区域
+- [x] Step 6: 改进AI识别逻辑 - 基于头像位置区分发言者
+- [x] Step 7: 优化AI回复策略 - 综合分析对方所有发言
+- [x] Step 8: 移除历史记录页面入口
+- [x] Step 9: 运行lint检查
 
 ## Notes
-- Using Gemini 2.5 Flash API for AI analysis and reply generation
-- Image upload required for screenshot handling
-- Design: Light blue (#87CEEB) primary color, white background, card-based layout
-- Need to simulate iOS AssistiveTouch with web-based image upload
-- Continuous learning: track user selections to improve profile over time
-- All core features implemented successfully
-- Lint passed with no errors
+- 重点：必须准确识别sender和receiver，基于头像位置（左侧=对方，右侧=用户）
+- AI需要综合分析对方的所有发言，可能包含多个问题
+- 问卷重填不应清空用户画像，而是补充更新
+- 移动端体验优化：使用内联文本框替代弹窗
+- 所有功能已实现并通过lint检查

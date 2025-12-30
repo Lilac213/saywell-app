@@ -12,6 +12,12 @@ interface QuestionAnswer {
 
 interface RequestBody {
   responses: QuestionAnswer[];
+  isUpdate?: boolean;
+  existingProfile?: {
+    personality_traits: any;
+    language_habits: any;
+    background_story: string;
+  };
 }
 
 Deno.serve(async (req) => {
@@ -21,7 +27,7 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const { responses } = await req.json() as RequestBody;
+    const { responses, isUpdate, existingProfile } = await req.json() as RequestBody;
 
     // 构建问卷内容
     let questionnaireText = '用户问卷回答：\n\n';
@@ -31,13 +37,56 @@ Deno.serve(async (req) => {
     });
 
     // 构建提示词
-    const prompt = `你是一个用户画像分析专家。请分析以下问卷回答，提取用户的性格特征、语言习惯和背景信息。
+    let prompt = '';
+    
+    if (isUpdate && existingProfile) {
+      // 老用户更新画像
+      prompt = `你是一个用户画像分析专家。用户想要补充或更新他们的个人画像信息。
+
+现有画像：
+性格特征：${JSON.stringify(existingProfile.personality_traits, null, 2)}
+语言习惯：${JSON.stringify(existingProfile.language_habits, null, 2)}
+背景故事：${existingProfile.background_story}
+
+用户补充的信息：
+${questionnaireText}
+
+请分析用户想要更新的内容，并以JSON格式返回更新后的画像。注意：
+1. 只更新用户明确提到的部分
+2. 保留未提及的原有信息
+3. 如果用户提到了新的语言习惯，合并到现有习惯中
+
+返回格式：
+{
+  "personality_traits": {
+    "性别": "用户的性别（如果提到）",
+    "MBTI类型": "用户的MBTI类型（如果提到）",
+    "星座": "用户的星座（如果提到）",
+    "性格特点": "更新后的性格特征",
+    "沟通风格": "更新后的沟通风格"
+  },
+  "language_habits": {
+    "常用词汇": ["更新后的常用词"],
+    "口头禅": "更新后的口头禅",
+    "表达方式": "更新后的表达习惯",
+    "语气特点": "更新后的语气风格",
+    "标点符号习惯": "更新后的标点习惯",
+    "断句习惯": "更新后的断句方式",
+    "emoji使用": "更新后的emoji使用习惯",
+    "句子长度偏好": "更新后的句子长度偏好"
+  },
+  "background_story": "更新后的背景故事"
+}`;
+    } else {
+      // 新用户完整问卷
+      prompt = `你是一个用户画像分析专家。请分析以下问卷回答，提取用户的性格特征、语言习惯和背景信息。
 
 ${questionnaireText}
 
 请以JSON格式返回分析结果，格式如下：
 {
   "personality_traits": {
+    "性别": "用户的性别",
     "MBTI类型": "用户的MBTI类型",
     "星座": "用户的星座",
     "性格特点": "详细描述用户的性格特征",
@@ -57,7 +106,7 @@ ${questionnaireText}
 }
 
 要求：
-1. 深入分析用户的性格特征（结合MBTI、星座等信息）
+1. 深入分析用户的性格特征（结合性别、MBTI、星座等信息）
 2. 详细识别用户的语言习惯，特别注意：
    - 标点符号的使用频率和偏好
    - 断句方式和消息发送习惯
@@ -65,6 +114,7 @@ ${questionnaireText}
    - 表情符号的使用风格
 3. 总结用户的背景信息和生活状态
 4. 分析要具体、准确，便于后续生成个性化回复`;
+    }
 
     // 调用Gemini API
     const geminiResponse = await fetch(

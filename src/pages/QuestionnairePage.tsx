@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Progress } from '@/components/ui/progress';
 import { useToast } from '@/hooks/use-toast';
 import { useUserProfile } from '@/contexts/UserProfileContext';
-import { questionnaireQuestions } from '@/data/questionnaire';
+import { questionnaireQuestions, updateQuestions } from '@/data/questionnaire';
 import { questionnaireApi } from '@/db/api';
 import { supabase } from '@/db/supabase';
 import { Loader2, Sparkles } from 'lucide-react';
@@ -17,12 +17,20 @@ const QuestionnairePage: React.FC = () => {
   const [currentStep, setCurrentStep] = useState(0);
   const [answers, setAnswers] = useState<Record<number, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isNewUser, setIsNewUser] = useState<boolean | null>(null);
 
-  const currentQuestion = questionnaireQuestions[currentStep];
-  const progress = ((currentStep + 1) / questionnaireQuestions.length) * 100;
+  // 根据是否新用户选择问题列表
+  const questions = isNewUser === false ? updateQuestions : questionnaireQuestions;
+  const currentQuestion = questions[currentStep];
+  const progress = ((currentStep + 1) / questions.length) * 100;
 
   const handleAnswerChange = (value: string) => {
     setAnswers({ ...answers, [currentQuestion.id]: value });
+
+    // 如果是第一个问题，判断是否新用户
+    if (currentQuestion.id === 0) {
+      setIsNewUser(value === '是，我是新用户');
+    }
   };
 
   const handleNext = () => {
@@ -35,7 +43,13 @@ const QuestionnairePage: React.FC = () => {
       return;
     }
 
-    if (currentStep < questionnaireQuestions.length - 1) {
+    // 如果是第一个问题且选择了"否"，直接跳到补充问卷
+    if (currentQuestion.id === 0 && isNewUser === false) {
+      setCurrentStep(0); // 重置到补充问卷的第一题
+      return;
+    }
+
+    if (currentStep < questions.length - 1) {
       setCurrentStep(currentStep + 1);
     } else {
       handleSubmit();
@@ -61,49 +75,100 @@ const QuestionnairePage: React.FC = () => {
         }
       }
 
-      // 保存问卷回答
-      const responses = questionnaireQuestions.map((q) => ({
-        question: q.question,
-        answer: answers[q.id] || '',
-        question_order: q.id,
-      }));
+      // 如果是老用户补充信息
+      if (isNewUser === false) {
+        const updateText = answers[100] || '';
+        
+        // 调用AI分析补充信息
+        const { data: analysisData, error: analysisError } = await supabase.functions.invoke(
+          'analyze-questionnaire',
+          {
+            body: {
+              responses: [
+                {
+                  question: '用户想要补充或更新的信息',
+                  answer: updateText,
+                },
+              ],
+              isUpdate: true,
+              existingProfile: {
+                personality_traits: profile.personality_traits,
+                language_habits: profile.language_habits,
+                background_story: profile.background_story,
+              },
+            },
+          }
+        );
 
-      const saved = await questionnaireApi.createBatch(profile.id, responses);
-      if (!saved) {
-        throw new Error('保存问卷回答失败');
-      }
-
-      // 调用AI分析问卷
-      const { data: analysisData, error: analysisError } = await supabase.functions.invoke(
-        'analyze-questionnaire',
-        {
-          body: {
-            responses: responses.map((r) => ({
-              question: r.question,
-              answer: r.answer,
-            })),
-          },
+        if (analysisError) {
+          const errorMsg = await analysisError?.context?.text();
+          console.error('AI分析失败:', errorMsg || analysisError?.message);
+          throw new Error('AI分析失败');
         }
-      );
 
-      if (analysisError) {
-        const errorMsg = await analysisError?.context?.text();
-        console.error('AI分析失败:', errorMsg || analysisError?.message);
-        throw new Error('AI分析失败');
+        // 更新用户画像（合并而非替换）
+        await updateProfile({
+          personality_traits: {
+            ...profile.personality_traits,
+            ...analysisData.personality_traits,
+          },
+          language_habits: {
+            ...profile.language_habits,
+            ...analysisData.language_habits,
+          },
+          background_story: analysisData.background_story || profile.background_story,
+        });
+
+        toast({
+          title: '画像更新成功！',
+          description: '您的个性化画像已更新',
+        });
+      } else {
+        // 新用户完整问卷
+        const responses = questions.map((q) => ({
+          question: q.question,
+          answer: answers[q.id] || '',
+          question_order: q.id,
+        }));
+
+        const saved = await questionnaireApi.createBatch(profile.id, responses);
+        if (!saved) {
+          throw new Error('保存问卷回答失败');
+        }
+
+        // 调用AI分析问卷
+        const { data: analysisData, error: analysisError } = await supabase.functions.invoke(
+          'analyze-questionnaire',
+          {
+            body: {
+              responses: responses.map((r) => ({
+                question: r.question,
+                answer: r.answer,
+              })),
+              isUpdate: false,
+            },
+          }
+        );
+
+        if (analysisError) {
+          const errorMsg = await analysisError?.context?.text();
+          console.error('AI分析失败:', errorMsg || analysisError?.message);
+          throw new Error('AI分析失败');
+        }
+
+        // 更新用户画像
+        await updateProfile({
+          personality_traits: analysisData.personality_traits || {},
+          language_habits: analysisData.language_habits || {},
+          background_story: analysisData.background_story || '',
+          questionnaire_completed: true,
+        });
+
+        toast({
+          title: '问卷完成！',
+          description: '您的个性化画像已创建，现在可以开始使用智能回复助手了',
+        });
       }
-
-      // 更新用户画像
-      await updateProfile({
-        personality_traits: analysisData.personality_traits || {},
-        language_habits: analysisData.language_habits || {},
-        background_story: analysisData.background_story || '',
-        questionnaire_completed: true,
-      });
-
-      toast({
-        title: '问卷完成！',
-        description: '您的个性化画像已创建，现在可以开始使用智能回复助手了',
-      });
 
       navigate('/');
     } catch (error) {
@@ -126,10 +191,12 @@ const QuestionnairePage: React.FC = () => {
             <Sparkles className="w-8 h-8 text-primary-foreground" />
           </div>
           <h1 className="text-3xl xl:text-4xl font-bold text-foreground mb-2">
-            欢迎使用智能回复助手
+            {isNewUser === false ? '更新您的画像' : '欢迎使用智能回复助手'}
           </h1>
           <p className="text-muted-foreground">
-            让我们先了解一下您，以便为您提供更个性化的回复建议
+            {isNewUser === false
+              ? '告诉我们您想补充或更新的信息'
+              : '让我们先了解一下您，以便为您提供更个性化的回复建议'}
           </p>
         </div>
 
@@ -137,7 +204,7 @@ const QuestionnairePage: React.FC = () => {
           <CardHeader>
             <div className="flex items-center justify-between mb-2">
               <CardTitle className="text-xl">
-                问题 {currentStep + 1} / {questionnaireQuestions.length}
+                问题 {currentStep + 1} / {questions.length}
               </CardTitle>
               <span className="text-sm text-muted-foreground">{Math.round(progress)}%</span>
             </div>
@@ -208,7 +275,7 @@ const QuestionnairePage: React.FC = () => {
                     <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                     分析中...
                   </>
-                ) : currentStep === questionnaireQuestions.length - 1 ? (
+                ) : currentStep === questions.length - 1 ? (
                   '完成'
                 ) : (
                   '下一题'

@@ -20,6 +20,9 @@ const RepliesPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+  const [feedbackText, setFeedbackText] = useState('');
+  const [showFeedbackInput, setShowFeedbackInput] = useState(false);
+  const [intentAnalysis, setIntentAnalysis] = useState<string>('');
 
   useEffect(() => {
     if (sessionId) {
@@ -94,14 +97,16 @@ const RepliesPage: React.FC = () => {
       }
 
       // 更新会话的提取文本和用户风格观察
-      if (aiData.extracted_text || aiData.user_style_observation) {
+      if (aiData.extracted_text || aiData.user_style_observation || aiData.intent_analysis) {
         await chatSessionApi.update(sessionId, {
           extracted_text: aiData.extracted_text || null,
           context: { 
             analysis: aiData.context_analysis,
             user_style_observation: aiData.user_style_observation,
+            intent_analysis: aiData.intent_analysis,
           },
         });
+        setIntentAnalysis(aiData.intent_analysis || '');
       }
 
       setReplies(aiData.replies || []);
@@ -141,34 +146,9 @@ const RepliesPage: React.FC = () => {
 
     setSelectedIndex(index);
 
-    // 如果选择的是第4个反馈选项，弹出输入框收集反馈
+    // 如果选择的是第4个反馈选项，显示文本框收集反馈
     if (index === 3) {
-      const feedback = prompt('请输入您期望的回复内容或反馈建议：');
-      if (feedback && feedback.trim()) {
-        // 保存反馈记录
-        await replySelectionApi.create(
-          sessionId,
-          replies.map((r) => r.text),
-          `用户反馈：${feedback}`,
-          index
-        );
-
-        toast({
-          title: '感谢您的反馈',
-          description: '我们会根据您的反馈持续优化回复风格',
-        });
-
-        // 延迟返回首页
-        setTimeout(() => {
-          navigate('/');
-        }, 1500);
-      } else {
-        setSelectedIndex(null);
-        toast({
-          title: '已取消',
-          description: '您可以继续选择其他回复',
-        });
-      }
+      setShowFeedbackInput(true);
       return;
     }
 
@@ -189,6 +169,40 @@ const RepliesPage: React.FC = () => {
     setTimeout(() => {
       navigate('/');
     }, 1500);
+  };
+
+  const handleSubmitFeedback = async () => {
+    if (!sessionId || !feedbackText.trim()) {
+      toast({
+        title: '请输入反馈内容',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    // 保存反馈记录
+    await replySelectionApi.create(
+      sessionId,
+      replies.map((r) => r.text),
+      `用户反馈：${feedbackText}`,
+      3
+    );
+
+    toast({
+      title: '感谢您的反馈',
+      description: '我们会根据您的反馈持续优化回复风格',
+    });
+
+    // 延迟返回首页
+    setTimeout(() => {
+      navigate('/');
+    }, 1500);
+  };
+
+  const handleCancelFeedback = () => {
+    setShowFeedbackInput(false);
+    setSelectedIndex(null);
+    setFeedbackText('');
   };
 
   if (loading) {
@@ -249,6 +263,21 @@ const RepliesPage: React.FC = () => {
                     <p className="text-sm text-foreground">{session.context.user_style_observation}</p>
                   </div>
                 )}
+              </CardContent>
+            </Card>
+          )}
+
+          {/* AI意图分析 */}
+          {intentAnalysis && (
+            <Card className="mb-6 animate-fade-in bg-gradient-to-br from-primary/5 to-accent/5">
+              <CardHeader>
+                <CardTitle className="text-lg flex items-center gap-2">
+                  <Sparkles className="w-5 h-5 text-primary" />
+                  对方意图分析
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-base leading-relaxed">{intentAnalysis}</p>
               </CardContent>
             </Card>
           )}
@@ -328,6 +357,43 @@ const RepliesPage: React.FC = () => {
                 </CardContent>
               </Card>
             ))}
+
+            {/* 反馈输入区域 */}
+            {showFeedbackInput && (
+              <Card className="animate-scale-in border-primary/50 bg-primary/5">
+                <CardHeader>
+                  <CardTitle className="text-lg">请输入您的反馈</CardTitle>
+                  <CardDescription>
+                    告诉我们您期望的回复内容或对以上回复的建议
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <textarea
+                    value={feedbackText}
+                    onChange={(e) => setFeedbackText(e.target.value)}
+                    placeholder="例如：我希望回复更简洁一些，或者我想说..."
+                    rows={4}
+                    className="flex min-h-[100px] w-full rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 resize-none"
+                  />
+                  <div className="flex gap-3">
+                    <Button
+                      variant="outline"
+                      onClick={handleCancelFeedback}
+                      className="flex-1"
+                    >
+                      取消
+                    </Button>
+                    <Button
+                      onClick={handleSubmitFeedback}
+                      disabled={!feedbackText.trim()}
+                      className="flex-1"
+                    >
+                      提交反馈
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
           </div>
 
           <div className="mt-6 text-center text-sm text-muted-foreground">
