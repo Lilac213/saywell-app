@@ -224,10 +224,10 @@ const HomePage: React.FC = () => {
   return (
     <div className="min-h-screen bg-background">
       {/* 顶部导航 */}
-      <header className="border-b border-border/50 bg-card/80 backdrop-blur-sm sticky top-0 z-10">
+      <header className="border-b border-border/30 bg-card/60 backdrop-blur-md sticky top-0 z-10">
         <div className="container mx-auto px-6 h-16 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 logo-gradient rounded-2xl flex items-center justify-center shadow-sm">
+            <div className="w-10 h-10 logo-gradient rounded-2xl flex items-center justify-center shadow-lg">
               <Sparkles className="w-5 h-5 text-white" />
             </div>
             <div className="flex flex-col">
@@ -235,7 +235,7 @@ const HomePage: React.FC = () => {
               <p className="text-xs text-muted-foreground leading-tight">帮助你好好说话的AI助手</p>
             </div>
           </div>
-          <Button variant="ghost" size="icon" className="rounded-full" onClick={() => navigate('/profile')}>
+          <Button variant="ghost" size="icon" className="rounded-full hover:bg-primary/10" onClick={() => navigate('/profile')}>
             <User className="w-5 h-5" />
           </Button>
         </div>
@@ -270,7 +270,7 @@ const HomePage: React.FC = () => {
             </p>
           </div>
 
-          <Card className="animate-scale-in shadow-sm border-border/50">
+          <Card className="animate-scale-in card-soft shadow-xl">
             <CardContent className="p-8 xl:p-10">
               {!previewUrl ? (
                 <div
