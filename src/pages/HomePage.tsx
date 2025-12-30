@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -6,7 +6,8 @@ import { useToast } from '@/hooks/use-toast';
 import { useUserProfile } from '@/contexts/UserProfileContext';
 import { chatSessionApi } from '@/db/api';
 import { supabase } from '@/db/supabase';
-import { Upload, Image as ImageIcon, User, Sparkles, TrendingUp } from 'lucide-react';
+import { Upload, Image as ImageIcon, User, Sparkles, TrendingUp, Info } from 'lucide-react';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
 const HomePage: React.FC = () => {
   const navigate = useNavigate();
@@ -15,6 +16,33 @@ const HomePage: React.FC = () => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
+
+  // 自动创建默认画像（如果不存在）
+  useEffect(() => {
+    const initProfile = async () => {
+      if (!profileLoading && !userProfile) {
+        const profile = await createProfile();
+        if (profile) {
+          await updateProfile({
+            personality_traits: { 
+              性别: '未设置',
+              星座: '未设置',
+              年龄段: '未设置',
+              性格特点: '随和自然'
+            },
+            language_habits: { 
+              发消息习惯: '灵活多变',
+              表达方式: '简洁明了'
+            },
+            background_story: '一个喜欢使用智能工具的用户',
+            questionnaire_completed: true,
+          });
+        }
+      }
+    };
+
+    initProfile();
+  }, [profileLoading, userProfile, createProfile, updateProfile]);
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -193,64 +221,6 @@ const HomePage: React.FC = () => {
     );
   }
 
-  if (!userProfile?.questionnaire_completed) {
-    return (
-      <div className="min-h-screen flex items-center justify-center p-4">
-        <Card className="max-w-md w-full animate-scale-in">
-          <CardHeader className="text-center">
-            <div className="inline-flex items-center justify-center w-16 h-16 bg-primary rounded-full mb-4 mx-auto">
-              <Sparkles className="w-8 h-8 text-primary-foreground" />
-            </div>
-            <CardTitle className="text-2xl">欢迎使用智能回复助手</CardTitle>
-            <CardDescription>
-              在开始使用之前，请先完成简单的问卷，帮助我们了解您的个性特征
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            <Button onClick={() => navigate('/questionnaire')} className="w-full" size="lg">
-              开始问卷
-            </Button>
-            <Button 
-              onClick={async () => {
-                // 快速跳过问卷，使用默认画像
-                if (!userProfile) {
-                  const profile = await createProfile();
-                  if (profile) {
-                    await updateProfile({
-                      personality_traits: { 性格: '随和', 沟通风格: '轻松自然' },
-                      language_habits: { 表达方式: '简洁明了', 语气特点: '友好亲切' },
-                      background_story: '一个喜欢使用智能工具的用户',
-                      questionnaire_completed: true,
-                    });
-                    toast({
-                      title: '已使用默认画像',
-                      description: '您可以稍后在个人画像页面重新填写问卷',
-                    });
-                  }
-                } else {
-                  await updateProfile({
-                    personality_traits: { 性格: '随和', 沟通风格: '轻松自然' },
-                    language_habits: { 表达方式: '简洁明了', 语气特点: '友好亲切' },
-                    background_story: '一个喜欢使用智能工具的用户',
-                    questionnaire_completed: true,
-                  });
-                  toast({
-                    title: '已使用默认画像',
-                    description: '您可以稍后在个人画像页面重新填写问卷',
-                  });
-                }
-              }} 
-              variant="outline" 
-              className="w-full"
-            >
-              跳过问卷（使用默认画像）
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-accent/30 to-background">
       {/* 顶部导航 */}
@@ -273,6 +243,22 @@ const HomePage: React.FC = () => {
       {/* 主内容 */}
       <main className="container mx-auto px-4 py-8 xl:py-12">
         <div className="max-w-3xl mx-auto">
+          {/* 提示信息 */}
+          <Alert className="mb-6 animate-fade-in bg-primary/5 border-primary/20">
+            <Info className="h-4 w-4 text-primary" />
+            <AlertDescription className="text-sm">
+              💡 <strong>个性化提示：</strong>为了获得更符合您风格的回复建议，建议前往
+              <Button 
+                variant="link" 
+                className="px-1 h-auto font-semibold text-primary"
+                onClick={() => navigate('/profile')}
+              >
+                「我的画像」
+              </Button>
+              填写问卷，完善您的人设和说话习惯
+            </AlertDescription>
+          </Alert>
+
           <div className="text-center mb-8 animate-fade-in">
             <h2 className="text-2xl xl:text-3xl font-bold mb-2">上传聊天截图</h2>
             <p className="text-muted-foreground">

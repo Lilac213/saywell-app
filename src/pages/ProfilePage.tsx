@@ -66,6 +66,24 @@ const ProfilePage: React.FC = () => {
             </CardHeader>
           </Card>
 
+          {/* 重新填写问卷按钮 */}
+          <Card className="animate-fade-in" style={{ animationDelay: '0.1s' }}>
+            <CardContent className="p-6">
+              <div className="flex flex-col xl:flex-row items-center gap-4">
+                <div className="flex-1 text-center xl:text-left">
+                  <h3 className="font-semibold mb-1">完善个性化画像</h3>
+                  <p className="text-sm text-muted-foreground">
+                    填写问卷可以让AI更准确地了解您的性格特点和语言习惯，生成更符合您风格的回复
+                  </p>
+                </div>
+                <Button onClick={() => navigate('/questionnaire')} className="shrink-0">
+                  <RefreshCw className="w-4 h-4 mr-2" />
+                  填写问卷
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+
           {/* 性格特征 */}
           {userProfile.personality_traits &&
             Object.keys(userProfile.personality_traits).length > 0 && (
@@ -134,28 +152,10 @@ const ProfilePage: React.FC = () => {
           )}
 
           {/* 操作按钮 */}
-          <Card className="animate-fade-in" style={{ animationDelay: '0.4s' }}>
-            <CardContent className="p-6">
-              <div className="space-y-3">
-                <Button
-                  variant="outline"
-                  className="w-full"
-                  onClick={() => navigate('/questionnaire')}
-                >
-                  <RefreshCw className="w-4 h-4 mr-2" />
-                  重新填写问卷
-                </Button>
-                <p className="text-xs text-center text-muted-foreground">
-                  重新填写问卷将更新您的个性化画像，帮助AI更好地理解您的风格
-                </p>
-              </div>
-            </CardContent>
-          </Card>
-
           {/* 说明 */}
           <div className="text-center text-sm text-muted-foreground space-y-2">
             <p>您的画像会随着使用不断优化</p>
-            <p>我们会根据您选择的回复持续学习您的偏好</p>
+            <p>我们会根据您选择的回复和反馈持续学习您的偏好</p>
           </div>
         </div>
       </main>
