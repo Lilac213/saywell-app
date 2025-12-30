@@ -209,7 +209,7 @@ const RepliesPage: React.FC = () => {
 
       // 调用Edge Function分析反馈并更新画像
       if (userProfile) {
-        const { error } = await supabase.functions.invoke('analyze-feedback', {
+        const { data, error } = await supabase.functions.invoke('analyze-feedback', {
           body: {
             feedbackText,
             userProfileId: userProfile.id,
@@ -222,10 +222,18 @@ const RepliesPage: React.FC = () => {
         });
 
         if (error) {
-          console.error('分析反馈失败:', error);
+          const errorMsg = await error?.context?.text?.();
+          console.error('分析反馈失败:', errorMsg || error?.message || error);
           toast({
             title: '反馈已保存',
-            description: '但画像更新失败，请稍后重试',
+            description: `但画像更新失败：${errorMsg || error?.message || '请稍后重试'}`,
+            variant: 'destructive',
+          });
+        } else if (data?.error) {
+          console.error('Edge Function返回错误:', data.error);
+          toast({
+            title: '反馈已保存',
+            description: `但画像更新失败：${data.error}`,
             variant: 'destructive',
           });
         } else {

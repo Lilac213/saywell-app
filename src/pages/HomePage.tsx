@@ -222,54 +222,51 @@ const HomePage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-accent/30 to-background">
+    <div className="min-h-screen bg-background">
       {/* 顶部导航 */}
-      <header className="border-b border-border bg-card/50 backdrop-blur-sm sticky top-0 z-10">
-        <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-gradient-to-br from-primary to-secondary rounded-lg flex items-center justify-center">
+      <header className="border-b border-border/50 bg-card/80 backdrop-blur-sm sticky top-0 z-10">
+        <div className="container mx-auto px-6 h-16 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 bg-gradient-to-br from-primary to-secondary rounded-2xl flex items-center justify-center shadow-sm">
               <Sparkles className="w-5 h-5 text-primary-foreground" />
             </div>
-            <h1 className="text-xl font-bold gradient-text">好好说</h1>
+            <h1 className="text-lg font-medium">好好说 · <span className="font-normal text-muted-foreground text-sm">SayWell</span></h1>
           </div>
-          <div className="flex gap-2">
-            <Button variant="ghost" size="icon" onClick={() => navigate('/profile')}>
-              <User className="w-5 h-5" />
-            </Button>
-          </div>
+          <Button variant="ghost" size="icon" className="rounded-full" onClick={() => navigate('/profile')}>
+            <User className="w-5 h-5" />
+          </Button>
         </div>
       </header>
 
       {/* 主内容 */}
-      <main className="container mx-auto px-4 py-6 xl:py-8">
-        <div className="max-w-3xl mx-auto">
-          {/* 提示信息 - 优化布局 */}
-          <Alert className="mb-4 gradient-bg border-primary/30">
-            <AlertDescription className="text-sm flex items-center gap-2">
-              <Info className="h-4 w-4 text-primary shrink-0" />
-              <span>
-                <strong>个性化提示：</strong>前往
-                <Button 
-                  variant="link" 
-                  className="px-1 h-auto font-semibold text-primary"
+      <main className="container mx-auto px-6 py-12 xl:py-16">
+        <div className="max-w-2xl mx-auto">
+          {/* 提示信息 - 更温和的设计 */}
+          <div className="mb-8 p-5 rounded-3xl bg-gradient-bg border border-border/30">
+            <div className="flex items-start gap-3">
+              <Info className="w-5 h-5 text-primary shrink-0 mt-0.5" />
+              <p className="text-sm text-foreground/70 leading-relaxed">
+                前往
+                <button 
+                  className="mx-1 text-primary font-medium hover:underline"
                   onClick={() => navigate('/profile')}
                 >
                   我的画像
-                </Button>
+                </button>
                 填写问卷，完善您的人设和说话习惯，获得更符合您风格的回复建议
-              </span>
-            </AlertDescription>
-          </Alert>
+              </p>
+            </div>
+          </div>
 
-          <div className="text-center mb-6">
-            <h2 className="text-2xl xl:text-3xl font-bold mb-2">上传聊天截图</h2>
+          <div className="text-center mb-10">
+            <h2 className="text-2xl xl:text-3xl font-medium mb-3">上传聊天截图</h2>
             <p className="text-sm text-muted-foreground">
               上传聊天记录截图，AI为您生成个性化回复建议
             </p>
           </div>
 
-          <Card className="animate-scale-in shadow-lg">
-            <CardContent className="p-6 xl:p-8">
+          <Card className="animate-scale-in shadow-sm border-border/50">
+            <CardContent className="p-8 xl:p-10">
               {!previewUrl ? (
                 <div
                   onDrop={handleDrop}
@@ -340,22 +337,24 @@ const HomePage: React.FC = () => {
             </CardContent>
           </Card>
 
-          {/* 功能说明 - 简化为一行 */}
-          <div className="mt-6 text-center text-sm text-muted-foreground">
-            <span className="inline-flex items-center gap-4 flex-wrap justify-center">
-              <span className="flex items-center gap-1">
-                <Upload className="w-4 h-4" />
+          {/* 功能说明 - 极简设计 */}
+          <div className="mt-12 text-center text-xs text-muted-foreground/60">
+            <div className="inline-flex items-center gap-6">
+              <span className="flex items-center gap-1.5">
+                <Upload className="w-3.5 h-3.5" />
                 快速上传
               </span>
-              <span className="flex items-center gap-1">
-                <Sparkles className="w-4 h-4" />
-                AI智能分析
+              <span className="w-px h-3 bg-border/50" />
+              <span className="flex items-center gap-1.5">
+                <Sparkles className="w-3.5 h-3.5" />
+                AI分析
               </span>
-              <span className="flex items-center gap-1">
-                <TrendingUp className="w-4 h-4" />
+              <span className="w-px h-3 bg-border/50" />
+              <span className="flex items-center gap-1.5">
+                <TrendingUp className="w-3.5 h-3.5" />
                 持续学习
               </span>
-            </span>
+            </div>
           </div>
         </div>
       </main>
