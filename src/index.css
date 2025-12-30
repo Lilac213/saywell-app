@@ -10,83 +10,83 @@ All colors MUST be HSL.
 @layer base {
   :root {
     --radius: 1.5rem;
-    --background: 210 35% 92%;
-    --foreground: 220 20% 30%;
+    --background: 210 40% 96%;
+    --foreground: 215 25% 27%;
     --card: 0 0% 100%;
-    --card-foreground: 220 20% 30%;
+    --card-foreground: 215 25% 27%;
     --popover: 0 0% 100%;
-    --popover-foreground: 220 20% 30%;
-    --primary: 210 30% 70%;
-    --primary-foreground: 220 20% 30%;
-    --secondary: 350 100% 90%;
-    --secondary-foreground: 220 20% 30%;
-    --muted: 210 25% 85%;
-    --muted-foreground: 220 15% 50%;
-    --accent: 350 100% 85%;
-    --accent-foreground: 220 20% 30%;
+    --popover-foreground: 215 25% 27%;
+    --primary: 210 30% 65%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 210 35% 82%;
+    --secondary-foreground: 215 25% 27%;
+    --muted: 210 30% 88%;
+    --muted-foreground: 215 15% 50%;
+    --accent: 210 35% 85%;
+    --accent-foreground: 215 25% 27%;
     --destructive: 0 65% 55%;
     --destructive-foreground: 0 0% 100%;
-    --border: 210 25% 82%;
-    --input: 210 25% 88%;
-    --ring: 210 30% 70%;
-    --chart-1: 210 30% 70%;
-    --chart-2: 350 100% 90%;
-    --chart-3: 350 80% 80%;
-    --chart-4: 300 30% 75%;
-    --chart-5: 220 30% 65%;
-    --dialog-bg: 350 100% 90%;
-    --dialog-border: 350 80% 85%;
-    --button-bg: 220 30% 60%;
-    --text-primary: 220 20% 30%;
-    --text-secondary: 220 15% 50%;
-    --sidebar-background: 210 35% 92%;
-    --sidebar-foreground: 220 20% 30%;
-    --sidebar-primary: 210 30% 70%;
-    --sidebar-primary-foreground: 220 20% 30%;
-    --sidebar-accent: 210 25% 88%;
-    --sidebar-accent-foreground: 220 20% 30%;
-    --sidebar-border: 210 25% 82%;
-    --sidebar-ring: 210 30% 70%;
+    --border: 210 25% 85%;
+    --input: 210 25% 90%;
+    --ring: 210 30% 65%;
+    --chart-1: 210 30% 65%;
+    --chart-2: 210 35% 82%;
+    --chart-3: 210 25% 75%;
+    --chart-4: 210 20% 70%;
+    --chart-5: 210 30% 60%;
+    --dialog-bg: 210 35% 88%;
+    --dialog-border: 210 30% 80%;
+    --button-bg: 210 30% 60%;
+    --text-primary: 215 25% 27%;
+    --text-secondary: 215 15% 50%;
+    --sidebar-background: 210 40% 96%;
+    --sidebar-foreground: 215 25% 27%;
+    --sidebar-primary: 210 30% 65%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 210 30% 90%;
+    --sidebar-accent-foreground: 215 25% 27%;
+    --sidebar-border: 210 25% 85%;
+    --sidebar-ring: 210 30% 65%;
   }
 
   .dark {
-    --background: 220 25% 8%;
-    --foreground: 210 20% 95%;
-    --card: 220 20% 12%;
-    --card-foreground: 210 20% 95%;
-    --popover: 220 20% 12%;
-    --popover-foreground: 210 20% 95%;
-    --primary: 210 30% 65%;
+    --background: 215 30% 10%;
+    --foreground: 210 25% 95%;
+    --card: 215 25% 14%;
+    --card-foreground: 210 25% 95%;
+    --popover: 215 25% 14%;
+    --popover-foreground: 210 25% 95%;
+    --primary: 210 30% 60%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 350 80% 75%;
+    --secondary: 210 25% 70%;
     --secondary-foreground: 0 0% 100%;
-    --muted: 220 15% 18%;
+    --muted: 215 20% 20%;
     --muted-foreground: 210 15% 60%;
-    --accent: 350 70% 70%;
-    --accent-foreground: 0 0% 100%;
+    --accent: 210 25% 25%;
+    --accent-foreground: 210 25% 95%;
     --destructive: 0 60% 50%;
     --destructive-foreground: 0 0% 100%;
-    --border: 220 15% 20%;
-    --input: 220 15% 20%;
-    --ring: 210 30% 65%;
-    --chart-1: 210 30% 65%;
-    --chart-2: 350 80% 75%;
-    --chart-3: 350 70% 70%;
-    --chart-4: 300 30% 65%;
-    --chart-5: 220 30% 60%;
-    --dialog-bg: 350 70% 70%;
-    --dialog-border: 350 60% 65%;
-    --button-bg: 220 30% 55%;
-    --text-primary: 210 20% 95%;
+    --border: 215 20% 22%;
+    --input: 215 20% 22%;
+    --ring: 210 30% 60%;
+    --chart-1: 210 30% 60%;
+    --chart-2: 210 25% 70%;
+    --chart-3: 210 20% 65%;
+    --chart-4: 210 25% 55%;
+    --chart-5: 210 30% 50%;
+    --dialog-bg: 210 25% 70%;
+    --dialog-border: 210 20% 65%;
+    --button-bg: 210 30% 55%;
+    --text-primary: 210 25% 95%;
     --text-secondary: 210 15% 60%;
-    --sidebar-background: 220 25% 8%;
-    --sidebar-foreground: 210 20% 95%;
-    --sidebar-primary: 210 30% 65%;
+    --sidebar-background: 215 30% 10%;
+    --sidebar-foreground: 210 25% 95%;
+    --sidebar-primary: 210 30% 60%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 220 15% 18%;
-    --sidebar-accent-foreground: 210 20% 95%;
-    --sidebar-border: 220 15% 20%;
-    --sidebar-ring: 210 30% 65%;
+    --sidebar-accent: 215 20% 20%;
+    --sidebar-accent-foreground: 210 25% 95%;
+    --sidebar-border: 215 20% 22%;
+    --sidebar-ring: 210 30% 60%;
   }
 }
 
@@ -175,18 +175,19 @@ All colors MUST be HSL.
   }
 
   .gradient-bg {
-    background: linear-gradient(135deg, rgba(255, 211, 221, 0.2), rgba(190, 209, 227, 0.2));
+    background: linear-gradient(135deg, rgba(190, 209, 227, 0.15), rgba(146, 161, 195, 0.08));
   }
 
   .logo-gradient {
-    background: linear-gradient(135deg, #CCA1C9, #FFD3DD);
+    background: linear-gradient(135deg, #92A1C3, #BED1E3);
   }
 
   .dialog-capsule {
     border-radius: 1.5rem;
-    background: linear-gradient(135deg, #FFD3DD, #F3A0AD);
+    background: linear-gradient(135deg, rgba(190, 209, 227, 0.9), rgba(146, 161, 195, 0.7));
     padding: 0.625rem 1rem;
-    border: 1px solid rgba(243, 160, 173, 0.3);
+    border: 1px solid rgba(146, 161, 195, 0.3);
+    backdrop-filter: blur(8px);
   }
 
   .button-dark {
@@ -194,10 +195,12 @@ All colors MUST be HSL.
     color: #FFFFFF;
     border-radius: 0.75rem;
     border: none;
+    box-shadow: 0 2px 8px rgba(146, 161, 195, 0.25);
   }
 
   .button-dark:hover {
     background: linear-gradient(135deg, #8291B3, #AEC1D3);
+    box-shadow: 0 4px 12px rgba(146, 161, 195, 0.35);
   }
 
   .spacing-title {
@@ -209,8 +212,9 @@ All colors MUST be HSL.
   }
 
   .card-soft {
-    background: rgba(255, 255, 255, 0.85);
-    backdrop-filter: blur(12px);
-    border: 1px solid rgba(204, 161, 201, 0.2);
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(190, 209, 227, 0.3);
+    box-shadow: 0 4px 16px rgba(146, 161, 195, 0.08);
   }
 }
