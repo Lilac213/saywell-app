@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { useUserProfile } from '@/contexts/UserProfileContext';
 import { chatSessionApi } from '@/db/api';
 import { supabase } from '@/db/supabase';
-import { Upload, Image as ImageIcon, User, Sparkles, Info, X, Loader2 } from 'lucide-react';
+import { Upload, Image as ImageIcon, User, Sparkles, TrendingUp, Info } from 'lucide-react';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
 const HomePage: React.FC = () => {
   const navigate = useNavigate();
@@ -220,137 +222,155 @@ const HomePage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-white">
-      {/* 简洁顶部导航 */}
-      <header className="border-b border-border/10 bg-white/80 backdrop-blur-sm sticky top-0 z-10">
-        <div className="container mx-auto px-6 h-14 flex items-center justify-between">
-          <div className="flex items-center gap-2">
+    <div className="min-h-screen bg-background">
+      {/* 顶部导航 */}
+      <header className="border-b border-border/20 bg-card/40 backdrop-blur-xl sticky top-0 z-10">
+        <div className="container mx-auto px-6 h-16 flex items-center justify-between">
+          <div className="flex items-center gap-3">
             <img 
               src="/logo.jpg" 
               alt="好好说Logo" 
-              className="w-8 h-8 rounded-xl object-cover"
+              className="w-10 h-10 rounded-2xl shadow-lg object-cover"
             />
-            <h1 className="text-base font-semibold">好好说</h1>
+            <div className="flex flex-col">
+              <h1 className="text-base font-bold leading-tight">好好说 · SayWell</h1>
+              <p className="text-xs text-muted-foreground leading-tight">帮助你好好说话的AI助手</p>
+            </div>
           </div>
-          <Button variant="ghost" size="icon" className="rounded-full" onClick={() => navigate('/profile')}>
+          <Button variant="ghost" size="icon" className="rounded-full hover:bg-primary/10" onClick={() => navigate('/profile')}>
             <User className="w-5 h-5" />
           </Button>
         </div>
       </header>
 
-      {/* 主内容 - 居中布局 */}
-      <main className="container mx-auto px-6 py-8 xl:py-12">
-        <div className="max-w-xl mx-auto">
-          
-          {/* 大型渐变球体 - 作为主视觉元素 */}
-          <div className="flex flex-col items-center mb-12">
-            <div className="w-48 h-48 xl:w-64 xl:h-64 gradient-sphere animate-float mb-8" />
-            <h2 className="text-2xl xl:text-3xl font-bold text-center mb-3">
-              你好，<span className="gradient-text">朋友</span>！
-            </h2>
-            <p className="text-center text-muted-foreground text-sm xl:text-base">
-              今天我能帮你什么？
+      {/* 主内容 */}
+      <main className="container mx-auto px-6 py-12 xl:py-16 relative">
+        {/* 装饰性渐变球体 */}
+        <div className="absolute top-20 right-10 w-64 h-64 gradient-sphere animate-float opacity-20 pointer-events-none hidden xl:block" />
+        <div className="absolute bottom-20 left-10 w-48 h-48 gradient-sphere animate-float opacity-15 pointer-events-none hidden xl:block" style={{ animationDelay: '2s' }} />
+        
+        <div className="max-w-2xl mx-auto relative z-10">
+          {/* 提示信息 - 胶囊形对话框设计 */}
+          <div className="mb-8 spacing-module">
+            <div className="dialog-capsule border border-[#F0B8E0]">
+              <div className="flex items-start gap-3">
+                <Info className="w-5 h-5 text-primary shrink-0 mt-0.5" />
+                <p className="text-sm text-[#333333] leading-relaxed">
+                  前往
+                  <button 
+                    className="mx-1 text-primary font-medium hover:underline"
+                    onClick={() => navigate('/profile')}
+                  >
+                    我的画像
+                  </button>
+                  填写问卷，完善您的人设和说话习惯，获得更符合您风格的回复建议
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="text-center spacing-title">
+            <h2 className="text-xl font-bold mb-8">上传聊天截图</h2>
+            <p className="text-sm text-[#999999] leading-relaxed">
+              上传聊天记录截图，AI为您生成个性化回复建议
             </p>
           </div>
 
-          {/* 提示信息 */}
-          {!userProfile?.questionnaire_completed && (
-            <div className="mb-6 p-4 bg-accent/10 rounded-2xl border border-accent/20">
-              <div className="flex items-start gap-3">
-                <Info className="w-5 h-5 text-accent-foreground shrink-0 mt-0.5" />
-                <div className="flex-1 text-sm">
-                  <p className="font-medium mb-1">完善您的个性画像</p>
-                  <p className="text-muted-foreground text-xs mb-3">
-                    完成问卷后，AI将更好地理解您的沟通风格
+          <Card className="animate-scale-in glass-card shadow-xl border-0">
+            <CardContent className="p-8 xl:p-10">
+              {!previewUrl ? (
+                <div
+                  onDrop={handleDrop}
+                  onDragOver={handleDragOver}
+                  className="border-2 border-dashed border-border rounded-lg p-8 xl:p-12 text-center hover:border-primary transition-colors cursor-pointer"
+                  onClick={() => document.getElementById('file-input')?.click()}
+                >
+                  <div className="inline-flex items-center justify-center w-20 h-20 bg-accent rounded-full mb-4">
+                    <Upload className="w-10 h-10 text-accent-foreground" />
+                  </div>
+                  <h3 className="text-lg font-semibold mb-2">点击或拖拽上传截图</h3>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    支持 JPG、PNG、GIF、WEBP 格式，最大 1MB
                   </p>
-                  <Button
-                    size="sm"
-                    onClick={() => navigate('/questionnaire')}
-                    className="button-dark text-xs h-8"
-                  >
-                    立即完成
+                  <Button variant="outline">
+                    <ImageIcon className="w-4 h-4 mr-2" />
+                    选择图片
                   </Button>
+                  <input
+                    id="file-input"
+                    type="file"
+                    accept="image/*"
+                    onChange={handleFileSelect}
+                    className="hidden"
+                  />
                 </div>
-              </div>
-            </div>
-          )}
-
-          {/* 上传区域 - 简洁白色卡片 */}
-          {!previewUrl ? (
-            <div className="bg-white rounded-3xl p-8 xl:p-10 shadow-lg border border-border/10">
-              <div
-                onDrop={handleDrop}
-                onDragOver={handleDragOver}
-                className="border-2 border-dashed border-border/40 rounded-2xl p-12 text-center hover:border-primary/50 transition-all cursor-pointer"
-                onClick={() => document.getElementById('file-input')?.click()}
-              >
-                <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-primary/10 to-accent/10 rounded-full mb-4">
-                  <Upload className="w-8 h-8 text-primary" />
+              ) : (
+                <div className="space-y-4">
+                  <div className="relative rounded-lg overflow-hidden border border-border">
+                    <img
+                      src={previewUrl}
+                      alt="预览"
+                      className="w-full h-auto max-h-96 object-contain bg-muted"
+                    />
+                  </div>
+                  <div className="flex gap-3">
+                    <Button
+                      variant="outline"
+                      onClick={() => {
+                        setSelectedFile(null);
+                        setPreviewUrl(null);
+                      }}
+                      disabled={uploading}
+                      className="flex-1"
+                    >
+                      重新选择
+                    </Button>
+                    <Button
+                      onClick={handleUpload}
+                      disabled={uploading}
+                      className="flex-1 button-dark"
+                    >
+                      {uploading ? (
+                        <>
+                          <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
+                          上传中...
+                        </>
+                      ) : (
+                        <>
+                          <Sparkles className="w-4 h-4 mr-2" />
+                          生成回复
+                        </>
+                      )}
+                    </Button>
+                  </div>
                 </div>
-                <h3 className="text-lg font-semibold mb-2">上传聊天截图</h3>
-                <p className="text-sm text-muted-foreground mb-6">
-                  点击或拖拽上传，支持 JPG、PNG 格式
-                </p>
-                <Button className="button-dark">
-                  <ImageIcon className="w-4 h-4 mr-2" />
-                  选择图片
-                </Button>
-                <input
-                  id="file-input"
-                  type="file"
-                  accept="image/*"
-                  onChange={handleFileSelect}
-                  className="hidden"
-                />
-              </div>
-            </div>
-          ) : (
-            <div className="bg-white rounded-3xl p-6 shadow-lg border border-border/10">
-              <div className="relative rounded-2xl overflow-hidden border border-border/20 mb-4">
-                <img
-                  src={previewUrl}
-                  alt="预览"
-                  className="w-full h-auto max-h-96 object-contain bg-muted/30"
-                />
-              </div>
-              <div className="flex gap-3">
-                <Button
-                  variant="outline"
-                  onClick={() => {
-                    setSelectedFile(null);
-                    setPreviewUrl('');
-                  }}
-                  className="flex-1 rounded-xl"
-                >
-                  <X className="w-4 h-4 mr-2" />
-                  重新选择
-                </Button>
-                <Button
-                  onClick={handleUpload}
-                  disabled={uploading}
-                  className="flex-1 button-dark rounded-xl"
-                >
-                  {uploading ? (
-                    <>
-                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                      分析中...
-                    </>
-                  ) : (
-                    <>
-                      <Sparkles className="w-4 h-4 mr-2" />
-                      生成回复
-                    </>
-                  )}
-                </Button>
-              </div>
-            </div>
-          )}
+              )}
+            </CardContent>
+          </Card>
 
+          {/* 功能说明 - 极简设计 */}
+          <div className="mt-12 text-center text-xs text-muted-foreground/60">
+            <div className="inline-flex items-center gap-6">
+              <span className="flex items-center gap-1.5">
+                <Upload className="w-3.5 h-3.5" />
+                快速上传
+              </span>
+              <span className="w-px h-3 bg-border/50" />
+              <span className="flex items-center gap-1.5">
+                <Sparkles className="w-3.5 h-3.5" />
+                AI分析
+              </span>
+              <span className="w-px h-3 bg-border/50" />
+              <span className="flex items-center gap-1.5">
+                <TrendingUp className="w-3.5 h-3.5" />
+                持续学习
+              </span>
+            </div>
+          </div>
         </div>
       </main>
     </div>
   );
-
 };
 
 export default HomePage;

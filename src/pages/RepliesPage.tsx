@@ -275,36 +275,31 @@ const RepliesPage: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-accent/30 to-background">
+      <div className="min-h-screen flex items-center justify-center bg-white">
         <div className="text-center animate-fade-in">
-          <div className="inline-flex items-center justify-center w-20 h-20 bg-primary rounded-full mb-4">
-            <Sparkles className="w-10 h-10 text-primary-foreground animate-pulse" />
-          </div>
-          <h2 className="text-2xl font-bold mb-2">AI正在分析中...</h2>
-          <p className="text-muted-foreground">正在为您生成个性化回复建议</p>
-          <div className="mt-6">
-            <Loader2 className="w-8 h-8 animate-spin mx-auto text-primary" />
-          </div>
+          <div className="w-32 h-32 xl:w-40 xl:h-40 gradient-sphere animate-float mb-6 mx-auto" />
+          <h2 className="text-xl xl:text-2xl font-bold mb-2">AI正在思考中...</h2>
+          <p className="text-muted-foreground text-sm">正在为您生成个性化回复建议</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-accent/30 to-background">
-      {/* 顶部导航 */}
-      <header className="border-b border-border bg-card/50 backdrop-blur-sm sticky top-0 z-10">
-        <div className="container mx-auto px-4 h-16 flex items-center">
-          <Button variant="ghost" size="icon" onClick={() => navigate('/')}>
+    <div className="min-h-screen bg-white">
+      {/* 简洁顶部导航 */}
+      <header className="border-b border-border/10 bg-white/80 backdrop-blur-sm sticky top-0 z-10">
+        <div className="container mx-auto px-6 h-14 flex items-center gap-3">
+          <Button variant="ghost" size="icon" className="rounded-full" onClick={() => navigate('/')}>
             <ArrowLeft className="w-5 h-5" />
           </Button>
-          <h1 className="text-xl font-bold ml-2">回复建议</h1>
+          <h1 className="text-base font-semibold">回复建议</h1>
         </div>
       </header>
 
       {/* 主内容 */}
-      <main className="container mx-auto px-4 py-6 xl:py-8">
-        <div className="max-w-4xl mx-auto">
+      <main className="container mx-auto px-6 py-6 xl:py-8">
+        <div className="max-w-2xl mx-auto">
           {/* 截图预览 */}
           {session && (
             <Card className="mb-6 animate-fade-in">
