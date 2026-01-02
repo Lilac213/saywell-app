@@ -10,83 +10,83 @@ All colors MUST be HSL.
 @layer base {
   :root {
     --radius: 1.5rem;
-    --background: 210 40% 96%;
-    --foreground: 215 25% 27%;
+    --background: 280 40% 98%;
+    --foreground: 260 15% 25%;
     --card: 0 0% 100%;
-    --card-foreground: 215 25% 27%;
+    --card-foreground: 260 15% 25%;
     --popover: 0 0% 100%;
-    --popover-foreground: 215 25% 27%;
-    --primary: 210 30% 65%;
+    --popover-foreground: 260 15% 25%;
+    --primary: 280 60% 75%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 210 35% 82%;
-    --secondary-foreground: 215 25% 27%;
-    --muted: 210 30% 88%;
-    --muted-foreground: 215 15% 50%;
-    --accent: 210 35% 85%;
-    --accent-foreground: 215 25% 27%;
+    --secondary: 260 50% 85%;
+    --secondary-foreground: 260 15% 25%;
+    --muted: 280 30% 92%;
+    --muted-foreground: 260 10% 50%;
+    --accent: 200 60% 85%;
+    --accent-foreground: 260 15% 25%;
     --destructive: 0 65% 55%;
     --destructive-foreground: 0 0% 100%;
-    --border: 210 25% 85%;
-    --input: 210 25% 90%;
-    --ring: 210 30% 65%;
-    --chart-1: 210 30% 65%;
-    --chart-2: 210 35% 82%;
-    --chart-3: 210 25% 75%;
-    --chart-4: 210 20% 70%;
-    --chart-5: 210 30% 60%;
-    --dialog-bg: 210 35% 88%;
-    --dialog-border: 210 30% 80%;
-    --button-bg: 210 30% 60%;
-    --text-primary: 215 25% 27%;
-    --text-secondary: 215 15% 50%;
-    --sidebar-background: 210 40% 96%;
-    --sidebar-foreground: 215 25% 27%;
-    --sidebar-primary: 210 30% 65%;
+    --border: 280 25% 90%;
+    --input: 280 25% 94%;
+    --ring: 280 60% 75%;
+    --chart-1: 280 60% 75%;
+    --chart-2: 260 50% 85%;
+    --chart-3: 200 60% 85%;
+    --chart-4: 320 50% 80%;
+    --chart-5: 240 50% 80%;
+    --dialog-bg: 280 50% 92%;
+    --dialog-border: 280 40% 85%;
+    --button-bg: 280 60% 70%;
+    --text-primary: 260 15% 25%;
+    --text-secondary: 260 10% 50%;
+    --sidebar-background: 280 40% 98%;
+    --sidebar-foreground: 260 15% 25%;
+    --sidebar-primary: 280 60% 75%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 210 30% 90%;
-    --sidebar-accent-foreground: 215 25% 27%;
-    --sidebar-border: 210 25% 85%;
-    --sidebar-ring: 210 30% 65%;
+    --sidebar-accent: 280 30% 94%;
+    --sidebar-accent-foreground: 260 15% 25%;
+    --sidebar-border: 280 25% 90%;
+    --sidebar-ring: 280 60% 75%;
   }
 
   .dark {
-    --background: 215 30% 10%;
-    --foreground: 210 25% 95%;
-    --card: 215 25% 14%;
-    --card-foreground: 210 25% 95%;
-    --popover: 215 25% 14%;
-    --popover-foreground: 210 25% 95%;
-    --primary: 210 30% 60%;
+    --background: 260 25% 8%;
+    --foreground: 280 20% 95%;
+    --card: 260 20% 12%;
+    --card-foreground: 280 20% 95%;
+    --popover: 260 20% 12%;
+    --popover-foreground: 280 20% 95%;
+    --primary: 280 60% 70%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 210 25% 70%;
+    --secondary: 260 50% 75%;
     --secondary-foreground: 0 0% 100%;
-    --muted: 215 20% 20%;
-    --muted-foreground: 210 15% 60%;
-    --accent: 210 25% 25%;
-    --accent-foreground: 210 25% 95%;
+    --muted: 260 15% 18%;
+    --muted-foreground: 280 15% 60%;
+    --accent: 200 50% 70%;
+    --accent-foreground: 0 0% 100%;
     --destructive: 0 60% 50%;
     --destructive-foreground: 0 0% 100%;
-    --border: 215 20% 22%;
-    --input: 215 20% 22%;
-    --ring: 210 30% 60%;
-    --chart-1: 210 30% 60%;
-    --chart-2: 210 25% 70%;
-    --chart-3: 210 20% 65%;
-    --chart-4: 210 25% 55%;
-    --chart-5: 210 30% 50%;
-    --dialog-bg: 210 25% 70%;
-    --dialog-border: 210 20% 65%;
-    --button-bg: 210 30% 55%;
-    --text-primary: 210 25% 95%;
-    --text-secondary: 210 15% 60%;
-    --sidebar-background: 215 30% 10%;
-    --sidebar-foreground: 210 25% 95%;
-    --sidebar-primary: 210 30% 60%;
+    --border: 260 15% 20%;
+    --input: 260 15% 20%;
+    --ring: 280 60% 70%;
+    --chart-1: 280 60% 70%;
+    --chart-2: 260 50% 75%;
+    --chart-3: 200 50% 70%;
+    --chart-4: 320 50% 70%;
+    --chart-5: 240 50% 70%;
+    --dialog-bg: 260 50% 75%;
+    --dialog-border: 260 40% 70%;
+    --button-bg: 280 60% 65%;
+    --text-primary: 280 20% 95%;
+    --text-secondary: 280 15% 60%;
+    --sidebar-background: 260 25% 8%;
+    --sidebar-foreground: 280 20% 95%;
+    --sidebar-primary: 280 60% 70%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 215 20% 20%;
-    --sidebar-accent-foreground: 210 25% 95%;
-    --sidebar-border: 215 20% 22%;
-    --sidebar-ring: 210 30% 60%;
+    --sidebar-accent: 260 15% 18%;
+    --sidebar-accent-foreground: 280 20% 95%;
+    --sidebar-border: 260 15% 20%;
+    --sidebar-ring: 280 60% 70%;
   }
 }
 
@@ -154,6 +154,15 @@ All colors MUST be HSL.
     }
   }
 
+  @keyframes float {
+    0%, 100% {
+      transform: translateY(0px);
+    }
+    50% {
+      transform: translateY(-20px);
+    }
+  }
+
   .animate-slide-up {
     animation: slide-up 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   }
@@ -166,8 +175,12 @@ All colors MUST be HSL.
     animation: scale-in 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+  }
+
   .gradient-text {
-    background: linear-gradient(135deg, #92A1C3, #BED1E3);
+    background: linear-gradient(135deg, #FFB6D9, #D4B5F7, #B5D9F7);
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -175,32 +188,46 @@ All colors MUST be HSL.
   }
 
   .gradient-bg {
-    background: linear-gradient(135deg, rgba(190, 209, 227, 0.15), rgba(146, 161, 195, 0.08));
+    background: linear-gradient(135deg, rgba(255, 182, 217, 0.1), rgba(212, 181, 247, 0.1), rgba(181, 217, 247, 0.1));
+  }
+
+  .gradient-sphere {
+    background: linear-gradient(135deg, #FFB6D9, #D4B5F7, #B5D9F7);
+    border-radius: 50%;
+    box-shadow: 0 20px 60px rgba(212, 181, 247, 0.4), inset 0 -10px 30px rgba(255, 255, 255, 0.3);
+  }
+
+  .glass-card {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    box-shadow: 0 8px 32px rgba(212, 181, 247, 0.15);
   }
 
   .logo-gradient {
-    background: linear-gradient(135deg, #92A1C3, #BED1E3);
+    background: linear-gradient(135deg, #FFB6D9, #D4B5F7);
   }
 
   .dialog-capsule {
     border-radius: 1.5rem;
-    background: linear-gradient(135deg, rgba(190, 209, 227, 0.9), rgba(146, 161, 195, 0.7));
+    background: linear-gradient(135deg, rgba(255, 182, 217, 0.8), rgba(212, 181, 247, 0.8));
     padding: 0.625rem 1rem;
-    border: 1px solid rgba(146, 161, 195, 0.3);
-    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    backdrop-filter: blur(12px);
+    box-shadow: 0 4px 16px rgba(212, 181, 247, 0.2);
   }
 
   .button-dark {
-    background: linear-gradient(135deg, #92A1C3, #BED1E3);
+    background: linear-gradient(135deg, #D4B5F7, #B5D9F7);
     color: #FFFFFF;
     border-radius: 0.75rem;
     border: none;
-    box-shadow: 0 2px 8px rgba(146, 161, 195, 0.25);
+    box-shadow: 0 4px 16px rgba(212, 181, 247, 0.3);
   }
 
   .button-dark:hover {
-    background: linear-gradient(135deg, #8291B3, #AEC1D3);
-    box-shadow: 0 4px 12px rgba(146, 161, 195, 0.35);
+    background: linear-gradient(135deg, #C4A5E7, #A5C9E7);
+    box-shadow: 0 6px 20px rgba(212, 181, 247, 0.4);
   }
 
   .spacing-title {
@@ -212,9 +239,9 @@ All colors MUST be HSL.
   }
 
   .card-soft {
-    background: rgba(255, 255, 255, 0.9);
-    backdrop-filter: blur(16px);
-    border: 1px solid rgba(190, 209, 227, 0.3);
-    box-shadow: 0 4px 16px rgba(146, 161, 195, 0.08);
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    box-shadow: 0 8px 32px rgba(212, 181, 247, 0.12);
   }
 }

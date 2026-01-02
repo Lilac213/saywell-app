@@ -1,15 +1,25 @@
-# Task: 修复问卷保存失败bug
+# Task: 基于UI设计图重新设计界面并更新Logo
 
 ## Plan
-- [x] Step 1: 调查问卷保存失败原因
-- [x] Step 2: 修复question_order小数问题
-- [x] Step 3: 修复TypeScript类型错误
-- [x] Step 4: 运行lint检查
+- [x] Step 1: 下载新Logo图片
+- [x] Step 2: 分析UI设计特点 - 玻璃态、渐变球体、柔和色彩
+- [x] Step 3: 更新配色方案 - 粉紫蓝渐变
+- [x] Step 4: 重新设计HomePage - 3D球体、玻璃态卡片
+- [x] Step 5: 优化整体视觉风格
+- [x] Step 6: 运行lint检查
 
 ## Notes
-- CRITICAL BUG: 问卷保存失败的根本原因是question_order字段类型不匹配
-- 数据库schema: question_order是integer类型，不支持小数
-- 问题来源: 问卷ID使用小数(2.5, 4.5, 6.5)，直接作为question_order导致数据库拒绝
-- 解决方案: 使用数组索引(index)作为question_order，确保是整数
-- 附加修复: RepliesPage.tsx中previousSelections数组类型声明
-- 所有功能已修复并通过lint检查
+- UI设计1特点：玻璃态效果、3D渐变球体、粉紫色调、柔和阴影
+- UI设计2特点：简洁对话界面、圆形渐变头像、白色卡片、清爽布局
+- Logo1：粉紫色"好好说"图标，带心形和对话框元素，已更新到public/logo.jpg
+- 配色方案：粉色#FFB6D9、紫色#D4B5F7、蓝色#B5D9F7
+- 设计风格：现代、柔和、玻璃态、3D元素
+- 背景：浅紫灰(280° 40% 98%)
+- 主色：粉紫(280° 60% 75%)
+- 次要色：紫色(260° 50% 85%)
+- 强调色：浅蓝(200° 60% 85%)
+- 玻璃态卡片：rgba(255, 255, 255, 0.7) + blur(20px)
+- 渐变球体：3色渐变 + 内阴影 + 浮动动画
+- 对话框：粉紫渐变 + 毛玻璃效果
+- 按钮：紫蓝渐变 + 阴影增强
+- 所有功能已实现并通过lint检查

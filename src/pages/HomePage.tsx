@@ -224,7 +224,7 @@ const HomePage: React.FC = () => {
   return (
     <div className="min-h-screen bg-background">
       {/* 顶部导航 */}
-      <header className="border-b border-border/30 bg-card/60 backdrop-blur-md sticky top-0 z-10">
+      <header className="border-b border-border/20 bg-card/40 backdrop-blur-xl sticky top-0 z-10">
         <div className="container mx-auto px-6 h-16 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <img 
@@ -244,8 +244,12 @@ const HomePage: React.FC = () => {
       </header>
 
       {/* 主内容 */}
-      <main className="container mx-auto px-6 py-12 xl:py-16">
-        <div className="max-w-2xl mx-auto">
+      <main className="container mx-auto px-6 py-12 xl:py-16 relative">
+        {/* 装饰性渐变球体 */}
+        <div className="absolute top-20 right-10 w-64 h-64 gradient-sphere animate-float opacity-20 pointer-events-none hidden xl:block" />
+        <div className="absolute bottom-20 left-10 w-48 h-48 gradient-sphere animate-float opacity-15 pointer-events-none hidden xl:block" style={{ animationDelay: '2s' }} />
+        
+        <div className="max-w-2xl mx-auto relative z-10">
           {/* 提示信息 - 胶囊形对话框设计 */}
           <div className="mb-8 spacing-module">
             <div className="dialog-capsule border border-[#F0B8E0]">
@@ -272,7 +276,7 @@ const HomePage: React.FC = () => {
             </p>
           </div>
 
-          <Card className="animate-scale-in card-soft shadow-xl">
+          <Card className="animate-scale-in glass-card shadow-xl border-0">
             <CardContent className="p-8 xl:p-10">
               {!previewUrl ? (
                 <div
