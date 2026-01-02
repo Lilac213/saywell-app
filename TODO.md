@@ -1,21 +1,15 @@
-# Task: Logo上传和配色优化
+# Task: 修复问卷保存失败bug
 
 ## Plan
-- [x] Step 1: 下载并保存Logo图片到public目录
-- [x] Step 2: 更新配色方案 - 仅使用#BED1E3和#92A1C3
-- [x] Step 3: 优化渐变设计 - 高级感、不土气
-- [x] Step 4: 更新所有页面使用新Logo
-- [x] Step 5: 运行lint检查
+- [x] Step 1: 调查问卷保存失败原因
+- [x] Step 2: 修复question_order小数问题
+- [x] Step 3: 修复TypeScript类型错误
+- [x] Step 4: 运行lint检查
 
 ## Notes
-- Logo图片：好好说logo.jpg，已保存到public/logo.jpg
-- 配色限制：仅使用#BED1E3(浅蓝)和#92A1C3(蓝灰)两个颜色
-- 设计要求：高级感、优雅、善用渐变、避免土气
-- 背景：浅蓝灰(210° 40% 96%)，清爽高级
-- 主色：蓝灰(210° 30% 65%)，#92A1C3
-- 次要色：浅蓝(210° 35% 82%)，#BED1E3
-- Logo渐变：#92A1C3到#BED1E3
-- 对话框：半透明渐变+毛玻璃效果，rgba(190, 209, 227, 0.9)到rgba(146, 161, 195, 0.7)
-- 按钮：渐变#92A1C3到#BED1E3，白色文字，阴影增强立体感
-- 卡片：半透明白色90%+毛玻璃blur(16px)，边框rgba(190, 209, 227, 0.3)，阴影rgba(146, 161, 195, 0.08)
-- 所有功能已实现并通过lint检查
+- CRITICAL BUG: 问卷保存失败的根本原因是question_order字段类型不匹配
+- 数据库schema: question_order是integer类型，不支持小数
+- 问题来源: 问卷ID使用小数(2.5, 4.5, 6.5)，直接作为question_order导致数据库拒绝
+- 解决方案: 使用数组索引(index)作为question_order，确保是整数
+- 附加修复: RepliesPage.tsx中previousSelections数组类型声明
+- 所有功能已修复并通过lint检查

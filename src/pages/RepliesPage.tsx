@@ -61,7 +61,7 @@ const RepliesPage: React.FC = () => {
 
       // 获取历史选择记录（用于学习）
       const allSessions = await chatSessionApi.getByUserProfile(userProfile.id, 10);
-      const previousSelections = [];
+      const previousSelections: Array<{ generated_replies: string[]; selected_reply: string }> = [];
       for (const s of allSessions) {
         if (s.id === sessionId) continue;
         const selection = await replySelectionApi.getByChatSession(s.id);

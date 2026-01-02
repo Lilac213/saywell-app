@@ -146,10 +146,10 @@ const QuestionnairePage: React.FC = () => {
         }, 500);
       } else {
         // 新用户完整问卷
-        const responses = questions.map((q) => ({
+        const responses = questions.map((q, index) => ({
           question: q.question,
           answer: answers[q.id] || '',
-          question_order: q.id,
+          question_order: index, // 使用索引作为顺序，避免小数问题
         }));
 
         const saved = await questionnaireApi.createBatch(profile.id, responses);
