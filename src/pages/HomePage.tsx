@@ -181,10 +181,24 @@ const HomePage: React.FC = () => {
       navigate(`/replies/${session.id}`);
     } catch (error) {
       console.error('上传失败:', error);
+      
+      // 记录错误到数据库
+      if (userProfile?.id) {
+        await supabase.from('error_logs').insert({
+          profile_id: userProfile.id,
+          error_message: error instanceof Error ? error.message : '未知错误',
+          error_stack: error instanceof Error ? error.stack : null,
+          error_context: {
+            action: 'upload_screenshot',
+            file_size: selectedFile?.size,
+            file_type: selectedFile?.type
+          }
+        });
+      }
+      
       toast({
-        title: '上传失败',
-        description: error instanceof Error ? error.message : '请稍后重试',
-        variant: 'destructive',
+        title: '加载遇到问题',
+        description: '请稍后再试一次，或重新上传截图',
       });
     } finally {
       setUploading(false);
@@ -230,7 +244,7 @@ const HomePage: React.FC = () => {
               alt="好好说Logo" 
               className="w-8 h-8 rounded-xl object-cover"
             />
-            <h1 className="text-base font-semibold">好好说</h1>
+            <h1 className="text-base font-semibold">好好说 · SayWell</h1>
           </div>
           <Button variant="ghost" size="icon" className="rounded-full" onClick={() => navigate('/profile')}>
             <User className="w-5 h-5" />
@@ -239,12 +253,12 @@ const HomePage: React.FC = () => {
       </header>
 
       {/* 主内容 - 居中布局 */}
-      <main className="container mx-auto px-6 py-8 xl:py-12">
+      <main className="container mx-auto px-6 py-6 xl:py-8">
         <div className="max-w-xl mx-auto">
           
           {/* 大型渐变球体 - 作为主视觉元素 */}
-          <div className="flex flex-col items-center mb-12">
-            <div className="w-48 h-48 xl:w-64 xl:h-64 gradient-sphere animate-float mb-8" />
+          <div className="flex flex-col items-center mb-8">
+            <div className="w-32 h-32 xl:w-40 xl:h-40 gradient-sphere animate-float mb-6" />
             <h2 className="text-2xl xl:text-3xl font-bold text-center mb-3">
               你好，<span className="gradient-text">朋友</span>！
             </h2>

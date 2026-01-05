@@ -1,35 +1,27 @@
-# Task: 完全重新设计UI参照UIdesign1和2
+# Task: UI优化和错误处理改进
 
 ## Plan
-- [x] Step 1: 分析UIdesign1和2的核心设计元素
-- [x] Step 2: 重新设计HomePage - 大型渐变球体为中心
-- [x] Step 3: 简化布局 - 白色背景、简洁卡片
-- [x] Step 4: 重新设计RepliesPage - 对话界面风格
-- [x] Step 5: 优化所有页面的视觉层次
-- [x] Step 6: 运行lint检查
+- [x] Step 1: 更新所有页面导航栏 - 统一样式，使用Logo图片
+- [x] Step 2: 修改按钮悬停效果 - 蓝色改为浅灰色
+- [x] Step 3: 优化错误处理 - 友好提示，不显示技术错误
+- [x] Step 4: 创建错误日志表
+- [x] Step 5: 优化回复情绪标签 - 限制长度
+- [x] Step 6: 优化画像更新逻辑 - 避免过快更新
+- [x] Step 7: 优化问卷页面 - 欢迎语和错误提示
+- [x] Step 8: 调整首页球体大小
+- [x] Step 9: 运行lint检查
 
 ## Notes
-- UIdesign1核心特点：
-  * 大型渐变球体作为中心视觉元素(蓝粉紫渐变)
-  * 纯白背景，极简布局
-  * 简单白色卡片，圆角，柔和阴影
-  * 底部输入栏
-  * 大量留白
-- UIdesign2核心特点：
-  * 3D渐变球体作为主角
-  * 柔和渐变背景(粉紫蓝)
-  * 居中内容布局
-  * 大标题+强调色文字
-  * 底部行动按钮
-- 设计原则：
-  * 球体是主角，不是装饰
-  * 极简主义，大量留白
-  * 白色卡片+柔和阴影
-  * 居中对齐
-  * 清晰的视觉层次
-- 实现细节：
-  * HomePage: 白色背景，大型渐变球体(48x48/64x64)，居中布局，简洁导航(h-14)
-  * 上传卡片: 白色rounded-3xl，shadow-lg，border-border/10
-  * 渐变球体: gradient-sphere类，animate-float动画
-  * RepliesPage: 白色背景，简洁导航，loading状态显示球体
-  * 所有功能已实现并通过lint检查
+- 导航栏统一: Logo + "好好说 · SayWell" + 个人画像图标 ✓
+- 按钮悬停: 蓝色改为浅灰色(#E5E7EB) ✓
+- 错误处理: 不显示技术错误，使用友好提示 ✓
+- 错误日志表: error_logs(id, error_message, error_time, profile_id) ✓
+- 回复标签: 限制为一行，max-w-[120px] truncate ✓
+- 画像更新: AI提示词已优化，要求谨慎判断，避免单次反馈过度更新 ✓
+- 问卷优化: 移除英文名，分行显示，友好错误提示 ✓
+- 球体大小: 减小为w-32 h-32 xl:w-40 xl:h-40 ✓
+- 所有页面导航栏已统一样式 ✓
+- HomePage/RepliesPage/ProfilePage导航栏已更新 ✓
+- 错误记录到数据库，用户看到友好提示 ✓
+- analyze-feedback edge function已更新并部署 ✓
+- 所有功能已实现并通过lint检查 ✓

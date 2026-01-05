@@ -226,8 +226,8 @@ All colors MUST be HSL.
   }
 
   .button-dark:hover {
-    background: linear-gradient(135deg, #C4A5E7, #A5C9E7);
-    box-shadow: 0 6px 20px rgba(212, 181, 247, 0.4);
+    background: linear-gradient(135deg, #E5E7EB, #D1D5DB);
+    box-shadow: 0 6px 20px rgba(229, 231, 235, 0.4);
   }
 
   .spacing-title {

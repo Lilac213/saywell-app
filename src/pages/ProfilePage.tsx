@@ -29,14 +29,24 @@ const ProfilePage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-accent/30 to-background">
-      {/* 顶部导航 */}
-      <header className="border-b border-border bg-card/50 backdrop-blur-sm sticky top-0 z-10">
-        <div className="container mx-auto px-4 h-16 flex items-center">
-          <Button variant="ghost" size="icon" onClick={() => navigate('/')}>
-            <ArrowLeft className="w-5 h-5" />
+    <div className="min-h-screen bg-white">
+      {/* 简洁顶部导航 */}
+      <header className="border-b border-border/10 bg-white/80 backdrop-blur-sm sticky top-0 z-10">
+        <div className="container mx-auto px-6 h-14 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <Button variant="ghost" size="icon" className="rounded-full" onClick={() => navigate('/')}>
+              <ArrowLeft className="w-5 h-5" />
+            </Button>
+            <img 
+              src="/logo.jpg" 
+              alt="好好说Logo" 
+              className="w-8 h-8 rounded-xl object-cover"
+            />
+            <h1 className="text-base font-semibold">好好说 · SayWell</h1>
+          </div>
+          <Button variant="ghost" size="icon" className="rounded-full">
+            <User className="w-5 h-5" />
           </Button>
-          <h1 className="text-xl font-bold ml-2">我的画像</h1>
         </div>
       </header>
 

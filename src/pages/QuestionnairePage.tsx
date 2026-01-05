@@ -119,7 +119,18 @@ const QuestionnairePage: React.FC = () => {
         if (analysisError) {
           const errorMsg = await analysisError?.context?.text();
           console.error('AI分析失败:', errorMsg || analysisError?.message);
-          throw new Error('AI分析失败');
+          
+          // 记录错误到数据库
+          await supabase.from('error_logs').insert({
+            profile_id: profile.id,
+            error_message: errorMsg || analysisError?.message || 'AI分析失败',
+            error_context: {
+              action: 'analyze_questionnaire_update',
+              is_update: true
+            }
+          });
+          
+          throw new Error('分析遇到问题，请稍后再试一次');
         }
 
         // 更新用户画像（合并而非替换）
@@ -174,7 +185,18 @@ const QuestionnairePage: React.FC = () => {
         if (analysisError) {
           const errorMsg = await analysisError?.context?.text();
           console.error('AI分析失败:', errorMsg || analysisError?.message);
-          throw new Error('AI分析失败');
+          
+          // 记录错误到数据库
+          await supabase.from('error_logs').insert({
+            profile_id: profile.id,
+            error_message: errorMsg || analysisError?.message || 'AI分析失败',
+            error_context: {
+              action: 'analyze_questionnaire_new',
+              is_update: false
+            }
+          });
+          
+          throw new Error('分析遇到问题，请稍后再试一次');
         }
 
         // 更新用户画像
@@ -187,7 +209,7 @@ const QuestionnairePage: React.FC = () => {
 
         toast({
           title: '问卷完成！',
-          description: '您的个性化画像已创建，现在可以开始使用好好说 · SayWell了',
+          description: '您的个性化画像已创建，现在可以开始使用好好说了',
         });
 
         // 延迟导航以确保状态更新
@@ -198,9 +220,8 @@ const QuestionnairePage: React.FC = () => {
     } catch (error) {
       console.error('提交问卷失败:', error);
       toast({
-        title: '提交失败',
-        description: error instanceof Error ? error.message : '请稍后重试',
-        variant: 'destructive',
+        title: '提交遇到问题',
+        description: error instanceof Error ? error.message : '请稍后再试一次',
       });
     } finally {
       setIsSubmitting(false);
@@ -230,12 +251,17 @@ const QuestionnairePage: React.FC = () => {
             <Sparkles className="w-8 h-8 text-primary-foreground" />
           </div>
           <h1 className="text-3xl xl:text-4xl font-bold text-foreground mb-2">
-            {isNewUser === false ? '更新您的画像' : '欢迎使用好好说 · SayWell'}
+            {isNewUser === false ? '更新您的画像' : '欢迎使用好好说'}
           </h1>
-          <p className="text-muted-foreground">
+          <p className="text-muted-foreground max-w-md mx-auto">
             {isNewUser === false
               ? '告诉我们您想补充或更新的信息'
-              : '让我们先了解一下您，以便为您提供更个性化的回复建议'}
+              : '让我们先了解一下您'}
+          </p>
+          <p className="text-muted-foreground text-sm max-w-md mx-auto mt-2">
+            {isNewUser === false
+              ? ''
+              : '以便为您提供更个性化的回复建议'}
           </p>
         </div>
 
