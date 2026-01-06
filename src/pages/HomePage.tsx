@@ -6,7 +6,7 @@ import { useUserProfile } from '@/contexts/UserProfileContext';
 import { chatSessionApi } from '@/db/api';
 import { supabase } from '@/db/supabase';
 import { Upload, Image as ImageIcon, User, Sparkles, Info, X, Loader2 } from 'lucide-react';
-import logoImage from '@/assets/logo.jpg';
+import logoImage from '@/assets/logo.png';
 
 const HomePage: React.FC = () => {
   const navigate = useNavigate();
@@ -238,14 +238,14 @@ const HomePage: React.FC = () => {
     <div className="min-h-screen bg-white">
       {/* 简洁顶部导航 */}
       <header className="border-b border-border/10 bg-white/80 backdrop-blur-sm sticky top-0 z-10">
-        <div className="container mx-auto px-6 h-14 flex items-center justify-between">
+        <div className="container mx-auto px-6 h-12 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <img 
               src={logoImage} 
               alt="好好说Logo" 
-              className="w-8 h-8 rounded-xl object-cover"
+              className="w-7 h-7 rounded-lg object-cover"
             />
-            <h1 className="text-base font-semibold">好好说 · SayWell</h1>
+            <h1 className="text-base font-bold">好好说 · <span className="font-normal text-muted-foreground">SayWell</span></h1>
           </div>
           <Button variant="ghost" size="icon" className="rounded-full" onClick={() => navigate('/profile')}>
             <User className="w-5 h-5" />
@@ -254,12 +254,12 @@ const HomePage: React.FC = () => {
       </header>
 
       {/* 主内容 - 居中布局 */}
-      <main className="container mx-auto px-6 py-6 xl:py-8">
+      <main className="container mx-auto px-6 py-4 xl:py-6">
         <div className="max-w-xl mx-auto">
           
           {/* 大型渐变球体 - 作为主视觉元素 */}
-          <div className="flex flex-col items-center mb-8">
-            <div className="w-32 h-32 xl:w-40 xl:h-40 gradient-sphere animate-float mb-6" />
+          <div className="flex flex-col items-center mb-6">
+            <div className="w-32 h-32 xl:w-40 xl:h-40 gradient-sphere animate-float mb-4" />
             <h2 className="text-2xl xl:text-3xl font-bold text-center mb-3">
               你好，<span className="gradient-text">朋友</span>！
             </h2>
@@ -271,17 +271,17 @@ const HomePage: React.FC = () => {
           {/* 提示信息 */}
           {!userProfile?.questionnaire_completed && (
             <div className="mb-6 p-4 bg-accent/10 rounded-2xl border border-accent/20">
-              <div className="flex items-start gap-3">
-                <Info className="w-5 h-5 text-accent-foreground shrink-0 mt-0.5" />
-                <div className="flex-1 text-sm">
-                  <p className="font-medium mb-1">完善您的个性画像</p>
-                  <p className="text-muted-foreground text-xs mb-3">
-                    完成问卷后，AI将更好地理解您的沟通风格
+              <div className="flex items-center gap-3">
+                <Info className="w-5 h-5 text-accent-foreground shrink-0" />
+                <div className="flex-1 flex items-center justify-between gap-3">
+                  <p className="text-sm">
+                    <span className="font-medium">完善您的个性画像</span>
+                    <span className="text-muted-foreground ml-2">完成问卷后，AI将更好地理解您的沟通风格</span>
                   </p>
                   <Button
                     size="sm"
                     onClick={() => navigate('/questionnaire')}
-                    className="button-dark text-xs h-8"
+                    className="button-dark text-xs h-8 shrink-0"
                   >
                     立即完成
                   </Button>

@@ -8,8 +8,8 @@ import { useUserProfile } from '@/contexts/UserProfileContext';
 import { questionnaireQuestions, updateQuestions } from '@/data/questionnaire';
 import { questionnaireApi } from '@/db/api';
 import { supabase } from '@/db/supabase';
-import { Loader2, Sparkles, User } from 'lucide-react';
-import logoImage from '@/assets/logo.jpg';
+import { Loader2, User } from 'lucide-react';
+import logoImage from '@/assets/logo.png';
 
 const QuestionnairePage: React.FC = () => {
   const navigate = useNavigate();
@@ -233,14 +233,14 @@ const QuestionnairePage: React.FC = () => {
     <div className="min-h-screen bg-gradient-to-br from-accent/30 to-background p-4 xl:p-8">
       {/* 顶部导航栏 */}
       <header className="fixed top-0 left-0 right-0 bg-background/80 backdrop-blur-sm border-b border-border z-50">
-        <div className="container mx-auto px-4 py-3 flex items-center justify-between">
-          <div className="flex items-center gap-3">
+        <div className="container mx-auto px-4 py-2 flex items-center justify-between">
+          <div className="flex items-center gap-2">
             <img 
               src={logoImage} 
               alt="好好说Logo" 
-              className="w-8 h-8 rounded-xl object-cover"
+              className="w-7 h-7 rounded-lg object-cover"
             />
-            <h1 className="text-xl font-bold">好好说 · <span className="font-normal text-muted-foreground">SayWell</span></h1>
+            <h1 className="text-base font-bold">好好说 · <span className="font-normal text-muted-foreground">SayWell</span></h1>
           </div>
           <Button variant="ghost" size="icon" onClick={() => navigate('/profile')}>
             <User className="w-5 h-5" />
@@ -250,9 +250,6 @@ const QuestionnairePage: React.FC = () => {
 
       <div className="max-w-2xl mx-auto pt-20">{/* 添加padding-top以避免被固定头部遮挡 */}
         <div className="text-center mb-8 animate-fade-in">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-primary rounded-full mb-4">
-            <Sparkles className="w-8 h-8 text-primary-foreground" />
-          </div>
           <h1 className="text-3xl xl:text-4xl font-bold text-foreground mb-2">
             {isNewUser === false ? '更新您的画像' : '欢迎使用好好说'}
           </h1>

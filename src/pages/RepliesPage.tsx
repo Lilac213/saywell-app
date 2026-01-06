@@ -9,7 +9,7 @@ import { chatSessionApi, replySelectionApi } from '@/db/api';
 import { supabase } from '@/db/supabase';
 import { ArrowLeft, Copy, Check, Sparkles, Loader2, User, ImageIcon } from 'lucide-react';
 import type { ChatSession, GeneratedReply } from '@/types/types';
-import logoImage from '@/assets/logo.jpg';
+import logoImage from '@/assets/logo.png';
 
 const RepliesPage: React.FC = () => {
   const { sessionId } = useParams<{ sessionId: string }>();
@@ -290,7 +290,7 @@ const RepliesPage: React.FC = () => {
     <div className="min-h-screen bg-white">
       {/* 简洁顶部导航 */}
       <header className="border-b border-border/10 bg-white/80 backdrop-blur-sm sticky top-0 z-10">
-        <div className="container mx-auto px-6 h-14 flex items-center justify-between">
+        <div className="container mx-auto px-6 h-12 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Button variant="ghost" size="icon" className="rounded-full" onClick={() => navigate('/')}>
               <ArrowLeft className="w-5 h-5" />
@@ -298,9 +298,9 @@ const RepliesPage: React.FC = () => {
             <img 
               src={logoImage} 
               alt="好好说Logo" 
-              className="w-8 h-8 rounded-xl object-cover"
+              className="w-7 h-7 rounded-lg object-cover"
             />
-            <h1 className="text-base font-semibold">好好说 · SayWell</h1>
+            <h1 className="text-base font-bold">好好说 · <span className="font-normal text-muted-foreground">SayWell</span></h1>
           </div>
           <Button variant="ghost" size="icon" className="rounded-full" onClick={() => navigate('/profile')}>
             <User className="w-5 h-5" />
