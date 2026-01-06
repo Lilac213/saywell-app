@@ -9,6 +9,7 @@ import { chatSessionApi, replySelectionApi } from '@/db/api';
 import { supabase } from '@/db/supabase';
 import { ArrowLeft, Copy, Check, Sparkles, Loader2, User, ImageIcon } from 'lucide-react';
 import type { ChatSession, GeneratedReply } from '@/types/types';
+import logoImage from '@/assets/logo.jpg';
 
 const RepliesPage: React.FC = () => {
   const { sessionId } = useParams<{ sessionId: string }>();
@@ -295,7 +296,7 @@ const RepliesPage: React.FC = () => {
               <ArrowLeft className="w-5 h-5" />
             </Button>
             <img 
-              src="/logo.jpg" 
+              src={logoImage} 
               alt="好好说Logo" 
               className="w-8 h-8 rounded-xl object-cover"
             />

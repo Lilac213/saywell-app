@@ -5,6 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { useUserProfile } from '@/contexts/UserProfileContext';
 import { ArrowLeft, User, Sparkles, RefreshCw } from 'lucide-react';
+import logoImage from '@/assets/logo.jpg';
 
 const ProfilePage: React.FC = () => {
   const navigate = useNavigate();
@@ -38,7 +39,7 @@ const ProfilePage: React.FC = () => {
               <ArrowLeft className="w-5 h-5" />
             </Button>
             <img 
-              src="/logo.jpg" 
+              src={logoImage} 
               alt="好好说Logo" 
               className="w-8 h-8 rounded-xl object-cover"
             />

@@ -6,6 +6,7 @@ import { useUserProfile } from '@/contexts/UserProfileContext';
 import { chatSessionApi } from '@/db/api';
 import { supabase } from '@/db/supabase';
 import { Upload, Image as ImageIcon, User, Sparkles, Info, X, Loader2 } from 'lucide-react';
+import logoImage from '@/assets/logo.jpg';
 
 const HomePage: React.FC = () => {
   const navigate = useNavigate();
@@ -240,7 +241,7 @@ const HomePage: React.FC = () => {
         <div className="container mx-auto px-6 h-14 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <img 
-              src="/logo.jpg" 
+              src={logoImage} 
               alt="好好说Logo" 
               className="w-8 h-8 rounded-xl object-cover"
             />
