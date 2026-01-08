@@ -111,64 +111,52 @@ ${questionnaireText}
 4. 语言习惯要详细记录，包括发消息习惯、标点、emoji、口头禅等`;
     }
 
-    // 调用Gemini API
-    const geminiResponse = await fetch(
-      'https://api-integrations.appmedo.com/app-8khk2ar42dc1/api-pLVzJnE6NKDL/v1beta/models/gemini-2.5-flash:streamGenerateContent?alt=sse',
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          contents: [
-            {
-              role: 'user',
-              parts: [{ text: prompt }],
-            },
-          ],
-        }),
-      }
-    );
-
-    if (!geminiResponse.ok) {
-      throw new Error(`Gemini API 错误: ${geminiResponse.status}`);
+    // 调用 DeepSeek API
+    const deepseekKey = Deno.env.get('DEEPSEEK_API_KEY');
+    if (!deepseekKey) {
+      throw new Error('未配置 DEEPSEEK_API_KEY');
     }
 
-    // 读取流式响应
-    const reader = geminiResponse.body?.getReader();
-    const decoder = new TextDecoder();
-    let fullText = '';
+    const response = await fetch('https://api.deepseek.com/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${deepseekKey}`
+      },
+      body: JSON.stringify({
+        model: 'deepseek-chat',
+        messages: [
+          { role: 'user', content: prompt }
+        ],
+        response_format: { type: 'json_object' }
+      })
+    });
 
-    if (reader) {
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        
-        const chunk = decoder.decode(value);
-        const lines = chunk.split('\n');
-        
-        for (const line of lines) {
-          if (line.startsWith('data: ')) {
-            try {
-              const jsonData = JSON.parse(line.slice(6));
-              if (jsonData.candidates?.[0]?.content?.parts?.[0]?.text) {
-                fullText += jsonData.candidates[0].content.parts[0].text;
-              }
-            } catch (e) {
-              // 忽略解析错误
-            }
-          }
-        }
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`DeepSeek API 错误: ${response.status} - ${errorText}`);
+    }
+
+    const data = await response.json();
+    const content = data.choices?.[0]?.message?.content;
+
+    if (!content) {
+      throw new Error('DeepSeek API 返回内容为空');
+    }
+
+    // 尝试解析 JSON
+    let result;
+    try {
+      result = JSON.parse(content);
+    } catch (e) {
+      // 如果直接解析失败，尝试提取 JSON 部分
+      const jsonMatch = content.match(/\{[\s\S]*\}/);
+      if (jsonMatch) {
+        result = JSON.parse(jsonMatch[0]);
+      } else {
+        throw new Error('无法解析 AI 返回的 JSON 数据');
       }
     }
-
-    // 提取JSON部分
-    const jsonMatch = fullText.match(/\{[\s\S]*\}/);
-    if (!jsonMatch) {
-      throw new Error('无法从AI响应中提取JSON数据');
-    }
-
-    const result = JSON.parse(jsonMatch[0]);
 
     return new Response(
       JSON.stringify(result),

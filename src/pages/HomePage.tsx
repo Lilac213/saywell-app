@@ -77,8 +77,8 @@ const HomePage: React.FC = () => {
           let width = img.width;
           let height = img.height;
 
-          // 限制最大分辨率为1080p
-          const maxDimension = 1080;
+          // 限制最大分辨率为 720p (足以识别文字，且上传更快)
+          const maxDimension = 720;
           if (width > maxDimension || height > maxDimension) {
             if (width > height) {
               height = (height / width) * maxDimension;
@@ -107,7 +107,7 @@ const HomePage: React.FC = () => {
               }
             },
             'image/webp',
-            0.8
+            0.6 // 降低质量到 0.6，进一步减小体积
           );
         };
         img.onerror = () => reject(new Error('图片加载失败'));
@@ -136,16 +136,16 @@ const HomePage: React.FC = () => {
 
       let fileToUpload = selectedFile;
 
-      // 如果文件大于1MB，进行压缩
-      if (selectedFile.size > 1024 * 1024) {
+      // 如果文件大于200KB，进行压缩 (降低阈值以确保更快的上传和分析)
+      if (selectedFile.size > 200 * 1024) {
         toast({
           title: '正在压缩图片',
-          description: '文件较大，正在自动压缩...',
+          description: '正在优化图片大小以提高分析速度...',
         });
         fileToUpload = await compressImage(selectedFile);
         toast({
           title: '压缩完成',
-          description: `文件大小：${(fileToUpload.size / 1024).toFixed(2)} KB`,
+          description: `优化后大小：${(fileToUpload.size / 1024).toFixed(2)} KB`,
         });
       }
 
