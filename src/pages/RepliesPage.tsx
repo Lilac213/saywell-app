@@ -7,7 +7,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useUserProfile } from '@/contexts/UserProfileContext';
 import { chatSessionApi, replySelectionApi } from '@/db/api';
 import { supabase } from '@/db/supabase';
-import { ArrowLeft, Copy, Check, Sparkles, Loader2, User, ImageIcon } from 'lucide-react';
+import { ArrowLeft, Copy, Check, Sparkles, Loader2, User } from 'lucide-react';
 import type { ChatSession, GeneratedReply } from '@/types/types';
 import logoImage from '@/assets/logo.png';
 

@@ -130,7 +130,7 @@ const contextValue = useMemo<MapContextProps>(
 const initMap = useCallback(() => {
     if (!mapRef.current) return;
 
-    let map = currentRef.current;
+    let map = currentRef.current as any;
 
     if (!map) {
     // Create map instance
