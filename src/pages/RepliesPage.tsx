@@ -38,18 +38,27 @@ const RepliesPage: React.FC = () => {
   const loadSessionAndGenerateReplies = async () => {
     if (!sessionId || !userProfile) return;
 
+    const timers = {
+      total: `TotalReplyGeneration:${sessionId}`,
+      fetchSession: `FetchSessionData:${sessionId}`,
+      fetchHistory: `FetchHistory:${sessionId}`,
+      ai: `AIGeneration:${sessionId}`,
+    };
+    let totalTimerStarted = false;
+
     try {
-      console.time('TotalReplyGeneration'); // ⏱️ 开始计时：总流程
+      console.time(timers.total); // ⏱️ 开始计时：总流程
+      totalTimerStarted = true;
       setLoading(true);
 
       // 加载会话信息
-      console.time('FetchSessionData'); // ⏱️ 开始计时：获取会话
+      console.time(timers.fetchSession); // ⏱️ 开始计时：获取会话
       const sessionData = await chatSessionApi.getById(sessionId);
       if (!sessionData) {
         throw new Error('会话不存在');
       }
       setSession(sessionData);
-      console.timeEnd('FetchSessionData'); // ⏱️ 结束计时：获取会话
+      console.timeEnd(timers.fetchSession); // ⏱️ 结束计时：获取会话
 
       // 将图片URL转换为base64的步骤已移除，直接使用URL
       // console.time('ImageProcessing');
@@ -57,7 +66,7 @@ const RepliesPage: React.FC = () => {
       // console.timeEnd('ImageProcessing');
 
       // 获取历史选择记录（用于学习）
-      console.time('FetchHistory'); // ⏱️ 开始计时：获取历史
+      console.time(timers.fetchHistory); // ⏱️ 开始计时：获取历史
       const allSessions = await chatSessionApi.getByUserProfile(userProfile.id, 10);
       
       // 并行获取历史记录，提高速度
@@ -77,10 +86,10 @@ const RepliesPage: React.FC = () => {
       const previousSelectionsResults = await Promise.all(previousSelectionsPromises);
       const previousSelections = previousSelectionsResults.filter((item): item is { generated_replies: string[]; selected_reply: string } => item !== null);
       
-      console.timeEnd('FetchHistory'); // ⏱️ 结束计时：获取历史
+      console.timeEnd(timers.fetchHistory); // ⏱️ 结束计时：获取历史
 
       // 调用AI生成回复
-      console.time('AIGeneration'); // ⏱️ 开始计时：AI生成
+      console.time(timers.ai); // ⏱️ 开始计时：AI生成
       const { data: aiData, error: aiError } = await supabase.functions.invoke('generate-replies', {
         body: {
           screenshotUrl: sessionData.screenshot_url, // 直接传递URL，不再传递Base64
@@ -92,7 +101,7 @@ const RepliesPage: React.FC = () => {
           previousSelections,
         },
       });
-      console.timeEnd('AIGeneration'); // ⏱️ 结束计时：AI生成
+      console.timeEnd(timers.ai); // ⏱️ 结束计时：AI生成
 
       if (aiError) {
         const errorMsg = await aiError?.context?.text();
@@ -103,7 +112,7 @@ const RepliesPage: React.FC = () => {
           title: 'AI分析失败',
           description: '网络连接问题或服务暂时不可用，请稍后重试',
           variant: 'destructive',
-        });
+          });
         
         throw new Error('AI生成回复失败');
       }
@@ -128,7 +137,6 @@ const RepliesPage: React.FC = () => {
       }
 
       setReplies(aiData.replies || []);
-      console.timeEnd('TotalReplyGeneration'); // ⏱️ 结束计时：总流程
     } catch (error) {
       console.error('加载失败:', error);
       toast({
@@ -138,6 +146,9 @@ const RepliesPage: React.FC = () => {
       });
       navigate('/');
     } finally {
+      if (totalTimerStarted) {
+        console.timeEnd(timers.total); // ⏱️ 结束计时：总流程
+      }
       setLoading(false);
     }
   };
