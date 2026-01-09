@@ -307,15 +307,28 @@ const RepliesPage: React.FC = () => {
   };
 
   if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-white">
-        <div className="text-center animate-fade-in">
-          <div className="w-32 h-32 xl:w-40 xl:h-40 gradient-sphere animate-float mb-6 mx-auto" />
-          <h2 className="text-xl xl:text-2xl font-bold mb-2">AI正在思考中...</h2>
-          <p className="text-muted-foreground text-sm">正在为您生成个性化回复建议</p>
+    if (showTransition) {
+      return (
+        <div className="fixed inset-0 bg-white z-50 flex flex-col items-center justify-center p-6 text-center animate-fade-in">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="space-y-4"
+          >
+            <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6">
+              <Sparkles className="w-8 h-8 text-primary" />
+            </div>
+            <h2 className="text-xl font-medium text-foreground">
+              我帮你整理了几种不同风格的回应方式
+            </h2>
+            <p className="text-muted-foreground">
+              你可以选一个最符合当下感受的
+            </p>
+          </motion.div>
         </div>
-      </div>
-    );
+      );
+    }
+    return <LoadingScreen />;
   }
 
   return (
