@@ -10,6 +10,8 @@ import { supabase } from '@/db/supabase';
 import { ArrowLeft, Copy, Check, Sparkles, Loader2, User, ImageIcon } from 'lucide-react';
 import type { ChatSession, GeneratedReply } from '@/types/types';
 import logoImage from '@/assets/logo.png';
+import { LoadingScreen } from '@/components/LoadingScreen';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const RepliesPage: React.FC = () => {
   const { sessionId } = useParams<{ sessionId: string }>();
@@ -19,6 +21,7 @@ const RepliesPage: React.FC = () => {
   const [session, setSession] = useState<ChatSession | null>(null);
   const [replies, setReplies] = useState<GeneratedReply[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showTransition, setShowTransition] = useState(false); // 控制过渡动画状态
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [feedbackText, setFeedbackText] = useState('');
@@ -137,6 +140,15 @@ const RepliesPage: React.FC = () => {
       }
 
       setReplies(aiData.replies || []);
+      
+      // 数据准备就绪，触发过渡动画
+      setShowTransition(true);
+      // 延迟关闭loading，让过渡动画展示完
+      setTimeout(() => {
+        setLoading(false);
+        setShowTransition(false);
+      }, 2000); // 给足够的时间展示过渡文案 (300-500ms fade out + 1500ms display)
+
     } catch (error) {
       console.error('加载失败:', error);
       toast({
@@ -145,11 +157,12 @@ const RepliesPage: React.FC = () => {
         variant: 'destructive',
       });
       navigate('/');
+      setLoading(false);
     } finally {
       if (totalTimerStarted) {
         console.timeEnd(timers.total); // ⏱️ 结束计时：总流程
       }
-      setLoading(false);
+      // setLoading(false) is handled in the success path after transition
     }
   };
 
