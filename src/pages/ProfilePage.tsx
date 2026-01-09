@@ -13,16 +13,41 @@ const ProfilePage: React.FC = () => {
 
   if (!userProfile) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Card className="max-w-md">
-          <CardHeader>
-            <CardTitle>未找到用户画像</CardTitle>
-            <CardDescription>请先完成问卷创建您的个性化画像</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Button onClick={() => navigate('/questionnaire')} className="w-full">
-              开始问卷
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 p-6">
+        <Card className="max-w-md w-full border-0 shadow-xl rounded-3xl overflow-hidden bg-white/80 backdrop-blur-sm">
+          <CardContent className="flex flex-col items-center text-center p-12 space-y-8">
+            {/* 视觉中心：动态光环包裹的 Logo */}
+            <div className="relative group">
+              <div className="absolute inset-0 bg-primary/20 rounded-full blur-xl group-hover:blur-2xl transition-all duration-500 animate-pulse" />
+              <div className="relative w-24 h-24 bg-white rounded-full flex items-center justify-center shadow-sm border border-gray-100">
+                <img 
+                  src={logoImage} 
+                  alt="好好说" 
+                  className="w-12 h-12 object-contain"
+                />
+              </div>
+            </div>
+
+            <div className="space-y-3">
+              <h2 className="text-2xl font-bold tracking-tight text-gray-900">
+                开启您的个性化之旅
+              </h2>
+              <p className="text-gray-500 leading-relaxed max-w-xs mx-auto">
+                暂未找到您的用户画像。只需简单几步，让 AI 学习您的风格，为您定制专属回复。
+              </p>
+            </div>
+
+            <Button 
+              onClick={() => navigate('/questionnaire')} 
+              className="w-full h-14 text-lg font-medium rounded-2xl shadow-lg shadow-primary/25 transition-all hover:scale-[1.02] hover:shadow-primary/40"
+            >
+              <Sparkles className="w-5 h-5 mr-2 animate-pulse" />
+              立即创建画像
             </Button>
+            
+            <p className="text-xs text-gray-400 mt-4">
+              大约需要 1-2 分钟完成
+            </p>
           </CardContent>
         </Card>
       </div>

@@ -22,6 +22,7 @@ const RepliesPage: React.FC = () => {
   const [replies, setReplies] = useState<GeneratedReply[]>([]);
   const [loading, setLoading] = useState(true);
   const [showTransition, setShowTransition] = useState(false); // 控制过渡动画状态
+  const [displayImageUrl, setDisplayImageUrl] = useState<string>(''); // 用于显示的图片URL
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [feedbackText, setFeedbackText] = useState('');
@@ -61,6 +62,10 @@ const RepliesPage: React.FC = () => {
         throw new Error('会话不存在');
       }
       setSession(sessionData);
+      // 初始化显示URL
+      if (sessionData.screenshot_url) {
+        setDisplayImageUrl(sessionData.screenshot_url);
+      }
       console.timeEnd(timers.fetchSession); // ⏱️ 结束计时：获取会话
 
       // 将图片URL转换为base64的步骤已移除，直接使用URL
@@ -371,8 +376,9 @@ const RepliesPage: React.FC = () => {
               <CardContent>
                 <div className="rounded-lg overflow-hidden border border-border">
                   <img
-                    src={session.screenshot_url}
+                    src={displayImageUrl || session.screenshot_url}
                     alt="聊天截图"
+                    onError={handleImageError}
                     className="w-full h-auto max-h-64 object-contain bg-muted"
                   />
                 </div>
