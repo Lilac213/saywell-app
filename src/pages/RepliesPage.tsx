@@ -51,41 +51,39 @@ const RepliesPage: React.FC = () => {
       setSession(sessionData);
       console.timeEnd('FetchSessionData'); // ⏱️ 结束计时：获取会话
 
-      // 将图片URL转换为base64
-      console.time('ImageProcessing'); // ⏱️ 开始计时：图片处理
-      const response = await fetch(sessionData.screenshot_url);
-      const blob = await response.blob();
-      const base64 = await new Promise<string>((resolve) => {
-        const reader = new FileReader();
-        reader.onloadend = () => {
-          const result = reader.result as string;
-          resolve(result.split(',')[1]);
-        };
-        reader.readAsDataURL(blob);
-      });
-      console.timeEnd('ImageProcessing'); // ⏱️ 结束计时：图片处理
+      // 将图片URL转换为base64的步骤已移除，直接使用URL
+      // console.time('ImageProcessing');
+      // ...
+      // console.timeEnd('ImageProcessing');
 
       // 获取历史选择记录（用于学习）
       console.time('FetchHistory'); // ⏱️ 开始计时：获取历史
       const allSessions = await chatSessionApi.getByUserProfile(userProfile.id, 10);
-      const previousSelections: Array<{ generated_replies: string[]; selected_reply: string }> = [];
-      for (const s of allSessions) {
-        if (s.id === sessionId) continue;
-        const selection = await replySelectionApi.getByChatSession(s.id);
-        if (selection) {
-          previousSelections.push({
-            generated_replies: selection.generated_replies,
-            selected_reply: selection.selected_reply,
-          });
-        }
-      }
+      
+      // 并行获取历史记录，提高速度
+      const previousSelectionsPromises = allSessions
+        .filter(s => s.id !== sessionId)
+        .map(async (s) => {
+          const selection = await replySelectionApi.getByChatSession(s.id);
+          if (selection) {
+            return {
+              generated_replies: selection.generated_replies,
+              selected_reply: selection.selected_reply,
+            };
+          }
+          return null;
+        });
+
+      const previousSelectionsResults = await Promise.all(previousSelectionsPromises);
+      const previousSelections = previousSelectionsResults.filter((item): item is { generated_replies: string[]; selected_reply: string } => item !== null);
+      
       console.timeEnd('FetchHistory'); // ⏱️ 结束计时：获取历史
 
       // 调用AI生成回复
       console.time('AIGeneration'); // ⏱️ 开始计时：AI生成
       const { data: aiData, error: aiError } = await supabase.functions.invoke('generate-replies', {
         body: {
-          screenshotBase64: base64,
+          screenshotUrl: sessionData.screenshot_url, // 直接传递URL，不再传递Base64
           userProfile: {
             personality_traits: userProfile.personality_traits,
             language_habits: userProfile.language_habits,
