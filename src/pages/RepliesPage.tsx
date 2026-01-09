@@ -242,6 +242,7 @@ const RepliesPage: React.FC = () => {
 
       // 调用Edge Function分析反馈并更新画像
       if (userProfile) {
+        console.time('FeedbackAnalysis'); // ⏱️ 开始计时：反馈分析
         const { data, error } = await supabase.functions.invoke('analyze-feedback', {
           body: {
             feedbackText,
@@ -253,6 +254,7 @@ const RepliesPage: React.FC = () => {
             },
           },
         });
+        console.timeEnd('FeedbackAnalysis'); // ⏱️ 结束计时：反馈分析
 
         if (error) {
           const errorMsg = await error?.context?.text?.();

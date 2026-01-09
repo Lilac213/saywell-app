@@ -168,26 +168,36 @@ const QuestionnairePage: React.FC = () => {
           question_order: index, // 使用索引作为顺序，避免小数问题
         }));
 
-        const saved = await questionnaireApi.createBatch(profile.id, responses);
+        // 🚀 并行执行：保存问卷 和 AI分析
+        console.time('Parallel_Save_Analyze');
+        const [saveResult, analyzeResult] = await Promise.all([
+          // 任务1: 保存问卷回答到数据库
+          questionnaireApi.createBatch(profile.id, responses),
+          
+          // 任务2: 调用AI分析
+          (async () => {
+             console.time('AIAnalysis_New'); 
+             const res = await supabase.functions.invoke('analyze-questionnaire', {
+                body: {
+                  responses: responses.map((r) => ({
+                    question: r.question,
+                    answer: r.answer,
+                  })),
+                  isUpdate: false,
+                },
+             });
+             console.timeEnd('AIAnalysis_New');
+             return res;
+          })()
+        ]);
+        console.timeEnd('Parallel_Save_Analyze');
+
+        const saved = saveResult;
+        const { data: analysisData, error: analysisError } = analyzeResult;
+
         if (!saved) {
           throw new Error('保存问卷回答失败');
         }
-
-        // 调用AI分析问卷
-        console.time('AIAnalysis_New'); // ⏱️ 开始计时：AI分析(新建)
-        const { data: analysisData, error: analysisError } = await supabase.functions.invoke(
-          'analyze-questionnaire',
-          {
-            body: {
-              responses: responses.map((r) => ({
-                question: r.question,
-                answer: r.answer,
-              })),
-              isUpdate: false,
-            },
-          }
-        );
-        console.timeEnd('AIAnalysis_New'); // ⏱️ 结束计时：AI分析(新建)
 
         if (analysisError) {
           const errorMsg = await analysisError?.context?.text();

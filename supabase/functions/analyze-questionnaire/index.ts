@@ -107,10 +107,10 @@ ${questionnaireText}
 }
 
 注意：
-1. 根据问卷回答准确提取语言习惯信息
-2. 如果用户设定了特别关心的人，记录备注名称和关系
-3. 性格特点要基于用户的自我描述进行总结
-4. 语言习惯要详细记录，包括发消息习惯、标点、emoji、口头禅等`;
+1. 保持输出内容极其简练，只提取关键词，不要长句。
+2. 背景故事必须控制在50字以内。
+3. 准确提取语言习惯信息。
+4. 如果用户设定了特别关心的人，记录备注名称和关系。`;
     }
 
     // 调用通义千问 Qwen API (DashScope)
@@ -130,7 +130,7 @@ ${questionnaireText}
         'Authorization': `Bearer ${dashscopeKey}`
       },
       body: JSON.stringify({
-        model: 'qwen-turbo', // 🚀 切换到 Turbo 模型以提升速度 (用户反馈 10s 太慢)
+        model: 'qwen-plus', // 🚀 恢复为 Plus 模型 (用户要求)，通过 Prompt 优化速度
         messages: [
           { role: 'user', content: prompt }
         ],
