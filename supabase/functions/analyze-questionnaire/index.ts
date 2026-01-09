@@ -113,23 +113,24 @@ ${questionnaireText}
 4. 语言习惯要详细记录，包括发消息习惯、标点、emoji、口头禅等`;
     }
 
-    // 调用 DeepSeek API
-    console.log('正在调用 DeepSeek API (deepseek-chat)...');
+    // 调用通义千问 Qwen API (DashScope)
+    console.log('正在调用通义千问 Qwen API...');
     const startTime = Date.now();
     
-    const deepseekKey = Deno.env.get('DEEPSEEK_API_KEY');
-    if (!deepseekKey) {
-      throw new Error('未配置 DEEPSEEK_API_KEY');
+    const dashscopeKey = Deno.env.get('DASHSCOPE_API_KEY');
+    if (!dashscopeKey) {
+      throw new Error('未配置 DASHSCOPE_API_KEY');
     }
 
-    const response = await fetch('https://api.deepseek.com/chat/completions', {
+    // 使用 OpenAI 兼容接口调用 Qwen
+    const response = await fetch('https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${deepseekKey}`
+        'Authorization': `Bearer ${dashscopeKey}`
       },
       body: JSON.stringify({
-        model: 'deepseek-chat',
+        model: 'qwen-plus', // 使用 qwen-plus 模型
         messages: [
           { role: 'user', content: prompt }
         ],
@@ -137,14 +138,16 @@ ${questionnaireText}
       })
     });
 
+    console.log(`Qwen API 调用耗时: ${Date.now() - startTime}ms`);
+
     if (!response.ok) {
       const errorText = await response.text();
-      console.error('DeepSeek API 调用失败:', response.status, errorText);
-      throw new Error(`DeepSeek API 错误: ${response.status} - ${errorText}`);
+      console.error('Qwen API 调用失败:', response.status, errorText);
+      throw new Error(`Qwen API 错误: ${response.status} - ${errorText}`);
     }
 
     const data = await response.json();
-    console.log(`DeepSeek API 调用成功，耗时: ${Date.now() - startTime}ms`);
+    console.log('Qwen API Response:', JSON.stringify(data));
     const content = data.choices?.[0]?.message?.content;
 
     if (!content) {
