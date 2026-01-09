@@ -56,8 +56,8 @@ Deno.serve(async (req) => {
     ` : ''}
 
     【任务要求】
-    1. 识别截图中的对话内容（如果是图片）。
-    2. 分析对方的意图、情绪和双方关系。
+    1. 识别截图中的对话内容（如果是图片），但不需要在返回结果中输出完整原文，仅用于你的分析。
+    2. 分析对方的意图、情绪和双方关系（保持简练，每项分析不超过30字）。
     3. 生成 4 个不同风格的回复建议：
        - 选项1：符合用户画像的常规/得体回复
        - 选项2：高情商/共情/温暖的回复
@@ -67,18 +67,17 @@ Deno.serve(async (req) => {
     【输出格式】
     请仅返回一个标准的 JSON 对象，不要包含 markdown 代码块标记，结构如下：
     {
-      "extracted_text": "对话文字内容...",
-      "context_analysis": "...",
-      "user_style_observation": "...",
-      "intent_analysis": "...",
-      "emotion_analysis": "...",
-      "relationship": "...",
-      "chat_remark": "...",
+      "context_analysis": "简练的语境分析...",
+      "user_style_observation": "简练的风格观察...",
+      "intent_analysis": "简练的意图分析...",
+      "emotion_analysis": "简练的情绪分析...",
+      "relationship": "简练的关系判断...",
+      "chat_remark": "对方备注名(如有)...",
       "replies": [
-        { "text": "回复1", "tone": "得体", "reasoning": "..." },
-        { "text": "回复2", "tone": "高情商", "reasoning": "..." },
-        { "text": "回复3", "tone": "幽默", "reasoning": "..." },
-        { "text": "回复4", "tone": "简洁", "reasoning": "..." }
+        { "text": "回复1", "tone": "得体", "reasoning": "简短推荐理由" },
+        { "text": "回复2", "tone": "高情商", "reasoning": "简短推荐理由" },
+        { "text": "回复3", "tone": "幽默", "reasoning": "简短推荐理由" },
+        { "text": "回复4", "tone": "简洁", "reasoning": "简短推荐理由" }
       ]
     }`;
 

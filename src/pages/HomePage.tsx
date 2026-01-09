@@ -78,8 +78,8 @@ const HomePage: React.FC = () => {
           let width = img.width;
           let height = img.height;
 
-          // 限制最大分辨率为 720p (足以识别文字，且上传更快)
-          const maxDimension = 720;
+          // 限制最大分辨率为 512 (降低分辨率以显著提升AI处理速度，同时保持文字可读性)
+          const maxDimension = 512;
           if (width > maxDimension || height > maxDimension) {
             if (width > height) {
               height = (height / width) * maxDimension;
