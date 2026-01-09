@@ -6,6 +6,8 @@ const corsHeaders = {
 };
 
 Deno.serve(async (req) => {
+  console.log("Received request:", req.method, req.url);
+
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders });
   }
@@ -61,20 +63,24 @@ ${JSON.stringify(existingProfile, null, 2)}
 4. 如果反馈中没有足够的信息，保持原样
 5. 宁可保守，不要过度解读单次反馈`;
 
-    // 调用 DeepSeek API
-    const deepseekKey = Deno.env.get('DEEPSEEK_API_KEY');
-    if (!deepseekKey) {
-      throw new Error('未配置 DEEPSEEK_API_KEY');
+    // 调用通义千问 Qwen API (DashScope)
+    console.log('正在调用通义千问 Qwen API...');
+    const startTime = Date.now();
+
+    const dashscopeKey = Deno.env.get('DASHSCOPE_API_KEY');
+    if (!dashscopeKey) {
+      throw new Error('未配置 DASHSCOPE_API_KEY');
     }
 
-    const response = await fetch('https://api.deepseek.com/chat/completions', {
+    // 使用 OpenAI 兼容接口调用 Qwen
+    const response = await fetch('https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${deepseekKey}`
+        'Authorization': `Bearer ${dashscopeKey}`
       },
       body: JSON.stringify({
-        model: 'deepseek-chat',
+        model: 'qwen-plus', // 使用 qwen-plus 模型，能力均衡且速度较快
         messages: [
           { role: 'user', content: prompt }
         ],
@@ -82,16 +88,20 @@ ${JSON.stringify(existingProfile, null, 2)}
       })
     });
 
+    console.log(`Qwen API 调用耗时: ${Date.now() - startTime}ms`);
+
     if (!response.ok) {
       const errorText = await response.text();
-      throw new Error(`DeepSeek API 错误: ${response.status} - ${errorText}`);
+      console.error(`Qwen API Error (${response.status}):`, errorText);
+      throw new Error(`Qwen API 错误: ${response.status} - ${errorText}`);
     }
 
     const data = await response.json();
+    console.log('Qwen API Response:', JSON.stringify(data));
     const content = data.choices?.[0]?.message?.content;
 
     if (!content) {
-      throw new Error('DeepSeek API 返回内容为空');
+      throw new Error('Qwen API 返回内容为空');
     }
 
     let analysisData;

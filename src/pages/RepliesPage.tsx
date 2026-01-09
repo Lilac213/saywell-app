@@ -39,16 +39,20 @@ const RepliesPage: React.FC = () => {
     if (!sessionId || !userProfile) return;
 
     try {
+      console.time('TotalReplyGeneration'); // ⏱️ 开始计时：总流程
       setLoading(true);
 
       // 加载会话信息
+      console.time('FetchSessionData'); // ⏱️ 开始计时：获取会话
       const sessionData = await chatSessionApi.getById(sessionId);
       if (!sessionData) {
         throw new Error('会话不存在');
       }
       setSession(sessionData);
+      console.timeEnd('FetchSessionData'); // ⏱️ 结束计时：获取会话
 
       // 将图片URL转换为base64
+      console.time('ImageProcessing'); // ⏱️ 开始计时：图片处理
       const response = await fetch(sessionData.screenshot_url);
       const blob = await response.blob();
       const base64 = await new Promise<string>((resolve) => {
@@ -59,8 +63,10 @@ const RepliesPage: React.FC = () => {
         };
         reader.readAsDataURL(blob);
       });
+      console.timeEnd('ImageProcessing'); // ⏱️ 结束计时：图片处理
 
       // 获取历史选择记录（用于学习）
+      console.time('FetchHistory'); // ⏱️ 开始计时：获取历史
       const allSessions = await chatSessionApi.getByUserProfile(userProfile.id, 10);
       const previousSelections: Array<{ generated_replies: string[]; selected_reply: string }> = [];
       for (const s of allSessions) {
@@ -73,8 +79,10 @@ const RepliesPage: React.FC = () => {
           });
         }
       }
+      console.timeEnd('FetchHistory'); // ⏱️ 结束计时：获取历史
 
       // 调用AI生成回复
+      console.time('AIGeneration'); // ⏱️ 开始计时：AI生成
       const { data: aiData, error: aiError } = await supabase.functions.invoke('generate-replies', {
         body: {
           screenshotBase64: base64,
@@ -86,6 +94,7 @@ const RepliesPage: React.FC = () => {
           previousSelections,
         },
       });
+      console.timeEnd('AIGeneration'); // ⏱️ 结束计时：AI生成
 
       if (aiError) {
         const errorMsg = await aiError?.context?.text();
@@ -121,6 +130,7 @@ const RepliesPage: React.FC = () => {
       }
 
       setReplies(aiData.replies || []);
+      console.timeEnd('TotalReplyGeneration'); // ⏱️ 结束计时：总流程
     } catch (error) {
       console.error('加载失败:', error);
       toast({

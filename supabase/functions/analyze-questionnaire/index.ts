@@ -21,6 +21,8 @@ interface RequestBody {
 }
 
 Deno.serve(async (req) => {
+  console.log("Received request:", req.method, req.url);
+
   // 处理CORS预检请求
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -112,6 +114,9 @@ ${questionnaireText}
     }
 
     // 调用 DeepSeek API
+    console.log('正在调用 DeepSeek API (deepseek-chat)...');
+    const startTime = Date.now();
+    
     const deepseekKey = Deno.env.get('DEEPSEEK_API_KEY');
     if (!deepseekKey) {
       throw new Error('未配置 DEEPSEEK_API_KEY');
@@ -134,14 +139,16 @@ ${questionnaireText}
 
     if (!response.ok) {
       const errorText = await response.text();
+      console.error('DeepSeek API 调用失败:', response.status, errorText);
       throw new Error(`DeepSeek API 错误: ${response.status} - ${errorText}`);
     }
 
     const data = await response.json();
+    console.log(`DeepSeek API 调用成功，耗时: ${Date.now() - startTime}ms`);
     const content = data.choices?.[0]?.message?.content;
 
     if (!content) {
-      throw new Error('DeepSeek API 返回内容为空');
+      throw new Error('Qwen API 返回内容为空');
     }
 
     // 尝试解析 JSON

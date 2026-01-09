@@ -110,6 +110,9 @@ ${historyDescription}
     }
 
     // 调用通义千问 Qwen-VL API (DashScope)
+    console.log('正在调用通义千问 Qwen-VL API...');
+    const startTime = Date.now();
+
     const dashscopeKey = Deno.env.get('DASHSCOPE_API_KEY');
     if (!dashscopeKey) {
       throw new Error('未配置 DASHSCOPE_API_KEY');
@@ -138,10 +141,12 @@ ${historyDescription}
 
     if (!response.ok) {
       const errorText = await response.text();
+      console.error('Qwen-VL API 调用失败:', response.status, errorText);
       throw new Error(`Qwen-VL API 错误: ${response.status} - ${errorText}`);
     }
 
     const data = await response.json();
+    console.log(`Qwen-VL API 调用成功，耗时: ${Date.now() - startTime}ms`);
     const content = data.choices?.[0]?.message?.content;
 
     if (!content) {

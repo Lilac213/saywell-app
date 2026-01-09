@@ -83,6 +83,8 @@ const QuestionnairePage: React.FC = () => {
     setIsSubmitting(true);
 
     try {
+      console.time('TotalQuestionnaireSubmission'); // ⏱️ 开始计时：总流程
+
       // 确保有用户画像
       let profile = userProfile;
       if (!profile) {
@@ -97,6 +99,7 @@ const QuestionnairePage: React.FC = () => {
         const updateText = answers[100] || '';
         
         // 调用AI分析补充信息
+        console.time('AIAnalysis_Update'); // ⏱️ 开始计时：AI分析(更新)
         const { data: analysisData, error: analysisError } = await supabase.functions.invoke(
           'analyze-questionnaire',
           {
@@ -116,6 +119,7 @@ const QuestionnairePage: React.FC = () => {
             },
           }
         );
+        console.timeEnd('AIAnalysis_Update'); // ⏱️ 结束计时：AI分析(更新)
 
         if (analysisError) {
           const errorMsg = await analysisError?.context?.text();
@@ -170,6 +174,7 @@ const QuestionnairePage: React.FC = () => {
         }
 
         // 调用AI分析问卷
+        console.time('AIAnalysis_New'); // ⏱️ 开始计时：AI分析(新建)
         const { data: analysisData, error: analysisError } = await supabase.functions.invoke(
           'analyze-questionnaire',
           {
@@ -182,6 +187,7 @@ const QuestionnairePage: React.FC = () => {
             },
           }
         );
+        console.timeEnd('AIAnalysis_New'); // ⏱️ 结束计时：AI分析(新建)
 
         if (analysisError) {
           const errorMsg = await analysisError?.context?.text();
@@ -218,6 +224,7 @@ const QuestionnairePage: React.FC = () => {
           navigate('/');
         }, 500);
       }
+      console.timeEnd('TotalQuestionnaireSubmission'); // ⏱️ 结束计时：总流程
     } catch (error) {
       console.error('提交问卷失败:', error);
       toast({

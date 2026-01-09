@@ -68,6 +68,7 @@ const HomePage: React.FC = () => {
   };
 
   const compressImage = async (file: File): Promise<File> => {
+    console.time('ImageCompression'); // ⏱️ 开始计时：压缩
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
       reader.onload = (e) => {
@@ -101,6 +102,7 @@ const HomePage: React.FC = () => {
                 const compressedFile = new File([blob], file.name.replace(/\.[^/.]+$/, '.webp'), {
                   type: 'image/webp',
                 });
+                console.timeEnd('ImageCompression'); // ⏱️ 结束计时：压缩
                 resolve(compressedFile);
               } else {
                 reject(new Error('压缩失败'));
@@ -132,6 +134,7 @@ const HomePage: React.FC = () => {
     }
 
     try {
+      console.time('TotalUploadProcess'); // ⏱️ 开始计时：总流程
       setUploading(true);
 
       let fileToUpload = selectedFile;
@@ -154,12 +157,14 @@ const HomePage: React.FC = () => {
       const fileName = `screenshot_${timestamp}_${fileToUpload.name.replace(/[^a-zA-Z0-9.]/g, '_')}`;
 
       // 上传到Supabase Storage
+      console.time('SupabaseStorageUpload'); // ⏱️ 开始计时：上传
       const { data, error } = await supabase.storage
         .from('app-8khk2ar42dc1_screenshots')
         .upload(fileName, fileToUpload, {
           cacheControl: '3600',
           upsert: false,
         });
+      console.timeEnd('SupabaseStorageUpload'); // ⏱️ 结束计时：上传
 
       if (error) {
         throw new Error(error.message);
@@ -173,10 +178,15 @@ const HomePage: React.FC = () => {
       const uploadedUrl = urlData.publicUrl;
 
       // 创建聊天会话
+      console.time('CreateChatSession'); // ⏱️ 开始计时：创建会话
       const session = await chatSessionApi.create(userProfile.id, uploadedUrl);
+      console.timeEnd('CreateChatSession'); // ⏱️ 结束计时：创建会话
+
       if (!session) {
         throw new Error('创建会话失败');
       }
+
+      console.timeEnd('TotalUploadProcess'); // ⏱️ 结束计时：总流程
 
       // 跳转到回复建议页面
       navigate(`/replies/${session.id}`);
