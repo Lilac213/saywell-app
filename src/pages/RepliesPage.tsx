@@ -22,7 +22,7 @@ const RepliesPage: React.FC = () => {
   const [replies, setReplies] = useState<GeneratedReply[]>([]);
   const [loading, setLoading] = useState(true);
   const [showTransition, setShowTransition] = useState(false); // 控制过渡动画状态
-  const [displayImageUrl, setDisplayImageUrl] = useState<string>(''); // 用于显示的图片URL
+  const [displayImageUrl, setDisplayImageUrl] = useState<string | null>(null); // 用于显示的图片URL，null表示不显示或加载失败
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [feedbackText, setFeedbackText] = useState('');
@@ -125,6 +125,10 @@ const RepliesPage: React.FC = () => {
         throw new Error('AI生成回复失败');
       }
 
+      if (!aiData) {
+        throw new Error('AI返回数据为空');
+      }
+
       // 更新会话的提取文本和用户风格观察
       if (aiData.extracted_text || aiData.user_style_observation || aiData.intent_analysis) {
         await chatSessionApi.update(sessionId, {
@@ -144,7 +148,7 @@ const RepliesPage: React.FC = () => {
         setChatRemark(aiData.chat_remark || '');
       }
 
-      setReplies(aiData.replies || []);
+      setReplies(Array.isArray(aiData.replies) ? aiData.replies : []);
       
       // 数据准备就绪，触发过渡动画
       setShowTransition(true);
@@ -313,6 +317,20 @@ const RepliesPage: React.FC = () => {
     setFeedbackText('');
   };
 
+  const handleImageError = () => {
+    console.error('图片加载失败');
+    // 防止重复触发
+    if (displayImageUrl === null) return;
+    
+    toast({
+      title: '图片显示失败',
+      description: '但这不影响AI生成回复',
+      variant: 'destructive',
+    });
+    // 设置为 null 表示加载失败，不再尝试显示
+    setDisplayImageUrl(null); 
+  };
+
   if (loading) {
     if (showTransition) {
       return (
@@ -374,13 +392,20 @@ const RepliesPage: React.FC = () => {
                 <CardTitle className="text-lg">聊天截图</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="rounded-lg overflow-hidden border border-border">
-                  <img
-                    src={displayImageUrl || session.screenshot_url}
-                    alt="聊天截图"
-                    onError={handleImageError}
-                    className="w-full h-auto max-h-64 object-contain bg-muted"
-                  />
+                <div className="rounded-lg overflow-hidden border border-border flex justify-center bg-muted min-h-[100px] items-center">
+                  {displayImageUrl ? (
+                    <img
+                      src={displayImageUrl}
+                      alt="聊天截图"
+                      onError={handleImageError}
+                      className="w-full h-auto max-h-64 object-contain"
+                    />
+                  ) : (
+                    <div className="text-muted-foreground text-sm p-4 flex flex-col items-center gap-2">
+                      <ImageIcon className="w-8 h-8 opacity-50" />
+                      <span>{displayImageUrl === null ? '图片加载失败' : '暂无图片'}</span>
+                    </div>
+                  )}
                 </div>
                 {session.extracted_text && (
                   <div className="mt-4 p-4 bg-muted rounded-lg">
@@ -441,7 +466,8 @@ const RepliesPage: React.FC = () => {
               为您推荐的回复
             </h2>
 
-            {replies.map((reply, index) => (
+            {replies && replies.length > 0 ? (
+              replies.map((reply, index) => (
               <Card
                 key={index}
                 className={`animate-slide-up transition-all hover:shadow-lg ${
@@ -510,7 +536,11 @@ const RepliesPage: React.FC = () => {
                   </div>
                 </CardContent>
               </Card>
-            ))}
+            ))) : (
+              <div className="text-center py-10 text-muted-foreground">
+                <p>暂时无法生成回复，请稍后重试。</p>
+              </div>
+            )}
 
             {/* 反馈输入区域 */}
             {showFeedbackInput && (

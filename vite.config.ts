@@ -10,6 +10,9 @@ export default defineConfig({
   plugins: [react(), svgr({
       svgrOptions: {
         icon: true, exportType: 'named', namedExport: 'ReactComponent', }, }), miaodaDevPlugin()],
+  build: {
+    target: 'es2015',
+  },
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
