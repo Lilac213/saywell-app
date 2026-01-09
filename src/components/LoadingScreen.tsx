@@ -118,9 +118,9 @@ export const LoadingScreen: React.FC<LoadingScreenProps> = ({ onTransitionEnd })
             repeat: Infinity,
             ease: "easeInOut"
           }}
-          className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center"
+          className="w-24 h-24 rounded-full bg-primary/10 flex items-center justify-center"
         >
-          <div className="w-8 h-8 rounded-full bg-primary/20" />
+          <div className="w-12 h-12 rounded-full bg-primary/20" />
         </motion.div>
       </div>
 

@@ -130,7 +130,7 @@ ${questionnaireText}
         'Authorization': `Bearer ${dashscopeKey}`
       },
       body: JSON.stringify({
-        model: 'qwen-plus', // 使用 qwen-plus 模型
+        model: 'qwen-turbo', // 🚀 切换到 Turbo 模型以提升速度 (用户反馈 10s 太慢)
         messages: [
           { role: 'user', content: prompt }
         ],

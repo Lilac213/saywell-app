@@ -316,7 +316,11 @@ const RepliesPage: React.FC = () => {
             className="space-y-4"
           >
             <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6">
-              <Sparkles className="w-8 h-8 text-primary" />
+              <img 
+                src={logoImage} 
+                alt="好好说" 
+                className="w-8 h-8 object-contain"
+              />
             </div>
             <h2 className="text-xl font-medium text-foreground">
               我帮你整理了几种不同风格的回应方式
