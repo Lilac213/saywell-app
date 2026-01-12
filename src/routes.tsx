@@ -9,6 +9,8 @@ import ChangePasswordPage from './pages/ChangePasswordPage';
 import AdminPage from './pages/AdminPage';
 import PrivacyPage from './pages/PrivacyPage';
 import AgreementPage from './pages/AgreementPage';
+import AIFeedbackListPage from './pages/AIFeedbackListPage';
+import AdminFeedbackPage from './pages/AdminFeedbackPage';
 import type { ReactNode } from 'react';
 
 interface RouteConfig {
@@ -66,6 +68,18 @@ const routes: RouteConfig[] = [
     name: '用户管理',
     path: '/admin',
     element: <AdminPage />,
+    visible: false
+  },
+  {
+    name: 'AI反馈管理',
+    path: '/admin/feedbacks',
+    element: <AdminFeedbackPage />,
+    visible: false
+  },
+  {
+    name: 'AI反馈调教',
+    path: '/feedback-list',
+    element: <AIFeedbackListPage />,
     visible: false
   },
   {

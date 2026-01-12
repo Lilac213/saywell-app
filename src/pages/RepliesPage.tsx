@@ -11,6 +11,7 @@ import { ArrowLeft, Copy, Check, Sparkles, Loader2, User, ImageIcon } from 'luci
 import type { ChatSession, GeneratedReply } from '@/types/types';
 import logoImage from '@/assets/logo.png';
 import { LoadingScreen } from '@/components/LoadingScreen';
+import { AIFeedbackModal } from '@/components/AIFeedbackModal';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const RepliesPage: React.FC = () => {
@@ -32,12 +33,45 @@ const RepliesPage: React.FC = () => {
   const [emotionAnalysis, setEmotionAnalysis] = useState<string>('');
   const [relationship, setRelationship] = useState<string>('');
   const [chatRemark, setChatRemark] = useState<string>('');
+  
+  // AI Feedback Logic
+  const [logoClickCount, setLogoClickCount] = useState(0);
+  const [isFeedbackModalOpen, setIsFeedbackModalOpen] = useState(false);
+  const [feedbackSystemEnabled, setFeedbackSystemEnabled] = useState(true);
 
   useEffect(() => {
     if (sessionId) {
       loadSessionAndGenerateReplies();
     }
+    fetchConfig();
   }, [sessionId]);
+
+  const fetchConfig = async () => {
+    const { data } = await supabase
+      .from('app_config')
+      .select('value')
+      .eq('key', 'ai_feedback_enabled')
+      .single();
+    
+    if (data) {
+      setFeedbackSystemEnabled(data.value);
+    }
+  };
+
+  const handleLogoClick = () => {
+    // Check config first
+    if (!feedbackSystemEnabled) return;
+
+    // Only allow testers to trigger this
+    if (userProfile?.is_tester) {
+      const newCount = logoClickCount + 1;
+      setLogoClickCount(newCount);
+      if (newCount >= 5) {
+        setIsFeedbackModalOpen(true);
+        setLogoClickCount(0);
+      }
+    }
+  };
 
   const loadSessionAndGenerateReplies = async () => {
     if (!sessionId || !userProfile) return;
@@ -369,11 +403,13 @@ const RepliesPage: React.FC = () => {
             <Button variant="ghost" size="icon" className="rounded-full" onClick={() => navigate('/')}>
               <ArrowLeft className="w-5 h-5" />
             </Button>
-            <img 
-              src={logoImage} 
-              alt="好好说Logo" 
-              className="w-7 h-7 rounded-lg object-cover"
-            />
+            <div onClick={handleLogoClick} className="cursor-pointer active:opacity-70 transition-opacity">
+              <img 
+                src={logoImage} 
+                alt="好好说Logo" 
+                className="w-7 h-7 rounded-lg object-cover"
+              />
+            </div>
             <h1 className="text-base font-bold">好好说 · <span className="font-normal text-muted-foreground">SayWell</span></h1>
           </div>
           <Button variant="ghost" size="icon" className="rounded-full" onClick={() => navigate('/profile')}>
@@ -592,6 +628,14 @@ const RepliesPage: React.FC = () => {
           </div>
         </div>
       </main>
+
+      {/* AI Feedback Modal for Testers */}
+      <AIFeedbackModal
+        isOpen={isFeedbackModalOpen}
+        onClose={() => setIsFeedbackModalOpen(false)}
+        aiResultId={sessionId || ''}
+        screenshotUrl={displayImageUrl || undefined}
+      />
     </div>
   );
 };

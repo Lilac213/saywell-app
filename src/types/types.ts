@@ -7,6 +7,9 @@ export interface UserProfile {
   language_habits: Record<string, any>;
   background_story: string | null;
   questionnaire_completed: boolean;
+  user_id?: string;
+  role?: 'user' | 'admin';
+  is_tester?: boolean;
 }
 
 // 聊天会话类型
@@ -28,6 +31,19 @@ export interface ReplySelection {
   generated_replies: string[];
   selected_reply: string;
   selection_index: number;
+}
+
+// AI反馈类型
+export interface AIFeedback {
+  id: string;
+  user_id: string;
+  ai_result_id: string;
+  feedback_type: 'role_confusion' | 'analysis_error' | 'style_mismatch' | 'other';
+  content: string;
+  attach_file?: string;
+  created_at: string;
+  handle_status: 'pending' | 'tuned' | 'verified';
+  handle_note?: string;
 }
 
 // 问卷回答类型

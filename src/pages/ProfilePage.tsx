@@ -1,15 +1,33 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useUserProfile } from '@/contexts/UserProfileContext';
-import { ArrowLeft, User, Sparkles, RefreshCw } from 'lucide-react';
+import { supabase } from '@/db/supabase';
+import { ArrowLeft, User, Sparkles, RefreshCw, Wrench } from 'lucide-react';
 import logoImage from '@/assets/logo.png';
 
 const ProfilePage: React.FC = () => {
   const navigate = useNavigate();
   const { userProfile } = useUserProfile();
+  const [feedbackSystemEnabled, setFeedbackSystemEnabled] = useState(true);
+
+  useEffect(() => {
+    fetchConfig();
+  }, []);
+
+  const fetchConfig = async () => {
+    const { data } = await supabase
+      .from('app_config')
+      .select('value')
+      .eq('key', 'ai_feedback_enabled')
+      .single();
+    
+    if (data) {
+      setFeedbackSystemEnabled(data.value);
+    }
+  };
 
   if (!userProfile) {
     return (
@@ -226,6 +244,31 @@ const ProfilePage: React.FC = () => {
                 <p className="text-sm text-muted-foreground leading-relaxed">
                   {userProfile.background_story}
                 </p>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* 测试人员专用入口 */}
+          {userProfile.is_tester && feedbackSystemEnabled && (
+            <Card className="animate-fade-in border-dashed border-yellow-400 bg-yellow-50" style={{ animationDelay: '0.4s' }}>
+              <CardContent className="p-4 flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-yellow-100 flex items-center justify-center">
+                    <Wrench className="w-5 h-5 text-yellow-600" />
+                  </div>
+                  <div>
+                    <p className="font-medium text-yellow-900">AI反馈调教 (测试专用)</p>
+                    <p className="text-xs text-yellow-700">查看及管理反馈记录</p>
+                  </div>
+                </div>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={() => navigate('/feedback-list')} 
+                  className="bg-white hover:bg-yellow-100 text-yellow-900 border-yellow-200"
+                >
+                  进入列表
+                </Button>
               </CardContent>
             </Card>
           )}

@@ -41,7 +41,7 @@ serve(async (req) => {
     );
 
     const url = new URL(req.url);
-    const action = url.searchParams.get('action'); // 'list' or 'reset_password'
+    const action = url.searchParams.get('action'); // 'list', 'reset_password', 'toggle_tester'
 
     if (req.method === 'GET' || (req.method === 'POST' && action === 'list')) {
       const page = parseInt(url.searchParams.get('page') || '1');
@@ -54,9 +54,24 @@ serve(async (req) => {
 
       if (error) throw error;
       
-      // Enrich with profile data if needed?
-      // For now just return auth users
-      return new Response(JSON.stringify({ users }), {
+      // Fetch profiles for these users to get is_tester status
+      const userIds = users.map(u => u.id);
+      const { data: profiles } = await supabaseAdmin
+        .from('user_profiles')
+        .select('user_id, is_tester, role')
+        .in('user_id', userIds);
+
+      // Merge data
+      const enrichedUsers = users.map(u => {
+        const p = profiles?.find(prof => prof.user_id === u.id);
+        return {
+          ...u,
+          is_tester: p?.is_tester || false,
+          role: p?.role || 'user'
+        };
+      });
+
+      return new Response(JSON.stringify({ users: enrichedUsers }), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         status: 200,
       });
@@ -74,6 +89,24 @@ serve(async (req) => {
       if (error) throw error;
 
       return new Response(JSON.stringify({ message: 'Password reset successfully' }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        status: 200,
+      });
+    }
+
+    if (req.method === 'POST' && action === 'toggle_tester') {
+      const { userId, isTester } = await req.json();
+      if (!userId) throw new Error('Missing userId');
+
+      // Update user_profiles
+      const { error } = await supabaseAdmin
+        .from('user_profiles')
+        .update({ is_tester: isTester })
+        .eq('user_id', userId);
+
+      if (error) throw error;
+
+      return new Response(JSON.stringify({ message: 'Tester status updated' }), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         status: 200,
       });
