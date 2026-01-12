@@ -5,13 +5,21 @@ import { useToast } from '@/hooks/use-toast';
 import { useUserProfile } from '@/contexts/UserProfileContext';
 import { chatSessionApi } from '@/db/api';
 import { supabase } from '@/db/supabase';
-import { Upload, Image as ImageIcon, User, Sparkles, Info, X, Loader2 } from 'lucide-react';
+import { Upload, Image as ImageIcon, User, Sparkles, Info, X, Loader2, LogOut, Settings, Shield } from 'lucide-react';
 import logoImage from '@/assets/logo.png';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const HomePage: React.FC = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { userProfile, loading: profileLoading, createProfile, updateProfile } = useUserProfile();
+  const { userProfile, loading: profileLoading, createProfile, updateProfile, session, signOut } = useUserProfile();
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
@@ -257,9 +265,43 @@ const HomePage: React.FC = () => {
             />
             <h1 className="text-base font-bold">好好说 · <span className="font-normal text-muted-foreground">SayWell</span></h1>
           </div>
-          <Button variant="ghost" size="icon" className="rounded-full" onClick={() => navigate('/profile')}>
-            <User className="w-5 h-5" />
-          </Button>
+          
+          {session ? (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon" className="rounded-full">
+                  <User className="w-5 h-5" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuLabel>我的账号</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={() => navigate('/profile')}>
+                  <User className="mr-2 h-4 w-4" />
+                  我的画像
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => navigate('/change-password')}>
+                  <Settings className="mr-2 h-4 w-4" />
+                  修改密码
+                </DropdownMenuItem>
+                {userProfile?.role === 'admin' && (
+                  <DropdownMenuItem onClick={() => navigate('/admin')}>
+                    <Shield className="mr-2 h-4 w-4" />
+                    用户管理
+                  </DropdownMenuItem>
+                )}
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={() => { signOut(); navigate('/auth'); }}>
+                  <LogOut className="mr-2 h-4 w-4" />
+                  退出登录
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ) : (
+            <Button variant="outline" size="sm" onClick={() => navigate('/auth')}>
+              登录 / 注册
+            </Button>
+          )}
         </div>
       </header>
 

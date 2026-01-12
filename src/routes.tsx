@@ -3,6 +3,12 @@ import QuestionnairePage from './pages/QuestionnairePage';
 import RepliesPage from './pages/RepliesPage';
 import HistoryPage from './pages/HistoryPage';
 import ProfilePage from './pages/ProfilePage';
+import AuthPage from './pages/AuthPage';
+import ForgotPasswordPage from './pages/ForgotPasswordPage';
+import ChangePasswordPage from './pages/ChangePasswordPage';
+import AdminPage from './pages/AdminPage';
+import PrivacyPage from './pages/PrivacyPage';
+import AgreementPage from './pages/AgreementPage';
 import type { ReactNode } from 'react';
 
 interface RouteConfig {
@@ -37,6 +43,42 @@ const routes: RouteConfig[] = [
     name: '我的画像',
     path: '/profile',
     element: <ProfilePage />
+  },
+  {
+    name: '登录/注册',
+    path: '/auth',
+    element: <AuthPage />,
+    visible: false
+  },
+  {
+    name: '忘记密码',
+    path: '/forgot-password',
+    element: <ForgotPasswordPage />,
+    visible: false
+  },
+  {
+    name: '修改密码',
+    path: '/change-password',
+    element: <ChangePasswordPage />,
+    visible: false
+  },
+  {
+    name: '用户管理',
+    path: '/admin',
+    element: <AdminPage />,
+    visible: false
+  },
+  {
+    name: '隐私政策',
+    path: '/privacy',
+    element: <PrivacyPage />,
+    visible: false
+  },
+  {
+    name: '用户协议',
+    path: '/agreement',
+    element: <AgreementPage />,
+    visible: false
   }
 ];
 
