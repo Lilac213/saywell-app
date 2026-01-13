@@ -102,8 +102,14 @@ export const AIFeedbackModal: React.FC<AIFeedbackModalProps> = ({
       });
 
       // Trigger AI optimization immediately
-      if (userProfile && feedbackData) {
-        console.log("Starting AI analysis for feedback:", feedbackData.id);
+      // 只要有 userProfile 就尝试进行 AI 优化，即使 feedbackData 因为 RLS 问题没返回
+      if (userProfile) {
+        console.log("Starting AI analysis...", { 
+          hasProfile: true, 
+          hasFeedbackData: !!feedbackData,
+          feedbackId: feedbackData?.id 
+        });
+
         const { data: analysisData, error: analysisError } = await supabase.functions.invoke('analyze-feedback', {
           body: {
             feedbackText: content,
@@ -113,7 +119,7 @@ export const AIFeedbackModal: React.FC<AIFeedbackModalProps> = ({
               language_habits: userProfile.language_habits,
               background_story: userProfile.background_story,
             },
-            feedbackId: feedbackData.id,
+            feedbackId: feedbackData?.id, // Optional
             feedbackType: feedbackType
           }
         });
@@ -149,19 +155,22 @@ export const AIFeedbackModal: React.FC<AIFeedbackModalProps> = ({
           });
         } else {
           console.log("AI analysis successful:", analysisData);
-          // 如果云函数分析成功，但由于云函数版本旧未更新状态，前端补救更新状态
-          try {
-             const { error: updateStatusError } = await supabase
-              .from('ai_feedbacks')
-              .update({ 
-                handle_status: 'tuned',
-                handle_note: 'AI已自动根据反馈优化画像 (Client-side verified)'
-              })
-              .eq('id', feedbackData.id);
-             
-             if (updateStatusError) console.error("Client-side status update failed", updateStatusError);
-          } catch (e) {
-            console.error("Client-side status update exception", e);
+          
+          // 只有当有 feedbackData 时才更新状态
+          if (feedbackData?.id) {
+            try {
+               const { error: updateStatusError } = await supabase
+                .from('ai_feedbacks')
+                .update({ 
+                  handle_status: 'tuned',
+                  handle_note: 'AI已自动根据反馈优化画像 (Client-side verified)'
+                })
+                .eq('id', feedbackData.id);
+               
+               if (updateStatusError) console.error("Client-side status update failed", updateStatusError);
+            } catch (e) {
+              console.error("Client-side status update exception", e);
+            }
           }
 
           toast({
@@ -170,10 +179,11 @@ export const AIFeedbackModal: React.FC<AIFeedbackModalProps> = ({
           });
         }
       } else {
-         console.warn("Skipping AI analysis: userProfile or feedbackData missing", { userProfile: !!userProfile, feedbackData: !!feedbackData });
+         console.warn("Skipping AI analysis: userProfile missing", { userProfile: !!userProfile });
          toast({
           title: "反馈提交成功",
-          description: "已同步至AI训练库 (未触发自动优化)",
+          description: "已同步至AI库 (未触发优化: 缺少用户画像)",
+          variant: "destructive" // 使用红色提示引起注意
         });
       }
 
