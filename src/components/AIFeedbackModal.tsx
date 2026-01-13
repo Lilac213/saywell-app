@@ -103,6 +103,7 @@ export const AIFeedbackModal: React.FC<AIFeedbackModalProps> = ({
 
       // Trigger AI optimization immediately
       if (userProfile && feedbackData) {
+        console.log("Starting AI analysis for feedback:", feedbackData.id);
         const { data: analysisData, error: analysisError } = await supabase.functions.invoke('analyze-feedback', {
           body: {
             feedbackText: content,
@@ -117,22 +118,28 @@ export const AIFeedbackModal: React.FC<AIFeedbackModalProps> = ({
           }
         });
 
-        if (analysisError) {
-          console.error('AI optimization failed:', analysisError);
+        // 检查 HTTP 错误或业务逻辑错误
+        if (analysisError || (analysisData && analysisData.error)) {
+          console.error('AI optimization failed:', analysisError || analysisData?.error);
+          
           // 尝试解析错误信息
           let errorMsg = "请稍后重试";
-          try {
-             // 如果是 FunctionsHttpError，可能包含详细信息
-             if (analysisError instanceof Error) {
-               errorMsg = analysisError.message;
-             }
-             // 尝试读取 response body 如果有
-             if ('context' in analysisError && (analysisError as any).context?.json) {
-                const body = await (analysisError as any).context.json();
-                if (body.error) errorMsg = body.error;
-             }
-          } catch (e) {
-             console.error("Error parsing analysis error", e);
+          if (analysisData && analysisData.error) {
+            errorMsg = analysisData.error;
+          } else {
+            try {
+               // 如果是 FunctionsHttpError，可能包含详细信息
+               if (analysisError instanceof Error) {
+                 errorMsg = analysisError.message;
+               }
+               // 尝试读取 response body 如果有
+               if ('context' in analysisError && (analysisError as any).context?.json) {
+                  const body = await (analysisError as any).context.json();
+                  if (body.error) errorMsg = body.error;
+               }
+            } catch (e) {
+               console.error("Error parsing analysis error", e);
+            }
           }
 
           toast({
@@ -141,6 +148,7 @@ export const AIFeedbackModal: React.FC<AIFeedbackModalProps> = ({
             variant: "destructive"
           });
         } else {
+          console.log("AI analysis successful:", analysisData);
           // 如果云函数分析成功，但由于云函数版本旧未更新状态，前端补救更新状态
           try {
              const { error: updateStatusError } = await supabase
@@ -162,6 +170,7 @@ export const AIFeedbackModal: React.FC<AIFeedbackModalProps> = ({
           });
         }
       } else {
+         console.warn("Skipping AI analysis: userProfile or feedbackData missing", { userProfile: !!userProfile, feedbackData: !!feedbackData });
          toast({
           title: "反馈提交成功",
           description: "已同步至AI训练库 (未触发自动优化)",

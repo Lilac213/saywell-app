@@ -40,11 +40,11 @@ const RepliesPage: React.FC = () => {
   const [feedbackSystemEnabled, setFeedbackSystemEnabled] = useState(true);
 
   useEffect(() => {
-    if (sessionId) {
+    if (sessionId && userProfile) {
       loadSessionAndGenerateReplies();
     }
     fetchConfig();
-  }, [sessionId]);
+  }, [sessionId, userProfile]);
 
   const fetchConfig = async () => {
     const { data } = await supabase
@@ -286,7 +286,7 @@ const RepliesPage: React.FC = () => {
       // 调用Edge Function分析反馈并更新画像
       if (userProfile) {
         console.time('FeedbackAnalysis'); // ⏱️ 开始计时：反馈分析
-        const { data, error } = await supabase.functions.invoke('analyze-feedback', {
+        const { data: analysisData, error: analysisError } = await supabase.functions.invoke('analyze-feedback', {
           body: {
             feedbackText,
             userProfileId: userProfile.id,
@@ -299,19 +299,24 @@ const RepliesPage: React.FC = () => {
         });
         console.timeEnd('FeedbackAnalysis'); // ⏱️ 结束计时：反馈分析
 
-        if (error) {
-          const errorMsg = await error?.context?.text?.();
-          console.error('分析反馈失败:', errorMsg || error?.message || error);
+        if (analysisError || (analysisData && analysisData.error)) {
+          // 尝试解析错误信息
+          let errorMsg = "请稍后重试";
+          if (analysisData && analysisData.error) {
+             errorMsg = analysisData.error;
+          } else {
+             try {
+                if (analysisError instanceof Error) errorMsg = analysisError.message;
+                const contextError = await analysisError?.context?.text?.();
+                if (contextError) errorMsg = contextError;
+             } catch (e) { console.error(e); }
+          }
+          
+          console.error('分析反馈失败:', errorMsg);
+          
           toast({
             title: '反馈已保存',
-            description: `但画像更新失败：${errorMsg || error?.message || '请稍后重试'}`,
-            variant: 'destructive',
-          });
-        } else if (data?.error) {
-          console.error('Edge Function返回错误:', data.error);
-          toast({
-            title: '反馈已保存',
-            description: `但画像更新失败：${data.error}`,
+            description: `但画像更新失败：${errorMsg}`,
             variant: 'destructive',
           });
         } else {
