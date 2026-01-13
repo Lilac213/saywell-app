@@ -84,6 +84,49 @@ const RepliesPage: React.FC = () => {
     };
     let totalTimerStarted = false;
 
+    // Check for cached replies first
+    const cachedReplies = sessionStorage.getItem(`replies_${sessionId}`);
+    
+    // Check if we need to fetch new data or use cached
+    if (cachedReplies) {
+      try {
+        const parsedCache = JSON.parse(cachedReplies);
+        // Basic validation of cache structure
+        if (parsedCache.replies && Array.isArray(parsedCache.replies)) {
+           console.log("Using cached replies for session:", sessionId);
+           
+           // Still need to fetch session data for image/context
+           console.time(timers.fetchSession);
+           const sessionData = await chatSessionApi.getById(sessionId);
+           if (!sessionData) throw new Error('会话不存在');
+           setSession(sessionData);
+           if (sessionData.screenshot_url) setDisplayImageUrl(sessionData.screenshot_url);
+           console.timeEnd(timers.fetchSession);
+
+           // Restore state from cache/session
+           setReplies(parsedCache.replies);
+           if (parsedCache.aiData) {
+              setIntentAnalysis(parsedCache.aiData.intent_analysis || '');
+              setEmotionAnalysis(parsedCache.aiData.emotion_analysis || '');
+              setRelationship(parsedCache.aiData.relationship || '');
+              setChatRemark(parsedCache.aiData.chat_remark || '');
+           } else if (sessionData.context) {
+              // Fallback to session context if aiData missing in cache
+              setIntentAnalysis(sessionData.context.intent_analysis || '');
+              setEmotionAnalysis(sessionData.context.emotion_analysis || '');
+              setRelationship(sessionData.context.relationship || '');
+              setChatRemark(sessionData.context.chat_remark || '');
+           }
+
+           setLoading(false);
+           return;
+        }
+      } catch (e) {
+        console.warn("Invalid cache, reloading...", e);
+        sessionStorage.removeItem(`replies_${sessionId}`);
+      }
+    }
+
     try {
       console.time(timers.total); // ⏱️ 开始计时：总流程
       totalTimerStarted = true;
@@ -184,6 +227,13 @@ const RepliesPage: React.FC = () => {
 
       setReplies(Array.isArray(aiData.replies) ? aiData.replies : []);
       
+      // Save to cache
+      sessionStorage.setItem(`replies_${sessionId}`, JSON.stringify({
+        replies: Array.isArray(aiData.replies) ? aiData.replies : [],
+        aiData: aiData,
+        timestamp: Date.now()
+      }));
+
       // 数据准备就绪，触发过渡动画
       setShowTransition(true);
       // 延迟关闭loading，让过渡动画展示完
