@@ -97,6 +97,9 @@ const AuthPage: React.FC = () => {
       const { data, error } = await supabase.auth.signUp({
         email: regEmail,
         password: regPassword,
+        options: {
+          emailRedirectTo: window.location.origin,
+        },
       });
 
       if (error) throw error;
