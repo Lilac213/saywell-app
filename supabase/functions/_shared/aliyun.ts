@@ -1,4 +1,3 @@
-import { hmac } from "https://deno.land/x/hmac@v2.0.1/mod.ts";
 
 interface AliyunConfig {
   accessKeyId: string;
@@ -21,20 +20,44 @@ export class AliyunClient {
     return new Date().toISOString().replace(/\.\d+Z$/, 'Z');
   }
 
-  private getSignature(params: Record<string, string>, method: string = 'POST'): string {
-    const sortedKeys = Object.keys(params).sort();
-    const canonicalizedQueryString = sortedKeys.map(key => {
-      return `${encodeURIComponent(key)}=${encodeURIComponent(params[key])}`;
-    }).join('&');
-
-    const stringToSign = `${method}&${encodeURIComponent('/')}&${encodeURIComponent(canonicalizedQueryString)}`;
-    
-    // HMAC-SHA1
-    const signature = hmac('sha1', `${this.accessKeySecret}&`, stringToSign, 'utf8', 'base64');
-    return signature as string;
+  private percentEncode(str: string): string {
+    return encodeURIComponent(str)
+      .replace(/!/g, '%21')
+      .replace(/'/g, '%27')
+      .replace(/\(/g, '%28')
+      .replace(/\)/g, '%29')
+      .replace(/\*/g, '%2A');
   }
 
-  private async request(action: string, params: Record<string, any>) {
+  private async getSignature(params: Record<string, string>, method: string = 'POST'): Promise<string> {
+    const sortedKeys = Object.keys(params).sort();
+    const canonicalizedQueryString = sortedKeys.map(key => {
+      return `${this.percentEncode(key)}=${this.percentEncode(params[key])}`;
+    }).join('&');
+
+    const stringToSign = `${method}&${this.percentEncode('/')}&${this.percentEncode(canonicalizedQueryString)}`;
+    
+    const encoder = new TextEncoder();
+    const keyData = encoder.encode(`${this.accessKeySecret}&`);
+    
+    const key = await crypto.subtle.importKey(
+      'raw',
+      keyData,
+      { name: 'HMAC', hash: 'SHA-1' },
+      false,
+      ['sign']
+    );
+
+    const signature = await crypto.subtle.sign(
+      'HMAC',
+      key,
+      encoder.encode(stringToSign)
+    );
+
+    return btoa(String.fromCharCode(...new Uint8Array(signature)));
+  }
+
+  public async request(action: string, params: Record<string, any>) {
     const timestamp = this.getTimestamp();
     const nonce = Math.random().toString(36).substring(2);
 
@@ -50,7 +73,7 @@ export class AliyunClient {
       ...params
     };
 
-    const signature = this.getSignature(commonParams);
+    const signature = await this.getSignature(commonParams);
     const requestParams = new URLSearchParams();
     for (const key in commonParams) {
       requestParams.append(key, commonParams[key]);
@@ -73,17 +96,13 @@ export class AliyunClient {
     return await response.json();
   }
 
-  async sendSmsVerifyCode(phoneNumber: string) {
-    return this.request('SendSmsVerifyCode', {
-      'PhoneNumber': phoneNumber,
-      'SceneCode': 'Register_Login' // Assuming generic scene or need config
-    });
-  }
-
-  async checkSmsVerifyCode(phoneNumber: string, verifyCode: string) {
-    return this.request('CheckSmsVerifyCode', {
-      'PhoneNumber': phoneNumber,
-      'VerifyCode': verifyCode
+  async sendSms(phoneNumber: string, signName: string, templateCode: string, templateParam: object) {
+    this.endpoint = 'https://dysmsapi.aliyuncs.com';
+    return this.request('SendSms', {
+      'PhoneNumbers': phoneNumber,
+      'SignName': signName,
+      'TemplateCode': templateCode,
+      'TemplateParam': JSON.stringify(templateParam)
     });
   }
 }
