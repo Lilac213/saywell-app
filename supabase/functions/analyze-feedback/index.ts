@@ -13,7 +13,7 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const { feedbackText, userProfileId, existingProfile } = await req.json();
+    const { feedbackText, userProfileId, existingProfile, feedbackId, feedbackType } = await req.json();
 
     if (!feedbackText || !userProfileId || !existingProfile) {
       return new Response(
@@ -23,10 +23,21 @@ Deno.serve(async (req) => {
     }
 
     // 构建提示词
+    let typeContext = '';
+    if (feedbackType) {
+      const typeMap: Record<string, string> = {
+        'role_confusion': '角色混淆',
+        'analysis_error': '分析错误',
+        'style_mismatch': '回复风格不符',
+        'other': '其他问题'
+      };
+      typeContext = `反馈类型：${typeMap[feedbackType] || feedbackType}\n`;
+    }
+
     const prompt = `你是一个用户画像分析专家。用户提供了反馈，请从中提炼关键信息并更新用户画像。
 
 用户反馈：
-${feedbackText}
+${typeContext}${feedbackText}
 
 当前用户画像：
 ${JSON.stringify(existingProfile, null, 2)}
@@ -133,6 +144,22 @@ ${JSON.stringify(existingProfile, null, 2)}
 
     if (updateError) {
       throw updateError;
+    }
+
+    // 如果提供了 feedbackId，更新反馈状态为已处理 (tuned)
+    if (feedbackId) {
+      const { error: feedbackUpdateError } = await supabase
+        .from('ai_feedbacks')
+        .update({ 
+          handle_status: 'tuned',
+          handle_note: 'AI已自动根据反馈优化画像'
+        })
+        .eq('id', feedbackId);
+      
+      if (feedbackUpdateError) {
+        console.error('更新反馈状态失败:', feedbackUpdateError);
+        // 不阻断流程，因为画像已经更新成功了
+      }
     }
 
     return new Response(

@@ -631,11 +631,12 @@ const RepliesPage: React.FC = () => {
 
       {/* AI Feedback Modal for Testers */}
       <AIFeedbackModal
-        isOpen={isFeedbackModalOpen}
-        onClose={() => setIsFeedbackModalOpen(false)}
-        aiResultId={sessionId || ''}
-        screenshotUrl={displayImageUrl || undefined}
-      />
+          isOpen={isFeedbackModalOpen}
+          onClose={() => setIsFeedbackModalOpen(false)}
+          aiResultId={sessionId || ''}
+          screenshotUrl={displayImageUrl || undefined}
+          userProfile={userProfile}
+        />
     </div>
   );
 };

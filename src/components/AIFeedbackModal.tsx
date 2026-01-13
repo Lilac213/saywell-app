@@ -21,19 +21,22 @@ import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/db/supabase";
 import { Loader2, Paperclip } from "lucide-react";
+import type { UserProfile } from "@/types/types";
 
 interface AIFeedbackModalProps {
   isOpen: boolean;
   onClose: () => void;
   aiResultId: string;
   screenshotUrl?: string; // Pre-fill with current screenshot if available
+  userProfile?: UserProfile | null;
 }
 
 export const AIFeedbackModal: React.FC<AIFeedbackModalProps> = ({
   isOpen,
   onClose,
   aiResultId,
-  screenshotUrl
+  screenshotUrl,
+  userProfile
 }) => {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -80,21 +83,60 @@ export const AIFeedbackModal: React.FC<AIFeedbackModalProps> = ({
       }
 
       // Insert feedback
-      const { error: insertError } = await supabase
+      const { data: feedbackData, error: insertError } = await supabase
         .from('ai_feedbacks')
         .insert({
           ai_result_id: aiResultId,
           feedback_type: feedbackType,
           content: content,
           attach_file: attachmentUrl,
-        });
+        })
+        .select()
+        .single();
 
       if (insertError) throw insertError;
 
       toast({
-        title: "反馈提交成功",
-        description: "已同步至AI训练库",
+        title: "反馈已记录",
+        description: "正在根据您的反馈优化模型...",
       });
+
+      // Trigger AI optimization immediately
+      if (userProfile && feedbackData) {
+        const { error: analysisError } = await supabase.functions.invoke('analyze-feedback', {
+          body: {
+            feedbackText: content,
+            userProfileId: userProfile.id,
+            existingProfile: {
+              personality_traits: userProfile.personality_traits,
+              language_habits: userProfile.language_habits,
+              background_story: userProfile.background_story,
+            },
+            feedbackId: feedbackData.id,
+            feedbackType: feedbackType
+          }
+        });
+
+        if (analysisError) {
+          console.error('AI optimization failed:', analysisError);
+          toast({
+            title: "反馈已保存",
+            description: "但自动优化暂时失败，我们将稍后处理",
+            variant: "destructive"
+          });
+        } else {
+          toast({
+            title: "优化完成",
+            description: "您的画像已更新，下次回复将更符合您的期望",
+          });
+        }
+      } else {
+         toast({
+          title: "反馈提交成功",
+          description: "已同步至AI训练库",
+        });
+      }
+
       onClose();
       // Reset form
       setFeedbackType('');
