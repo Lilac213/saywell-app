@@ -8,7 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/db/supabase';
-import { Loader2, Phone, Lock, MessageSquare } from 'lucide-react';
+import { Loader2, Phone, Lock, MessageSquare, Mail } from 'lucide-react';
 
 const AuthPage: React.FC = () => {
   const navigate = useNavigate();
@@ -16,16 +16,19 @@ const AuthPage: React.FC = () => {
   const [loading, setLoading] = useState(false);
   
   // Login State
-  const [loginPhone, setLoginPhone] = useState('');
+  // const [loginPhone, setLoginPhone] = useState('');
+  const [loginEmail, setLoginEmail] = useState('');
   const [loginPassword, setLoginPassword] = useState('');
 
   // Register State
-  const [regPhone, setRegPhone] = useState('');
-  const [regCode, setRegCode] = useState('');
+  // const [regPhone, setRegPhone] = useState('');
+  // const [regCode, setRegCode] = useState('');
+  const [regEmail, setRegEmail] = useState('');
   const [regPassword, setRegPassword] = useState('');
   const [agreed, setAgreed] = useState(false);
-  const [countdown, setCountdown] = useState(0);
+  // const [countdown, setCountdown] = useState(0);
 
+  /*
   const handleSendCode = async () => {
     if (!regPhone) {
       toast({ title: '请输入手机号', variant: 'destructive' });
@@ -57,22 +60,22 @@ const AuthPage: React.FC = () => {
       toast({ title: '发送失败', description: error.message, variant: 'destructive' });
     }
   };
+  */
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!loginPhone || !loginPassword) return;
+    if (!loginEmail || !loginPassword) return;
 
     setLoading(true);
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
-        phone: `+86${loginPhone}`,
+        email: loginEmail,
         password: loginPassword,
       });
 
       if (error) throw error;
 
       toast({ title: '登录成功' });
-      // Redirect based on role? Or just home
       navigate('/');
     } catch (error) {
       toast({ title: '登录失败', description: error.message, variant: 'destructive' });
@@ -83,7 +86,7 @@ const AuthPage: React.FC = () => {
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!regPhone || !regCode || !regPassword) return;
+    if (!regEmail || !regPassword) return;
     if (!agreed) {
       toast({ title: '请同意用户协议', variant: 'destructive' });
       return;
@@ -91,25 +94,21 @@ const AuthPage: React.FC = () => {
 
     setLoading(true);
     try {
-      const { data, error } = await supabase.functions.invoke('auth-operations', {
-        body: {
-          type: 'register',
-          phone: regPhone,
-          code: regCode,
-          password: regPassword
-        }
+      const { data, error } = await supabase.auth.signUp({
+        email: regEmail,
+        password: regPassword,
       });
 
       if (error) throw error;
 
-      toast({ title: '注册成功', description: '请登录' });
-      // Switch to login tab? Or auto login?
-      // Auto login
-      await supabase.auth.signInWithPassword({
-        phone: `+86${regPhone}`,
-        password: regPassword,
-      });
-      navigate('/');
+      if (data.session) {
+        toast({ title: '注册成功', description: '已自动登录' });
+        navigate('/');
+      } else if (data.user) {
+         // Email confirmation case
+         toast({ title: '注册成功', description: '请检查邮箱并验证账号', duration: 5000 });
+         // Switch to login or just stay
+      }
     } catch (error) {
       toast({ title: '注册失败', description: error.message, variant: 'destructive' });
     } finally {
@@ -134,15 +133,16 @@ const AuthPage: React.FC = () => {
             <TabsContent value="login">
               <form onSubmit={handleLogin} className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="phone">手机号</Label>
+                  <Label htmlFor="email">邮箱</Label>
                   <div className="relative">
-                    <Phone className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                    <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                     <Input 
-                      id="phone" 
-                      placeholder="请输入手机号" 
+                      id="email" 
+                      type="email"
+                      placeholder="请输入邮箱" 
                       className="pl-9"
-                      value={loginPhone}
-                      onChange={e => setLoginPhone(e.target.value)}
+                      value={loginEmail}
+                      onChange={e => setLoginEmail(e.target.value)}
                     />
                   </div>
                 </div>
@@ -175,18 +175,20 @@ const AuthPage: React.FC = () => {
             <TabsContent value="register">
               <form onSubmit={handleRegister} className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="reg-phone">手机号</Label>
+                  <Label htmlFor="reg-email">邮箱</Label>
                   <div className="relative">
-                    <Phone className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                    <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                     <Input 
-                      id="reg-phone" 
-                      placeholder="请输入手机号" 
+                      id="reg-email" 
+                      type="email"
+                      placeholder="请输入邮箱" 
                       className="pl-9"
-                      value={regPhone}
-                      onChange={e => setRegPhone(e.target.value)}
+                      value={regEmail}
+                      onChange={e => setRegEmail(e.target.value)}
                     />
                   </div>
                 </div>
+                {/* 
                 <div className="space-y-2">
                   <Label htmlFor="code">验证码</Label>
                   <div className="flex gap-2">
@@ -211,6 +213,7 @@ const AuthPage: React.FC = () => {
                     </Button>
                   </div>
                 </div>
+                */}
                 <div className="space-y-2">
                   <Label htmlFor="reg-password">设置密码</Label>
                   <div className="relative">

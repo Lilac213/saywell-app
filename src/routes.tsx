@@ -6,6 +6,7 @@ import ProfilePage from './pages/ProfilePage';
 import AuthPage from './pages/AuthPage';
 import ForgotPasswordPage from './pages/ForgotPasswordPage';
 import ChangePasswordPage from './pages/ChangePasswordPage';
+import ResetPasswordPage from './pages/ResetPasswordPage';
 import AdminPage from './pages/AdminPage';
 import PrivacyPage from './pages/PrivacyPage';
 import AgreementPage from './pages/AgreementPage';
@@ -62,6 +63,12 @@ const routes: RouteConfig[] = [
     name: '修改密码',
     path: '/change-password',
     element: <ChangePasswordPage />,
+    visible: false
+  },
+  {
+    name: '重置密码',
+    path: '/reset-password',
+    element: <ResetPasswordPage />,
     visible: false
   },
   {

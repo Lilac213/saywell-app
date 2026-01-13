@@ -147,3 +147,19 @@ create policy "Admins can update app_config"
       where user_id = auth.uid() and role = 'admin'
     )
   );
+
+-- 6. Setup automatic user profile creation
+-- Function to handle new user signup
+create or replace function public.handle_new_user() 
+returns trigger as $$
+begin
+  insert into public.user_profiles (user_id, role, is_tester)
+  values (new.id, 'user', false);
+  return new;
+end;
+$$ language plpgsql security definer;
+
+-- Trigger to call the function
+create or replace trigger on_auth_user_created
+  after insert on auth.users
+  for each row execute procedure public.handle_new_user();
