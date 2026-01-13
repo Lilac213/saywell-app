@@ -53,18 +53,37 @@ const AdminPage: React.FC = () => {
 
   const fetchUsers = async () => {
     try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        throw new Error('No active session');
+      }
+
       const { data, error } = await supabase.functions.invoke('admin-users', {
         method: 'GET',
         headers: {
-          // Pass current session auth
+          Authorization: `Bearer ${session.access_token}`
         }
       });
       if (error) throw error;
       setUsers(data.users || []);
     } catch (error: any) {
-      console.error(error);
-      toast({ title: '加载失败', description: '无法获取用户列表，请确认权限', variant: 'destructive' });
-      navigate('/');
+      console.error('Fetch users error:', error);
+      // Try to parse the error message if it's a JSON string
+      let errorMessage = error.message;
+      try {
+        const parsed = JSON.parse(error.message);
+        if (parsed && parsed.error) errorMessage = parsed.error;
+      } catch (e) {
+        // ignore
+      }
+      
+      toast({ 
+        title: '加载失败', 
+        description: `无法获取用户列表: ${errorMessage || '请确认权限'}`, 
+        variant: 'destructive' 
+      });
+      // Don't navigate away immediately so user can see the error
+      // navigate('/'); 
     } finally {
       setLoading(false);
     }
