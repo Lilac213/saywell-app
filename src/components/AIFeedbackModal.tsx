@@ -44,6 +44,13 @@ export const AIFeedbackModal: React.FC<AIFeedbackModalProps> = ({
   const [content, setContent] = useState('');
   const [file, setFile] = useState<File | null>(null);
 
+  const getPlaceholder = () => {
+    if (feedbackType === 'role_confusion') {
+      return "请务必提供正确的对话文本，格式如下：\n对方：[对方说的话]\n用户：[我说的话]\n\n（这将帮助AI重新学习您的语言风格）";
+    }
+    return "请描述AI的错误点及正确结果 (不少于10字)";
+  };
+
   const handleSubmit = async () => {
     if (!feedbackType) {
       toast({
@@ -233,7 +240,7 @@ export const AIFeedbackModal: React.FC<AIFeedbackModalProps> = ({
             <Label htmlFor="content">具体问题描述 <span className="text-red-500">*</span></Label>
             <Textarea
               id="content"
-              placeholder="请描述AI的错误点及正确结果 (不少于10字)"
+              placeholder={getPlaceholder()}
               value={content}
               onChange={(e) => setContent(e.target.value)}
               className="min-h-[100px]"
