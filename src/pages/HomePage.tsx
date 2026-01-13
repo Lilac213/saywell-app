@@ -23,11 +23,20 @@ const HomePage: React.FC = () => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
+  const [isInitializing, setIsInitializing] = useState(true);
 
   // 自动创建默认画像（如果不存在）
   useEffect(() => {
+    if (profileLoading) return;
+
     const initProfile = async () => {
-      if (!profileLoading && !userProfile) {
+      if (userProfile) {
+        setIsInitializing(false);
+        return;
+      }
+
+      // 如果没有画像，尝试创建
+      try {
         const profile = await createProfile();
         if (profile) {
           await updateProfile({
@@ -45,6 +54,10 @@ const HomePage: React.FC = () => {
             questionnaire_completed: true,
           });
         }
+      } catch (error) {
+        console.error('Failed to init profile:', error);
+      } finally {
+        setIsInitializing(false);
       }
     };
 
@@ -129,7 +142,7 @@ const HomePage: React.FC = () => {
   };
 
   const handleUpload = async () => {
-    if (!selectedFile) return;
+    if (!selectedFile || uploading) return;
 
     if (!userProfile) {
       toast({
@@ -241,7 +254,7 @@ const HomePage: React.FC = () => {
     e.preventDefault();
   };
 
-  if (profileLoading) {
+  if (profileLoading || isInitializing) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
