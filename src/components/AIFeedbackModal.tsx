@@ -103,7 +103,7 @@ export const AIFeedbackModal: React.FC<AIFeedbackModalProps> = ({
 
       // Trigger AI optimization immediately
       if (userProfile && feedbackData) {
-        const { error: analysisError } = await supabase.functions.invoke('analyze-feedback', {
+        const { data: analysisData, error: analysisError } = await supabase.functions.invoke('analyze-feedback', {
           body: {
             feedbackText: content,
             userProfileId: userProfile.id,
@@ -119,12 +119,43 @@ export const AIFeedbackModal: React.FC<AIFeedbackModalProps> = ({
 
         if (analysisError) {
           console.error('AI optimization failed:', analysisError);
+          // 尝试解析错误信息
+          let errorMsg = "请稍后重试";
+          try {
+             // 如果是 FunctionsHttpError，可能包含详细信息
+             if (analysisError instanceof Error) {
+               errorMsg = analysisError.message;
+             }
+             // 尝试读取 response body 如果有
+             if ('context' in analysisError && (analysisError as any).context?.json) {
+                const body = await (analysisError as any).context.json();
+                if (body.error) errorMsg = body.error;
+             }
+          } catch (e) {
+             console.error("Error parsing analysis error", e);
+          }
+
           toast({
-            title: "反馈已保存",
-            description: "但自动优化暂时失败，我们将稍后处理",
+            title: "自动优化失败",
+            description: `原因: ${errorMsg}`,
             variant: "destructive"
           });
         } else {
+          // 如果云函数分析成功，但由于云函数版本旧未更新状态，前端补救更新状态
+          try {
+             const { error: updateStatusError } = await supabase
+              .from('ai_feedbacks')
+              .update({ 
+                handle_status: 'tuned',
+                handle_note: 'AI已自动根据反馈优化画像 (Client-side verified)'
+              })
+              .eq('id', feedbackData.id);
+             
+             if (updateStatusError) console.error("Client-side status update failed", updateStatusError);
+          } catch (e) {
+            console.error("Client-side status update exception", e);
+          }
+
           toast({
             title: "优化完成",
             description: "您的画像已更新，下次回复将更符合您的期望",
@@ -133,7 +164,7 @@ export const AIFeedbackModal: React.FC<AIFeedbackModalProps> = ({
       } else {
          toast({
           title: "反馈提交成功",
-          description: "已同步至AI训练库",
+          description: "已同步至AI训练库 (未触发自动优化)",
         });
       }
 
