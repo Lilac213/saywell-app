@@ -138,7 +138,7 @@ const AdminPage: React.FC = () => {
           <TableHeader>
             <TableRow>
               <TableHead>ID</TableHead>
-              <TableHead>手机号</TableHead>
+              <TableHead>账号</TableHead>
               <TableHead>角色</TableHead>
               <TableHead>测试人员</TableHead>
               <TableHead>注册时间</TableHead>
@@ -150,7 +150,7 @@ const AdminPage: React.FC = () => {
             {users.map((user) => (
               <TableRow key={user.id}>
                 <TableCell className="font-mono text-xs">{user.id.substring(0, 8)}...</TableCell>
-                <TableCell>{user.phone}</TableCell>
+                <TableCell>{user.email || user.phone}</TableCell>
                 <TableCell>
                   <Badge variant={user.role === 'admin' ? 'destructive' : 'secondary'}>
                     {user.role === 'admin' ? '管理员' : '用户'}
@@ -179,7 +179,7 @@ const AdminPage: React.FC = () => {
                         <DialogTitle>重置用户密码</DialogTitle>
                       </DialogHeader>
                       <div className="space-y-4 py-4">
-                        <p className="text-sm text-muted-foreground">用户: {user.phone}</p>
+                        <p className="text-sm text-muted-foreground">用户: {user.email || user.phone}</p>
                         <Input 
                           placeholder="输入新密码" 
                           value={newPassword} 
