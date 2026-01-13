@@ -53,37 +53,25 @@ const AdminPage: React.FC = () => {
 
   const fetchUsers = async () => {
     try {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
-        throw new Error('No active session');
-      }
+      console.log('Fetching users via RPC...');
+      // Use RPC call instead of Edge Function to avoid CORS/Deployment issues
+      const { data, error } = await supabase.rpc('get_all_users');
+      
+      console.log('RPC Result:', { data, error });
 
-      const { data, error } = await supabase.functions.invoke('admin-users', {
-        method: 'GET',
-        headers: {
-          Authorization: `Bearer ${session.access_token}`
-        }
-      });
-      if (error) throw error;
-      setUsers(data.users || []);
+      if (error) {
+        // Fallback: if RPC fails (maybe not created), try direct query if RLS allows (it won't usually, but worth a shot for debugging)
+        console.warn('RPC failed, error:', error);
+        throw error;
+      }
+      setUsers(data || []);
     } catch (error: any) {
       console.error('Fetch users error:', error);
-      // Try to parse the error message if it's a JSON string
-      let errorMessage = error.message;
-      try {
-        const parsed = JSON.parse(error.message);
-        if (parsed && parsed.error) errorMessage = parsed.error;
-      } catch (e) {
-        // ignore
-      }
-      
       toast({ 
         title: '加载失败', 
-        description: `无法获取用户列表: ${errorMessage || '请确认权限'}`, 
+        description: error.message || '无法获取用户列表', 
         variant: 'destructive' 
       });
-      // Don't navigate away immediately so user can see the error
-      // navigate('/'); 
     } finally {
       setLoading(false);
     }
@@ -91,10 +79,12 @@ const AdminPage: React.FC = () => {
 
   const handleToggleTester = async (userId: string, currentStatus: boolean) => {
     try {
-      const { error } = await supabase.functions.invoke('admin-users?action=toggle_tester', {
-        method: 'POST',
-        body: { userId, isTester: !currentStatus }
-      });
+      // Use RPC call instead of Edge Function
+      // Or update directly via RLS since we are admin
+      const { error } = await supabase
+        .from('user_profiles')
+        .update({ is_tester: !currentStatus })
+        .eq('user_id', userId);
 
       if (error) throw error;
 

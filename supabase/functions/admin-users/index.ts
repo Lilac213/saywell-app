@@ -11,21 +11,45 @@ serve(async (req) => {
     const supabaseClient = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_ANON_KEY') ?? '',
-      { global: { headers: { Authorization: req.headers.get('Authorization')! } } }
+      // Explicitly set the auth token from the request header
+      { 
+        global: { headers: { Authorization: req.headers.get('Authorization')! } },
+        auth: {
+          persistSession: false, // Don't persist session in Edge Functions
+          autoRefreshToken: false,
+          detectSessionInUrl: false
+        }
+      }
     );
 
     // 1. Check if caller is admin
+    // Use getUser() which validates the JWT token
     const { data: { user }, error: authError } = await supabaseClient.auth.getUser();
-    if (authError || !user) throw new Error('Unauthorized');
+    
+    // Debug log
+    console.log('Auth check:', { 
+      hasUser: !!user, 
+      userId: user?.id, 
+      authError: authError?.message,
+      authHeader: req.headers.get('Authorization')?.substring(0, 20) + '...'
+    });
 
-    const { data: profile } = await supabaseClient
+    if (authError || !user) throw new Error('Unauthorized: ' + (authError?.message || 'No user found'));
+
+    const { data: profile, error: profileError } = await supabaseClient
       .from('user_profiles')
       .select('role')
       .eq('user_id', user.id)
       .single();
 
+    // Debug log
+    console.log('Profile check:', { 
+      profile, 
+      profileError: profileError?.message 
+    });
+
     if (profile?.role !== 'admin') {
-      throw new Error('Forbidden: Admin access required');
+      throw new Error(`Forbidden: Admin access required. Current role: ${profile?.role}`);
     }
 
     // 2. Admin Actions
