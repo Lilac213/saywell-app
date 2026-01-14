@@ -231,6 +231,7 @@ const RepliesPage: React.FC = () => {
       sessionStorage.setItem(`replies_${sessionId}`, JSON.stringify({
         replies: Array.isArray(aiData.replies) ? aiData.replies : [],
         aiData: aiData,
+        sessionData: sessionData,
         timestamp: Date.now()
       }));
 

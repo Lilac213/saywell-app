@@ -93,6 +93,7 @@ export const AIFeedbackModal: React.FC<AIFeedbackModalProps> = ({
       const { data: feedbackData, error: insertError } = await supabase
         .from('ai_feedbacks')
         .insert({
+          user_id: userProfile?.user_id || userProfile?.id, // 确保关联到用户
           ai_result_id: aiResultId,
           feedback_type: feedbackType,
           content: content,
