@@ -33,6 +33,7 @@ const RepliesPage: React.FC = () => {
   const [emotionAnalysis, setEmotionAnalysis] = useState<string>('');
   const [relationship, setRelationship] = useState<string>('');
   const [chatRemark, setChatRemark] = useState<string>('');
+  const [extractedHeader, setExtractedHeader] = useState<string>('');
   
   // AI Feedback Logic
   const [logoClickCount, setLogoClickCount] = useState(0);
@@ -110,12 +111,14 @@ const RepliesPage: React.FC = () => {
               setEmotionAnalysis(parsedCache.aiData.emotion_analysis || '');
               setRelationship(parsedCache.aiData.relationship || '');
               setChatRemark(parsedCache.aiData.chat_remark || '');
+              setExtractedHeader(parsedCache.aiData.extracted_header || '');
            } else if (sessionData.context) {
               // Fallback to session context if aiData missing in cache
               setIntentAnalysis(sessionData.context.intent_analysis || '');
               setEmotionAnalysis(sessionData.context.emotion_analysis || '');
               setRelationship(sessionData.context.relationship || '');
               setChatRemark(sessionData.context.chat_remark || '');
+              setExtractedHeader(sessionData.context.extracted_header || '');
            }
 
            setLoading(false);
@@ -223,6 +226,7 @@ const RepliesPage: React.FC = () => {
         setEmotionAnalysis(aiData.emotion_analysis || '');
         setRelationship(aiData.relationship || '');
         setChatRemark(aiData.chat_remark || '');
+        setExtractedHeader(aiData.extracted_header || '');
       }
 
       setReplies(Array.isArray(aiData.replies) ? aiData.replies : []);

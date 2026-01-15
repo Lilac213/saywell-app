@@ -136,12 +136,22 @@ Deno.serve(async (req) => {
     }
 
     const extractData = await extractResponse.json();
-    const extractedText = extractData.choices?.[0]?.message?.content?.trim();
+    let extractedText = extractData.choices?.[0]?.message?.content?.trim();
     console.log(`✅ 提取完成，耗时: ${Date.now() - extractStartTime}ms`);
     console.log('📝 提取到的对话:', extractedText);
 
     if (!extractedText) {
       throw new Error('OCR 提取结果为空');
+    }
+
+    // 分离顶部备注和对话内容
+    let extractedHeader = null;
+    const headerMatch = extractedText.match(/^\[顶部备注\]：(.*)$/m);
+    if (headerMatch) {
+      extractedHeader = headerMatch[1].trim();
+      console.log('🏷️ 识别到顶部备注:', extractedHeader);
+      // 从文本中移除顶部备注行，以免影响后续显示和分析的纯净度
+      extractedText = extractedText.replace(/^\[顶部备注\]：.*(\r\n|\n|\r)?/, '').trim();
     }
 
     // --- 第二步：基于提取文本进行分析与回复 (NLP) ---
@@ -152,6 +162,9 @@ Deno.serve(async (req) => {
 
     【对话记录】
     ${extractedText}
+
+    【附加信息】
+    - 顶部备注名: ${extractedHeader || '对方'}
 
     【用户画像】
     - 性格特点: ${JSON.stringify(userProfile.personality_traits)}
