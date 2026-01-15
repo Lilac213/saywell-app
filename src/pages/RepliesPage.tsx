@@ -531,14 +531,21 @@ const RepliesPage: React.FC = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                {chatRemark && relationship && (
+                {(extractedHeader || chatRemark) && relationship && (
                   <div className="p-3 bg-background rounded-lg border border-border">
                     <p className="text-sm text-muted-foreground mb-1">对方信息</p>
                     <p className="text-base">
-                      <span className="font-medium">{chatRemark}</span>
+                      <span className="font-medium">{extractedHeader || chatRemark}</span>
                       {' · '}
                       <span className="text-muted-foreground">{relationship}</span>
                     </p>
+                    {/* 新增测试用户专属顶部备注显示 - 仅当未作为主标题显示时才显示，避免重复 */}
+                    {session?.context?.extracted_header && userProfile?.is_tester && !extractedHeader && (
+                      <p className="text-sm text-yellow-600 mt-2">
+                        <span className="font-medium">顶部备注（测试环境）：</span>
+                        {session.context.extracted_header}
+                      </p>
+                    )}
                   </div>
                 )}
                 {emotionAnalysis && (

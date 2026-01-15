@@ -236,6 +236,11 @@ Deno.serve(async (req) => {
     // 合并结果：将第一步提取的文本加入最终结果
     result.extracted_text = extractedText;
     result.extracted_header = extractedHeader;
+    
+    // 如果识别到了顶部备注，强制覆盖 chat_remark，确保前端显示正确的名字
+    if (extractedHeader) {
+      result.chat_remark = extractedHeader;
+    }
 
     return new Response(
       JSON.stringify(result),
