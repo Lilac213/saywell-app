@@ -235,6 +235,7 @@ Deno.serve(async (req) => {
     
     // 合并结果：将第一步提取的文本加入最终结果
     result.extracted_text = extractedText;
+    result.extracted_header = extractedHeader;
 
     return new Response(
       JSON.stringify(result),

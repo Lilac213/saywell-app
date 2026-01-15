@@ -505,6 +505,12 @@ const RepliesPage: React.FC = () => {
                     <p className="text-sm whitespace-pre-wrap">{session.extracted_text}</p>
                   </div>
                 )}
+                {session.context?.extracted_header && userProfile?.is_tester && (
+                  <div className="mt-4 p-4 bg-yellow-50 rounded-lg border border-yellow-200">
+                    <p className="text-sm text-yellow-700 font-medium mb-1">🔍 [测试专用] OCR提取的顶部备注：</p>
+                    <p className="text-sm text-yellow-900">{session.context.extracted_header}</p>
+                  </div>
+                )}
                 {session.context?.user_style_observation && (
                   <div className="mt-4 p-4 bg-primary/10 rounded-lg border border-primary/20">
                     <p className="text-sm text-primary font-medium mb-1">📝 从截图中观察到的您的语言风格：</p>
