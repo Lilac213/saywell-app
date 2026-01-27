@@ -12,6 +12,12 @@ export interface UserProfile {
   is_tester?: boolean;
 }
 
+// 特别关心对象类型
+export interface SpecialContact {
+  name: string; // 微信备注
+  relation: string; // 关系描述
+}
+
 // 聊天会话类型
 export interface ChatSession {
   id: string;

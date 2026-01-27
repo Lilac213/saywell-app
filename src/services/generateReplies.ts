@@ -121,6 +121,20 @@ export async function generateReplies({
   }
   console.log('🏷️ 识别到顶部备注:', extractedHeader);
 
+  // 识别特别关心对象 (用户预设)
+  const specialContacts = (userProfile.personality_traits?.special_contacts as Array<{name: string, relation: string}>) || [];
+  let matchedSpecialContact = null;
+  if (extractedHeader) {
+    matchedSpecialContact = specialContacts.find(c => 
+      c.name === extractedHeader || 
+      extractedHeader?.includes(c.name) || 
+      c.name.includes(extractedHeader!)
+    );
+    if (matchedSpecialContact) {
+      console.log('❤️ 匹配到用户预设特别关心对象:', matchedSpecialContact.name);
+    }
+  }
+
   // 处理对话内容结果
   let extractedText = dialogueResponse.trim();
   // 移除可能的顶部备注行（如果模型还是输出了）
@@ -141,6 +155,7 @@ export async function generateReplies({
 
   【附加信息】
   - 顶部备注名: ${extractedHeader || '对方'}
+  - 用户预设特别关心: ${matchedSpecialContact ? `是 (预设关系: ${matchedSpecialContact.relation})` : '否'}
 
   【用户画像】
   - 性格特点: ${JSON.stringify(userProfile.personality_traits)}
@@ -158,6 +173,7 @@ export async function generateReplies({
      - 提取或推测对方的备注名（chat_remark），如果对话中没有体现，可以根据语境推测（如“妈妈”、“老板”），实在无法推测则留空。
   2. **特别关心对象检测与策略（新增核心任务）**：
      - **检测**：基于备注名（如亲属称谓、亲密昵称、重要职级）和对话内容，判断对方是否为用户的“特别关心对象”。
+     - **优先级规则**：如果【用户预设特别关心】为“是”，则**直接认定**为特别关心对象，且关系类型直接使用用户预设的 "${matchedSpecialContact?.relation}"，无需再次猜测。
      - **特殊反馈提取**：若是特别关心对象，请结合用户画像，提取或推测用户对该对象的特殊对待模式。
      - **风格强制映射规则**：
        - 若是【家人/亲属】：生成回复必须**温馨、充满关怀**。
