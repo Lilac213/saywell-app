@@ -200,6 +200,30 @@ Deno.serve(async (req) => {
         return newItem
       }))
 
+    } else if (action === 'createAnalysisFeatures') {
+      const { session_id, user_profile_id, features } = params
+      
+      if (!session_id || !user_profile_id || !features) throw new Error('Missing required parameters')
+      
+      // Hash user_profile_id to create user_id_hash
+      const msgBuffer = new TextEncoder().encode(user_profile_id)
+      const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer)
+      const hashArray = Array.from(new Uint8Array(hashBuffer))
+      const user_id_hash = hashArray.map(b => b.toString(16).padStart(2, '0')).join('')
+
+      const { data, error } = await supabase
+        .from('conversation_analysis_features')
+        .insert({
+          session_id,
+          user_id_hash,
+          ...features
+        })
+        .select()
+        .single()
+        
+      if (error) throw error
+      resultData = data
+
     } else {
       throw new Error(`Unknown action: ${action}`)
     }

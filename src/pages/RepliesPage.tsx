@@ -230,6 +230,13 @@ const RepliesPage: React.FC = () => {
         setExtractedHeader(aiData.extracted_header || '');
       }
 
+      // 提取 L2 特征并存储 (后台执行，不阻塞 UI)
+      if (aiData.features) {
+         chatSessionApi.createAnalysisFeatures(sessionId, userProfile.id, aiData.features).catch(err => {
+             console.error('Failed to save analysis features:', err);
+         });
+      }
+
       setReplies(Array.isArray(aiData.replies) ? aiData.replies : []);
       
       // Save to cache

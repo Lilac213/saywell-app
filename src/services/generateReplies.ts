@@ -156,7 +156,14 @@ export async function generateReplies({
   1. **分析**：
      - 分析对方的意图、情绪和双方关系（意图和情绪分析需丰满深入，每项约50-80字，但总字数控制在100字以内；关系判断保持简练）。
      - 提取或推测对方的备注名（chat_remark），如果对话中没有体现，可以根据语境推测（如“妈妈”、“老板”），实在无法推测则留空。
-  2. **生成回复**：
+  2. **特征提取 (L2 Layer)**：
+     - 请根据对话内容，精准判断以下特征：
+       - 场景 (scenario)
+       - 关系类型 (relationship_type)
+       - 意图类别 (intent_category)
+       - 情绪状态 (emotion_primary, emotion_type)
+       - 各项数值指标 (0-1之间)
+  3. **生成回复**：
      - 生成 4 个不同风格的回复建议：
        - 选项1：符合用户画像的常规/得体回复
        - 选项2：高情商/共情/温暖的回复
@@ -174,6 +181,20 @@ export async function generateReplies({
     "emotion_analysis": "简练的情绪分析...",
     "relationship": "简练的关系判断...",
     "chat_remark": "对方备注名...",
+    "features": {
+        "scenario": "场景类型 (可选值: 恋爱, 职场, 朋友, 家庭, 其他)",
+        "relationship_type": "关系类型 (可选值: 暧昧, 上下级, 同事, 朋友, 亲人, 陌生人, 其他)",
+        "intent_category": "意图类别 (可选值: share, seek_support, seek_advice, test_boundary, express_dissatisfaction, conflict, coordination, casual_chat, other)",
+        "intent_strength": 0.8, // 意图强度 0-1
+        "emotion_primary": "主情绪 (可选值: positive, neutral, negative)",
+        "emotion_type": "具体情绪 (可选值: joy, excitement, relief, sadness, anxiety, anger, disappointment, embarrassment, other)",
+        "emotion_intensity": 0.8, // 情绪强度 0-1
+        "sarcasm": false, // 是否反讽
+        "humor": false, // 是否幽默
+        "indirectness": 0.2, // 委婉程度 0-1
+        "emotional_volatility": 0.1, // 情绪波动程度 0-1
+        "recommended_reply_style": "推荐回复风格 (可选值: 共情, 理性, 轻松, 克制, 幽默, 直接, 其他)"
+    },
     "replies": [
       { "text": "回复1", "tone": "得体", "reasoning": "简短推荐理由" },
       { "text": "回复2", "tone": "高情商", "reasoning": "简短推荐理由" },

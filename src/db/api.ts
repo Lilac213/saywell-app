@@ -118,6 +118,24 @@ export const chatSessionApi = {
       return null;
     }
     return data;
+  },
+
+  // 创建分析特征
+  async createAnalysisFeatures(sessionId: string, userProfileId: string, features: any): Promise<any | null> {
+    const { data, error } = await supabase.functions.invoke('chat-session', {
+      body: { 
+        action: 'createAnalysisFeatures',
+        session_id: sessionId,
+        user_profile_id: userProfileId,
+        features
+      }
+    });
+    
+    if (error) {
+      console.error('创建分析特征失败:', error);
+      return null;
+    }
+    return data;
   }
 };
 
