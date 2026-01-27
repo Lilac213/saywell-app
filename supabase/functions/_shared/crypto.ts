@@ -54,10 +54,17 @@ export class CryptoService {
 
     try {
       const key = await this.getKey();
-      const combined = decodeBase64(encryptedText);
+      let combined;
+      try {
+        combined = decodeBase64(encryptedText);
+      } catch {
+        // Not a base64 string, assume it's plain text (not encrypted)
+        return encryptedText;
+      }
 
       if (combined.length < 12) {
-        throw new Error("Invalid encrypted data length");
+        // Too short to be IV + Ciphertext, assume plain text
+        return encryptedText;
       }
 
       const iv = combined.slice(0, 12);
