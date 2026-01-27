@@ -334,7 +334,7 @@ const ProfilePage: React.FC = () => {
                   
                   {/* 其他性格特征 */}
                   {Object.entries(userProfile.personality_traits)
-                    .filter(([key]) => !['性别', '星座', '年龄段', 'MBTI', 'special_contacts'].includes(key))
+                    .filter(([key]) => !['性别', '星座', '年龄段', 'MBTI', 'special_contacts', '特别关心的人'].includes(key))
                     .map(([key, value]) => (
                       <div key={key} className="flex flex-col xl:flex-row xl:items-center gap-2">
                         <span className="font-medium text-sm min-w-24">{key}：</span>

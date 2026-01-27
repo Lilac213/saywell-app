@@ -46,23 +46,16 @@ export const UserProfileProvider: React.FC<{ children: React.ReactNode }> = ({ c
     setLoading(true);
     try {
       if (userId) {
-        // Fetch by user_id
-        const { data: profiles, error } = await supabase
-          .from('user_profiles')
-          .select('*')
-          .eq('user_id', userId)
-          .single();
+        // Fetch by user_id via Edge Function (handles decryption)
+        const profiles = await userProfileApi.getByUserId(userId);
         
         if (profiles) {
           setUserProfile(profiles);
           localStorage.setItem('userProfileId', profiles.id);
         } else {
           // If auth user but no profile, create one?
-          // Usually created at registration, but if missing:
           // We can't use userProfileApi.create() directly because it might not set user_id.
           // We'll leave it null and let UI handle it, or auto-create.
-          // For now, let's try to find by localStorage ID just in case they linked it?
-          // Or just leave it.
           setUserProfile(null);
         }
       } else {

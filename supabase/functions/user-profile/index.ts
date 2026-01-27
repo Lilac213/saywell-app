@@ -34,15 +34,20 @@ Deno.serve(async (req) => {
       resultData = data
 
     } else if (action === 'get') {
-      // Get profile by ID
-      const { id } = params
-      if (!id) throw new Error('Missing ID')
+      // Get profile by ID or User ID
+      const { id, user_id } = params
+      
+      if (!id && !user_id) throw new Error('Missing ID or User ID')
 
-      const { data, error } = await supabase
-        .from('user_profiles')
-        .select('*')
-        .eq('id', id)
-        .maybeSingle()
+      let query = supabase.from('user_profiles').select('*')
+      
+      if (id) {
+        query = query.eq('id', id)
+      } else {
+        query = query.eq('user_id', user_id)
+      }
+
+      const { data, error } = await query.maybeSingle()
 
       if (error) throw error
       if (!data) {

@@ -34,6 +34,19 @@ export const userProfileApi = {
     return data;
   },
 
+  // 根据 User ID 获取用户画像
+  async getByUserId(userId: string): Promise<UserProfile | null> {
+    const { data, error } = await supabase.functions.invoke('user-profile', {
+      body: { action: 'get', user_id: userId }
+    });
+    
+    if (error) {
+      console.error('获取用户画像失败:', error);
+      return null;
+    }
+    return data;
+  },
+
   // 更新用户画像
   async update(id: string, updates: Partial<UserProfile>): Promise<UserProfile | null> {
     const { data, error } = await supabase.functions.invoke('user-profile', {

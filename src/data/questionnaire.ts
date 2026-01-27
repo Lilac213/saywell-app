@@ -133,28 +133,6 @@ export const questionnaireQuestions: QuestionnaireQuestion[] = [
     placeholder: '例如：哈哈、嗯嗯、好的、没问题、确实、hhh、噢、哦等',
     type: 'textarea',
   },
-  {
-    id: 9,
-    question: '你是否要设定特别关心的人？',
-    type: 'select',
-    options: ['否，暂不设定', '是，我要设定'],
-  },
-  {
-    id: 10,
-    question: '请输入TA在你这里的备注名称',
-    placeholder: '例如：老板、小王、妈妈、宝贝等',
-    type: 'text',
-    conditionalOn: 9,
-    conditionalValue: '是，我要设定',
-  },
-  {
-    id: 11,
-    question: 'TA跟你的关系是？',
-    placeholder: '例如：领导、同事、朋友、父母、爱人、暧昧对象、追求对象、追求者等',
-    type: 'text',
-    conditionalOn: 9,
-    conditionalValue: '是，我要设定',
-  },
 ];
 
 // 老用户补充问卷（只有一个问题）

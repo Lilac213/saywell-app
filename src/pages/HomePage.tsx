@@ -99,8 +99,8 @@ const HomePage: React.FC = () => {
           let width = img.width;
           let height = img.height;
 
-          // 限制最大分辨率为 720p (足以识别文字，且上传更快)
-          const maxDimension = 720;
+          // 限制最大分辨率为 1440p (提高清晰度以准确识别中文字符)
+          const maxDimension = 1440;
           if (width > maxDimension || height > maxDimension) {
             if (width > height) {
               height = (height / width) * maxDimension;
@@ -130,7 +130,7 @@ const HomePage: React.FC = () => {
               }
             },
             'image/webp',
-            0.6 // 降低质量到 0.6，进一步减小体积
+            0.85 // 提高质量到 0.85，保证文字清晰度
           );
         };
         img.onerror = () => reject(new Error('图片加载失败'));
