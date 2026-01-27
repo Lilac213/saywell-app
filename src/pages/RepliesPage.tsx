@@ -232,9 +232,14 @@ const RepliesPage: React.FC = () => {
 
       // 提取 L2 特征并存储 (后台执行，不阻塞 UI)
       if (aiData.features) {
-         chatSessionApi.createAnalysisFeatures(sessionId, userProfile.id, aiData.features).catch(err => {
-             console.error('Failed to save analysis features:', err);
+         console.log('🔍 [L2 Feature] Found features in AI response, saving...', aiData.features);
+         chatSessionApi.createAnalysisFeatures(sessionId, userProfile.id, aiData.features)
+            .then(res => console.log('✅ [L2 Feature] Saved successfully:', res))
+            .catch(err => {
+             console.error('❌ [L2 Feature] Failed to save analysis features:', err);
          });
+      } else {
+         console.warn('⚠️ [L2 Feature] No features found in AI response');
       }
 
       setReplies(Array.isArray(aiData.replies) ? aiData.replies : []);

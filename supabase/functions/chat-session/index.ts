@@ -211,17 +211,37 @@ Deno.serve(async (req) => {
       const hashArray = Array.from(new Uint8Array(hashBuffer))
       const user_id_hash = hashArray.map(b => b.toString(16).padStart(2, '0')).join('')
 
+      // Sanitize features to only include allowed columns
+      const allowedColumns = [
+        'scenario', 'relationship_type', 'intent_category', 'intent_strength',
+        'emotion_primary', 'emotion_type', 'emotion_intensity',
+        'sarcasm', 'humor', 'indirectness', 'emotional_volatility',
+        'recommended_reply_style'
+      ];
+      
+      const sanitizedFeatures: any = {};
+      for (const key of allowedColumns) {
+        if (features[key] !== undefined) {
+          sanitizedFeatures[key] = features[key];
+        }
+      }
+
+      console.log('Inserting features:', sanitizedFeatures);
+
       const { data, error } = await supabase
         .from('conversation_analysis_features')
         .insert({
           session_id,
           user_id_hash,
-          ...features
+          ...sanitizedFeatures
         })
         .select()
         .single()
         
-      if (error) throw error
+      if (error) {
+        console.error('Insert error:', error);
+        throw error;
+      }
       resultData = data
 
     } else {
