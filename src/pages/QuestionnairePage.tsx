@@ -8,6 +8,7 @@ import { useUserProfile } from '@/contexts/UserProfileContext';
 import { questionnaireQuestions, updateQuestions } from '@/data/questionnaire';
 import { questionnaireApi } from '@/db/api';
 import { supabase } from '@/db/supabase';
+import { analyzeQuestionnaire } from '@/services/analyzeQuestionnaire';
 import { Loader2, User } from 'lucide-react';
 import logoImage from '@/assets/logo.png';
 
@@ -100,30 +101,32 @@ const QuestionnairePage: React.FC = () => {
         
         // 调用AI分析补充信息
         console.time('AIAnalysis_Update'); // ⏱️ 开始计时：AI分析(更新)
-        const { data: analysisData, error: analysisError } = await supabase.functions.invoke(
-          'analyze-questionnaire',
-          {
-            body: {
-              responses: [
-                {
-                  question: '用户想要补充或更新的信息',
-                  answer: updateText,
-                },
-              ],
-              isUpdate: true,
-              existingProfile: {
-                personality_traits: profile.personality_traits,
-                language_habits: profile.language_habits,
-                background_story: profile.background_story,
+        
+        let analysisData, analysisError;
+        try {
+          analysisData = await analyzeQuestionnaire({
+            responses: [
+              {
+                question: '用户想要补充或更新的信息',
+                answer: updateText,
               },
+            ],
+            isUpdate: true,
+            existingProfile: {
+              personality_traits: profile.personality_traits,
+              language_habits: profile.language_habits,
+              background_story: profile.background_story,
             },
-          }
-        );
+          });
+        } catch (e: any) {
+          analysisError = e;
+        }
+
         console.timeEnd('AIAnalysis_Update'); // ⏱️ 结束计时：AI分析(更新)
 
         if (analysisError) {
-          const errorMsg = await analysisError?.context?.text();
-          console.error('AI分析失败:', errorMsg || analysisError?.message);
+          const errorMsg = analysisError.message;
+          console.error('AI分析失败:', errorMsg);
           
           // 记录错误到数据库
           await supabase.from('error_logs').insert({
@@ -177,17 +180,20 @@ const QuestionnairePage: React.FC = () => {
           // 任务2: 调用AI分析
           (async () => {
              console.time('AIAnalysis_New'); 
-             const res = await supabase.functions.invoke('analyze-questionnaire', {
-                body: {
+             try {
+                const res = await analyzeQuestionnaire({
                   responses: responses.map((r) => ({
                     question: r.question,
                     answer: r.answer,
                   })),
                   isUpdate: false,
-                },
-             });
-             console.timeEnd('AIAnalysis_New');
-             return res;
+                });
+                return { data: res, error: null };
+             } catch (e) {
+                return { data: null, error: e };
+             } finally {
+                console.timeEnd('AIAnalysis_New');
+             }
           })()
         ]);
         console.timeEnd('Parallel_Save_Analyze');
@@ -200,13 +206,12 @@ const QuestionnairePage: React.FC = () => {
         }
 
         if (analysisError) {
-          const errorMsg = await analysisError?.context?.text();
-          console.error('AI分析失败:', errorMsg || analysisError?.message);
+          console.error('AI分析失败:', analysisError);
           
           // 记录错误到数据库
           await supabase.from('error_logs').insert({
             profile_id: profile.id,
-            error_message: errorMsg || analysisError?.message || 'AI分析失败',
+            error_message: (analysisError as any).message || 'AI分析失败',
             error_context: {
               action: 'analyze_questionnaire_new',
               is_update: false
@@ -218,9 +223,9 @@ const QuestionnairePage: React.FC = () => {
 
         // 更新用户画像
         await updateProfile({
-          personality_traits: analysisData.personality_traits || {},
-          language_habits: analysisData.language_habits || {},
-          background_story: analysisData.background_story || '',
+          personality_traits: analysisData?.personality_traits || {},
+          language_habits: analysisData?.language_habits || {},
+          background_story: analysisData?.background_story || '',
           questionnaire_completed: true,
         });
 

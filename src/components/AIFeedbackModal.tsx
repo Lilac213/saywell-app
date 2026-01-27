@@ -20,6 +20,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/db/supabase";
+import { analyzeFeedback } from "@/services/analyzeFeedback";
 import { Loader2, Paperclip } from "lucide-react";
 import type { UserProfile } from "@/types/types";
 
@@ -117,9 +118,10 @@ export const AIFeedbackModal: React.FC<AIFeedbackModalProps> = ({
           hasFeedbackData: !!feedbackData,
           feedbackId: feedbackData?.id 
         });
-
-        const { data: analysisData, error: analysisError } = await supabase.functions.invoke('analyze-feedback', {
-          body: {
+        
+        let analysisData;
+        try {
+          analysisData = await analyzeFeedback({
             feedbackText: content,
             userProfileId: userProfile.id,
             existingProfile: {
@@ -127,41 +129,10 @@ export const AIFeedbackModal: React.FC<AIFeedbackModalProps> = ({
               language_habits: userProfile.language_habits,
               background_story: userProfile.background_story,
             },
-            feedbackId: feedbackData?.id, // Optional
+            feedbackId: feedbackData?.id,
             feedbackType: feedbackType
-          }
-        });
-
-        // 检查 HTTP 错误或业务逻辑错误
-        if (analysisError || (analysisData && analysisData.error)) {
-          console.error('AI optimization failed:', analysisError || analysisData?.error);
-          
-          // 尝试解析错误信息
-          let errorMsg = "请稍后重试";
-          if (analysisData && analysisData.error) {
-            errorMsg = analysisData.error;
-          } else {
-            try {
-               // 如果是 FunctionsHttpError，可能包含详细信息
-               if (analysisError instanceof Error) {
-                 errorMsg = analysisError.message;
-               }
-               // 尝试读取 response body 如果有
-               if ('context' in analysisError && (analysisError as any).context?.json) {
-                  const body = await (analysisError as any).context.json();
-                  if (body.error) errorMsg = body.error;
-               }
-            } catch (e) {
-               console.error("Error parsing analysis error", e);
-            }
-          }
-
-          toast({
-            title: "自动优化失败",
-            description: `原因: ${errorMsg}`,
-            variant: "destructive"
           });
-        } else {
+
           console.log("AI analysis successful:", analysisData);
           
           // 只有当有 feedbackData 时才更新状态
@@ -184,6 +155,14 @@ export const AIFeedbackModal: React.FC<AIFeedbackModalProps> = ({
           toast({
             title: "优化完成",
             description: "您的画像已更新，下次回复将更符合您的期望",
+          });
+
+        } catch (error: any) {
+          console.error('AI optimization failed:', error);
+          toast({
+            title: "自动优化失败",
+            description: `原因: ${error.message || '请稍后重试'}`,
+            variant: "destructive"
           });
         }
       } else {

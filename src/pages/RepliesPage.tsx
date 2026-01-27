@@ -7,6 +7,8 @@ import { useToast } from '@/hooks/use-toast';
 import { useUserProfile } from '@/contexts/UserProfileContext';
 import { chatSessionApi, replySelectionApi } from '@/db/api';
 import { supabase } from '@/db/supabase';
+import { generateReplies } from '@/services/generateReplies';
+import { analyzeFeedback } from '@/services/analyzeFeedback';
 import { ArrowLeft, Copy, Check, Sparkles, Loader2, User, ImageIcon } from 'lucide-react';
 import type { ChatSession, GeneratedReply } from '@/types/types';
 import logoImage from '@/assets/logo.png';
@@ -178,32 +180,31 @@ const RepliesPage: React.FC = () => {
 
       // 调用AI生成回复
       console.time(timers.ai); // ⏱️ 开始计时：AI生成
-      const { data: aiData, error: aiError } = await supabase.functions.invoke('generate-replies', {
-        body: {
-          screenshotUrl: sessionData.screenshot_url, // 直接传递URL，不再传递Base64
+      
+      let aiData;
+      try {
+        aiData = await generateReplies({
+          screenshotUrl: sessionData.screenshot_url,
           userProfile: {
             personality_traits: userProfile.personality_traits,
             language_habits: userProfile.language_habits,
             background_story: userProfile.background_story,
           },
           previousSelections,
-        },
-      });
-      console.timeEnd(timers.ai); // ⏱️ 结束计时：AI生成
-
-      if (aiError) {
-        const errorMsg = await aiError?.context?.text();
-        console.error('AI生成回复失败:', errorMsg || aiError?.message);
+        });
+      } catch (error: any) {
+        console.error('AI生成回复失败:', error);
         
-        // 提供更友好的错误提示
         toast({
           title: 'AI分析失败',
-          description: '网络连接问题或服务暂时不可用，请稍后重试',
+          description: error.message || '网络连接问题或服务暂时不可用，请稍后重试',
           variant: 'destructive',
-          });
+        });
         
         throw new Error('AI生成回复失败');
       }
+
+      console.timeEnd(timers.ai); // ⏱️ 结束计时：AI生成
 
       if (!aiData) {
         throw new Error('AI返回数据为空');
@@ -341,8 +342,9 @@ const RepliesPage: React.FC = () => {
       // 调用Edge Function分析反馈并更新画像
       if (userProfile) {
         console.time('FeedbackAnalysis'); // ⏱️ 开始计时：反馈分析
-        const { data: analysisData, error: analysisError } = await supabase.functions.invoke('analyze-feedback', {
-          body: {
+        let analysisData;
+        try {
+          analysisData = await analyzeFeedback({
             feedbackText,
             userProfileId: userProfile.id,
             existingProfile: {
@@ -350,31 +352,19 @@ const RepliesPage: React.FC = () => {
               language_habits: userProfile.language_habits,
               background_story: userProfile.background_story,
             },
-          },
-        });
+          });
+        } catch (error: any) {
+           console.error('分析反馈失败:', error);
+           toast({
+             title: '反馈已保存',
+             description: `但画像更新失败：${error.message || '请稍后重试'}`,
+             variant: 'destructive',
+           });
+           // Continue execution to refresh profile if needed, though update failed
+        }
         console.timeEnd('FeedbackAnalysis'); // ⏱️ 结束计时：反馈分析
 
-        if (analysisError || (analysisData && analysisData.error)) {
-          // 尝试解析错误信息
-          let errorMsg = "请稍后重试";
-          if (analysisData && analysisData.error) {
-             errorMsg = analysisData.error;
-          } else {
-             try {
-                if (analysisError instanceof Error) errorMsg = analysisError.message;
-                const contextError = await analysisError?.context?.text?.();
-                if (contextError) errorMsg = contextError;
-             } catch (e) { console.error(e); }
-          }
-          
-          console.error('分析反馈失败:', errorMsg);
-          
-          toast({
-            title: '反馈已保存',
-            description: `但画像更新失败：${errorMsg}`,
-            variant: 'destructive',
-          });
-        } else {
+        if (analysisData && analysisData.success) {
           // 刷新用户画像
           await refreshProfile();
           toast({
